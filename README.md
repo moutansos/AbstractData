@@ -9,10 +9,10 @@ TODO: Excel Files
 TODO: CSV Files  
 TODO: SQL Server Databases  
 TODO: PostgreSql Databases  
-TODO: MariaDB Databases
-TODO: SQLite Databases
-TODO: MongoDB ?
-TODO: JSON File ?
+TODO: MariaDB Databases   
+TODO: SQLite Databases  
+TODO: MongoDB ?  
+TODO: JSON File ?  
 
 ## Library Usage
 Currently unusable. As things come together there will be a way to include the library in projects from source and also from NuGet.
