@@ -204,8 +204,8 @@ namespace AbstractData
 
             private string generateVariableString()
             {
-                originalString = ""
-                return
+                originalString = "";
+                return originalString;
             }
 
             #region Static Utils
