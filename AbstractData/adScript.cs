@@ -124,8 +124,8 @@ namespace AbstractData
         public class Variable
         {
             private string varID;
-            private string value; //Switch to a reference
-            private string type;
+            private string varValue; //Switch to a reference
+            private string typeID;
             private adLine line;
 
             private string originalString;
@@ -145,50 +145,43 @@ namespace AbstractData
 
             public Variable(string varID, string value, string type)
             {
-                setID(varID);
-                setValue(value);
-                setType(type);
+                this.id = varID;
+                this.value = value;
+                this.type = type;
             }
             #endregion
 
-            #region Get Methods
-            public string getID()
+            #region Properties
+            public string id
             {
-                return varID;
+                get { return varID; }
+                set { varID = value; }
             }
 
-            public string getValue()
+            public string value
             {
-                return value;
+                get { return varValue; }
+                set { varValue = value; }
             }
 
-            public string getType()
+            public string type
             {
-                return type;
+                get { return typeID; }
+                set
+                {
+                    validateType(value);
+                    typeID = value;
+                }
             }
             #endregion
 
-            #region Set Methods
-            public void setID(string newID)
+            #region Validation Methods
+            public void validateType(string type)
             {
-                varID = newID;
-            }
-
-            public void setValue(string newValue)
-            {
-                value = newValue;
-            }
-
-            public void setType(string newType)
-            {
-                if (newType != "Local" ||
-                   newType != "Global")
+                if ((type != "Local") ||
+                    (type != "Global"))
                 {
                     throw new ArgumentException("The type being set to the variable is not valid. Must be a Local or Global type.");
-                }
-                else
-                {
-                    type = newType;
                 }
             }
             #endregion
@@ -204,7 +197,7 @@ namespace AbstractData
 
             private string generateVariableString()
             {
-                originalString = "";
+                originalString = type + " " + id + " = " + value;
                 return originalString;
             }
 
@@ -409,11 +402,11 @@ namespace AbstractData
         #region Variable Management
         public void setGlobalVariable(Variable newVar)
         {
-            string varID = newVar.getID();
+            string varID = newVar.id;
             Variable foundValue = null;
             foreach (Variable var in globalVariablesList)
             {
-                if (var.getID() == varID)
+                if (var.id == varID)
                 {
                     foundValue = var;
                     break;
@@ -435,11 +428,11 @@ namespace AbstractData
 
         public void setLocalVariable(Variable newVar)
         {
-            string varID = newVar.getID();
+            string varID = newVar.id;
             Variable foundValue = null;
             foreach (Variable var in localVariablesList)
             {
-                if (var.getID() == varID)
+                if (var.id == varID)
                 {
                     foundValue = var;
                     break;
@@ -463,7 +456,7 @@ namespace AbstractData
         {
             foreach (Variable var in globalVariablesList)
             {
-                if (var.getID() == varID)
+                if (var.id == varID)
                 {
                     return var;
                 }
@@ -474,14 +467,14 @@ namespace AbstractData
 
         public string getGlobalVarString(string varID)
         {
-            return getGlobalVariable(varID).getValue();
+            return getGlobalVariable(varID).value;
         }
 
         public Variable getLocalVariable(string varID)
         {
             foreach (Variable var in localVariablesList)
             {
-                if (var.getID() == varID)
+                if (var.id == varID)
                 {
                     return var;
                 }
@@ -492,7 +485,7 @@ namespace AbstractData
 
         public string getLocalVarString(string varID)
         {
-            return getLocalVariable(varID).getID();
+            return getLocalVariable(varID).value;
         }
         #endregion
     }
