@@ -51,6 +51,7 @@
     <Compile Include="adScript.cs" />
     <Compile Include="Databases\DataEntry.cs" />
     <Compile Include="Databases\ExcelFile.cs" />
+    <Compile Include="Databases\SQLServerDB.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Databases\IDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

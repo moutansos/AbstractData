@@ -13,7 +13,6 @@ namespace AbstractData
         string table { get; set; }
         void addData(DataEntry data);
         void close();
-
     }
 
     public enum dbType

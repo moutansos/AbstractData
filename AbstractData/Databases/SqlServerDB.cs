@@ -1,0 +1,71 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AbstractData
+{
+    class SQLServerDB : IDatabase
+    {
+        //Constants
+        public const string idInScript = "ExcelFile";
+
+        private string tableName;
+        private string connectionString;
+
+        List<DataEntry> dataEntryCache;
+
+        #region Constructors
+        public SQLServerDB(string connectionString)
+        {
+            dataEntryCache = new List<DataEntry>();
+            this.connectionString = connectionString;
+        }
+        #endregion
+
+        #region Properties
+        public bool isMultiTable
+        {
+            get { return true; }
+        }
+
+        public string table
+        {
+            get { return tableName; }
+            set
+            {
+                writeCache();
+                tableName = value;
+            }
+        }
+
+        public dbType type
+        {
+            get { return dbType.SQLServerDB}
+        }
+        #endregion
+
+        public void addData(DataEntry data)
+        {
+            dataEntryCache.Add(data);
+            if(dataEntryCache.Count > 5000)
+            {
+                writeCache();
+            }
+        }
+
+        public void writeCache()
+        {
+            if(dataEntryCache.Count > 0)
+            {
+                //TODO: Add code for writeing out to database
+            }
+        }
+
+        public void close()
+        {
+            writeCache();
+        }
+    }
+}
