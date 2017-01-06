@@ -49,7 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="adScript.cs" />
-    <Compile Include="dbObject.cs" />
+    <Compile Include="Databases\DataEntry.cs" />
+    <Compile Include="Databases\ExcelFile.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Databases\IDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

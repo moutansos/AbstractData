@@ -8,8 +8,12 @@ namespace AbstractData
 {
     public interface IDatabase
     {
-        dbType getType();
-        bool isMultiTable();
+        dbType type { get; }
+        bool isMultiTable { get; }
+        string table { get; set; }
+        void addData(DataEntry data);
+        void close();
+
     }
 
     public enum dbType
