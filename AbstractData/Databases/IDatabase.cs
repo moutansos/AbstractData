@@ -23,7 +23,6 @@ namespace AbstractData
         SQLServerDB,
         PostgreSqlDB,
         MariaDB,
-        SQLiteDB,
-        Unknown
+        SQLiteDB
     }
 }

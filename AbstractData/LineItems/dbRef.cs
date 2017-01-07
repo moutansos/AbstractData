@@ -11,6 +11,8 @@ namespace AbstractData
         private string errorText;
         private int line;
         private string lineString;
+        private string refString;
+        private string plainRefString; //No quotes
 
         private IDatabase db;
         private string refID;
@@ -99,6 +101,129 @@ namespace AbstractData
         public void parseString()
         {
             string line = originalString;
+            //DB Type
+            int posOfFirstSpace = line.IndexOf(' ');
+            string typeString = line.Substring(0, posOfFirstSpace).Trim(); //Verify the math on this one
+            dbType type = getDbType(typeString);
+
+            //Ref ID
+            int posOfEquals = line.IndexOf('=');
+            refID = line.Substring(posOfFirstSpace, posOfFirstSpace - posOfEquals).Trim(); //This one too
+
+            //Ref String
+            refString = line.Substring(posOfEquals, line.Length - posOfEquals).Trim(); //Again, this one too
+            plainRefString = refString.Trim('\"');
+
+            //Get the database
+            db = getDatabase(type);
+        }
+
+        public static dbType getDbType(string type)
+        {
+            if(type == ExcelFile.idInScript)
+            {
+                return dbType.ExcelFile;
+            }
+            else if(type == "CSVFile")
+            {
+                return dbType.CSVFile;
+            }
+            else if(type == "AccessDB")
+            {
+                return dbType.AccessDB;
+            }
+            else if(type == SQLServerDB.idInScript)
+            {
+                return dbType.SQLServerDB;
+            }
+            else if(type == "PostgreSqlDB")
+            {
+                return dbType.PostgreSqlDB;
+            }
+            else if(type == "MariaDB")
+            {
+                return dbType.MariaDB;
+            }
+            else if(type == "SQLiteDB")
+            {
+                return dbType.SQLiteDB;
+            }
+            else
+            {
+                throw new ArgumentException("The input database type of: " + type + " was not valid");
+            }
+        }
+
+        public static string getDbType(dbType type)
+        {
+            if(type == dbType.ExcelFile)
+            {
+                return ExcelFile.idInScript;
+            }
+            else if(type == dbType.CSVFile)
+            {
+                return "CSVFile";
+            }
+            else if(type == dbType.AccessDB)
+            {
+                return "AccessDB";
+            }
+            else if(type == dbType.SQLServerDB)
+            {
+                return SQLServerDB.idInScript;
+            }
+            else if(type == dbType.PostgreSqlDB)
+            {
+                return "PostgreSqlDB";
+            }
+            else if(type == dbType.MariaDB)
+            {
+                return "MariaDB";
+            }
+            else if(type == dbType.SQLiteDB)
+            {
+                return "SQLiteDB";
+            }
+            else
+            {
+                throw new Exception("Fatal Exception: Internal error reading database type");
+            }
+        }
+
+        public IDatabase getDatabase(dbType type)
+        {
+            if(type == dbType.ExcelFile)
+            {
+                return new ExcelFile(plainRefString);
+            }
+            else if(type == dbType.CSVFile)
+            {
+                throw new NotImplementedException("CSVFile Database Not Implemented");
+            }
+            else if(type == dbType.AccessDB)
+            {
+                throw new NotImplementedException("AccessDB Database Not Implemented");
+            }
+            else if(type == dbType.SQLServerDB)
+            {
+                return new SQLServerDB(plainRefString);
+            }
+            else if(type == dbType.PostgreSqlDB)
+            {
+                throw new NotImplementedException("PostgreSqlDB Database Not Implemented");
+            }
+            else if(type == dbType.MariaDB)
+            {
+                throw new NotImplementedException("MariaDB Database Not Implemented");
+            }
+            else if(type == dbType.SQLiteDB)
+            {
+                throw new NotImplementedException("SQLiteDB Database Not Implemented");
+            }
+            else
+            {
+                throw new Exception("Fatal Exception: Internal error reading database type");
+            }
 
         }
     }
