@@ -10,7 +10,7 @@ namespace AbstractData
     class SQLServerDB : IDatabase
     {
         //Constants
-        public const string idInScript = "ExcelFile";
+        public const string idInScript = "SQLServerDB";
 
         private string tableName;
         private string connectionString;

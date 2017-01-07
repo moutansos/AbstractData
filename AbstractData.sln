@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractData", "AbstractDat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractData CLI", "AbstractData CLI\AbstractData CLI.csproj", "{0B6C15AF-CECD-4C12-904E-6F3D4B2575D7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "adTests", "adTests\adTests.csproj", "{2ADFF289-E040-44C7-967C-0975212CD6AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0B6C15AF-CECD-4C12-904E-6F3D4B2575D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B6C15AF-CECD-4C12-904E-6F3D4B2575D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B6C15AF-CECD-4C12-904E-6F3D4B2575D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ADFF289-E040-44C7-967C-0975212CD6AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ADFF289-E040-44C7-967C-0975212CD6AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ADFF289-E040-44C7-967C-0975212CD6AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ADFF289-E040-44C7-967C-0975212CD6AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

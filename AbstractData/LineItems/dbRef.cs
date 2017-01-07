@@ -12,15 +12,15 @@ namespace AbstractData
         private int line;
         private string lineString;
         private string refString;
-        private string plainRefString; //No quotes
+        private string cleanRefString; //No quotes
 
         private IDatabase db;
         private string refID;
 
         #region Constructor
-        public dbRef()
+        public dbRef(string original)
         {
-
+            originalString = original;
         }
 
         #endregion
@@ -29,6 +29,25 @@ namespace AbstractData
         public Type type
         {
             get { return typeof(dbRef); }
+        }
+
+        public dbType databaseType
+        {
+            get
+            {
+                if (db != null) { return db.type; }
+                else { return dbType.Unknown; }
+            }
+        }
+
+        public string referenceString
+        {
+            get { return refString; }
+        }
+
+        public string cleanReferenceString
+        {
+            get { return cleanRefString; }
         }
 
         public bool hasError
@@ -108,11 +127,11 @@ namespace AbstractData
 
             //Ref ID
             int posOfEquals = line.IndexOf('=');
-            refID = line.Substring(posOfFirstSpace, posOfFirstSpace - posOfEquals).Trim(); //This one too
+            refID = line.Substring(posOfFirstSpace, posOfEquals - posOfFirstSpace).Trim(); //This one too
 
             //Ref String
-            refString = line.Substring(posOfEquals, line.Length - posOfEquals).Trim(); //Again, this one too
-            plainRefString = refString.Trim('\"');
+            refString = line.Substring(posOfEquals + 1, line.Length - (posOfEquals + 1)).Trim(); //Again, this one too
+            cleanRefString = refString.Trim('\"');
 
             //Get the database
             db = getDatabase(type);
@@ -194,7 +213,7 @@ namespace AbstractData
         {
             if(type == dbType.ExcelFile)
             {
-                return new ExcelFile(plainRefString);
+                return new ExcelFile(cleanRefString);
             }
             else if(type == dbType.CSVFile)
             {
@@ -206,7 +225,7 @@ namespace AbstractData
             }
             else if(type == dbType.SQLServerDB)
             {
-                return new SQLServerDB(plainRefString);
+                return new SQLServerDB(cleanRefString);
             }
             else if(type == dbType.PostgreSqlDB)
             {
