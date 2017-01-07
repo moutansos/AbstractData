@@ -10,7 +10,8 @@ TODO: CSV Files
 TODO: Access Databases  
 TODO: SQL Server Databases  
 TODO: PostgreSql Databases  
-TODO: MariaDB Databases   
+TODO: MariaDB Databases  
+TODO: Oracle Databases  
 TODO: SQLite Databases  
 TODO: MongoDB ?  
 TODO: JSON File ?  
