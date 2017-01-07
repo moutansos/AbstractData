@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using ClosedXML;
 using System.IO;
 
-namespace AbstractData.Databases
+namespace AbstractData
 {
     public class ExcelFile : IDatabase
     {

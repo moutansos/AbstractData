@@ -44,79 +44,22 @@ namespace AbstractData
             int lineCounter = 1;
 
             string line;
-            List<adLine> scriptLines = new List<adLine>();
+            List<ILine> scriptLines = new List<ILine>();
             while ((line = dataStream.ReadLine()) != null) //Parse in file and set up structures
             {
-                if (!String.IsNullOrWhiteSpace(line))
+                if (!string.IsNullOrWhiteSpace(line))
                 {
-                    scriptLines.Add(new adLine(lineCounter, line));
+                    ILine lineObject = null;
+                    //TODO: Add type detection here
+
+                    if(lineObject != null)
+                    {
+                        scriptLines.Add(lineObject);
+                    }
                 }
                 lineCounter++;
             }
 
-
-        }
-
-        public class adLine
-        {
-            //Line Type
-            private bool isDbRef;
-            private bool isVarAssgn;
-            private bool isTableRef;
-            private bool isDataRef;
-            private bool isCommand;
-            private bool isComment;
-            private bool isLastHeaderComment;
-
-            //Error found
-            private bool hasError;
-
-            //Line String
-            private string originalString;
-            private int lineNumber;
-
-            //Database Reference
-            private dbRef dbRef;
-            private dbObject db;
-
-            #region Constructors
-            public adLine(int lineNumber, string originalString)
-            {
-                this.originalString = originalString;
-                this.lineNumber = lineNumber;
-
-                //Run checks to see what kind of command it is
-                isVarAssgn = Variable.isVar(this);
-                parseString();
-            }
-            #endregion
-
-            #region Set Methods
-            #endregion
-
-            #region Get Methods
-            public string getOriginalString()
-            {
-                return originalString;
-            }
-            #endregion
-
-            private void parseString()
-            {
-                originalString = originalString.Trim();
-
-                //Assign all the type flags
-                isDbRef = dbRef.isDbRef(originalString);
-
-                //TODO: Check for conflicts here
-
-                //Parse the strings
-                if (isDbRef)
-                {
-                    dbRef = new dbRef(this);
-                    db = dbRef.getDbObject();
-                }
-            }
 
         }
 
@@ -126,21 +69,13 @@ namespace AbstractData
             private string varID;
             private string varValue; //Switch to a reference
             private string typeID;
-            private adLine line;
 
             private string originalString;
 
             #region Constructors
-            public Variable()
+            public Variable(string originalString)
             {
-
-            }
-
-            public Variable(adLine line)
-            {
-                this.line = line;
-                originalString = line.getOriginalString();
-                parseAndSet();
+                this.originalString = originalString;
             }
 
             public Variable(string varID, string value, string type)
@@ -202,6 +137,7 @@ namespace AbstractData
             }
 
             #region Static Utils
+            /*
             public static bool isVar(adLine line)
             {
                 string originalString = line.getOriginalString();
@@ -215,139 +151,94 @@ namespace AbstractData
                 {
                     return false;
                 }
-            }
+            } */
             #endregion
         }
 
-        public class dbRef
+        public class dbRef : ILine
         {
-            private string dbName;
-            private string dbType;
-            private string connectionString;
-            private dbObject db;
-            private adLine line;
+            private string errorText;
+            private int line;
+            private string lineString;
 
-            private string originalString;
-
-            #region Constructors
-            public dbRef(string dbName, dbObject db)
+            #region Constructor
+            public dbRef()
             {
-                setDbName(dbName);
-                setDbType(db.getDbType());
-                setConnectionString(db.getConnectionString());
 
-                originalString = generateDbRef();
-            }
-
-            public dbRef(string dbName, string dbType, string connectionString)
-            {
-                setDbName(dbName);
-                setDbType(dbType);
-                setConnectionString(connectionString);
-
-                originalString = generateDbRef();
-            }
-
-            public dbRef(adLine line)
-            {
-                this.line = line;
-                originalString = line.getOriginalString();
-                parseDbRef();
             }
             #endregion
 
-            private void parseDbRef()
+            #region Properties
+            public bool hasError
             {
-                int posOfFirstSpace = originalString.IndexOf(' ');
-                dbType = originalString.Substring(0, posOfFirstSpace);
-                connectionString = StringUtils.returnStringInside(originalString, '"', '"');
-            }
-
-            public string generateDbRef()
-            {
-                originalString = dbType + " " + dbName + " = \"" + connectionString + "\"";
-                return originalString;
-            }
-
-            #region Set Methods
-            public void setDbType(string dbType)
-            {
-                if ((dbType != "SqlServerDb") &&
-                    (dbType != "PostgreSqlDb") &&
-                    (dbType != "AccessDb") &&
-                    (dbType != "CSVFile") &&
-                    (dbType != "ExcelFile"))
+                get
                 {
-                    this.dbType = dbType;
-                }
-                else
-                {
-                    throw new UnknownDatabaseTypeException();
+                    if (errorText != null) return true;
+                    else return false;
                 }
             }
 
-            public void setDbName(string dbName)
+            public int lineNumber
             {
-                this.dbName = dbName;
-            }
-
-            public void setConnectionString(string connectionString)
-            {
-                this.connectionString = connectionString;
-            }
-            #endregion
-
-            #region Get Methods
-            public string getDbType()
-            {
-                return dbType;
-            }
-
-            public dbObject getDbObject()
-            {
-                return db;
-            }
-            #endregion
-
-            #region Static Utils
-            public static bool isDbRef(string originalString)
-            {
-                //TODO: Add REGEX validation here
-                if (originalString.StartsWith("SqlServerDb") ||
-                   originalString.StartsWith("PostgreSqlDb") ||
-                   originalString.StartsWith("AccessDb") ||
-                   originalString.StartsWith("CSVFile") ||
-                   originalString.StartsWith("ExcelFile"))
+                get { return line; }
+                set
                 {
-                    return true;
+                    if(value > 0)
+                    {
+                        line = value;
+                    }
+                    else
+                    {
+                        line = 0;
+                    }
+                    
                 }
-                return false;
+            }
+
+            public string originalString
+            {
+                get
+                {
+                    if(lineString == null)
+                    {
+                        generateString();
+                    }
+                    return lineString;
+                }
+                set
+                {
+                    lineString = value;
+                    parseString();
+                }
             }
             #endregion
+
+            public void execute(adScript script)
+            {
+                throw new NotImplementedException();
+            }
+
+            public string generateString()
+            {
+                throw new NotImplementedException();
+            }
+
+            public void parseString()
+            {
+                //TODO: Add parsing logic
+            }
         }
 
         public class comment
         {
             private string commentText;
-            private adLine line;
 
             private string originalString;
 
             #region Constructors
-            public comment()
+            public comment(string originalString)
             {
-
-            }
-
-            public comment(adLine line)
-            {
-                this.line = line;
-                this.originalString = line.getOriginalString();
-            }
-
-            public comment(string commentString)
-            {
-                originalString = commentString;
+                this.originalString = originalString;
             }
             #endregion
 
@@ -367,22 +258,12 @@ namespace AbstractData
             {
                 commentText = commentString;
             }
-
-            public void setLine(adLine line)
-            {
-                this.line = line;
-            }
             #endregion
 
             #region Get Methods
             public string getCommentString()
             {
                 return commentText;
-            }
-
-            public adLine getLine()
-            {
-                return line;
             }
             #endregion
 
@@ -397,6 +278,17 @@ namespace AbstractData
             }
             #endregion
 
+        }
+
+        public interface ILine
+        {
+            void execute(adScript script);
+            void parseString();
+            string generateString();
+
+            int lineNumber { get; set; }
+            string originalString { get; set; }
+            bool hasError { get; }
         }
 
         #region Variable Management

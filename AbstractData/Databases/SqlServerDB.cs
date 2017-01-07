@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace AbstractData
 
         public dbType type
         {
-            get { return dbType.SQLServerDB}
+            get { return dbType.SQLServerDB; }
         }
         #endregion
 
@@ -59,7 +60,10 @@ namespace AbstractData
         {
             if(dataEntryCache.Count > 0)
             {
-                //TODO: Add code for writeing out to database
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+
+                }
             }
         }
 
