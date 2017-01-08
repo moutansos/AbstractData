@@ -43,6 +43,7 @@ namespace AbstractData
             databaseReferenceList = new List<IDatabase>();
             #endregion
 
+            //Parse Script
             int lineCounter = 1;
 
             string line;
@@ -51,8 +52,7 @@ namespace AbstractData
             {
                 if (!string.IsNullOrWhiteSpace(line))
                 {
-                    ILine lineObject = null;
-                    //TODO: Add type detection here
+                    ILine lineObject = getLineObjectForLine(line);
 
                     if(lineObject != null)
                     {
@@ -60,6 +60,12 @@ namespace AbstractData
                     }
                 }
                 lineCounter++;
+            }
+
+            //Execute Script
+            foreach(ILine lineObj in scriptLines)
+            {
+                lineObj.execute(this);
             }
 
 
@@ -155,6 +161,26 @@ namespace AbstractData
         }
         #endregion
 
+        private ILine getLineObjectForLine(string line)
+        {
+            #region Check and clean the string
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                return null;
+            }
+            line = line.Trim();
+            #endregion
+
+            ILine lineObject = null;
+            if (dbRef.isDbRef(line))
+            {
+                lineObject = new dbRef(line);
+                //TODO: Check for error in line or implement an events system?
+            }
+
+            return lineObject;
+        }
+
         public void addDatabaseReference(IDatabase db)
         {
             if (databaseReferenceList.Where(a => a.id == db.id).Count() == 0)
@@ -166,7 +192,7 @@ namespace AbstractData
 
     public interface ILine
     {
-        void execute(ref adScript script);
+        void execute(adScript script);
         void parseString();
         string generateString();
 

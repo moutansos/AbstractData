@@ -105,7 +105,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void execute(ref adScript script)
+        public void execute(adScript script)
         {
             script.addDatabaseReference(db);
         }
@@ -145,6 +145,23 @@ namespace AbstractData
 
             //Get the database
             db = getDatabase(type);
+        }
+
+        public static bool isDbRef(string candidateString)
+        {
+            //TODO: Add RegEx validation
+            if(candidateString.StartsWith(ExcelFile.idInScript) ||
+               candidateString.StartsWith("CSVFile") ||
+               candidateString.StartsWith("AccessDB") ||
+               candidateString.StartsWith(SQLServerDB.idInScript) ||
+               candidateString.StartsWith("PostgreSqlDB") ||
+               candidateString.StartsWith("MariaDB") ||
+               candidateString.StartsWith("SQLiteDB"))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public static dbType getDbType(string type)
