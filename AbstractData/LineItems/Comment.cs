@@ -96,17 +96,18 @@ namespace AbstractData
 
         public void execute(adScript script)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void parseString()
         {
-            throw new NotImplementedException();
+            commentText = original.TrimStart('#');
         }
 
         public string generateString()
         {
-            throw new NotImplementedException();
+            originalString = "#" + commentText;
+            return originalString;
         }
     }
 }

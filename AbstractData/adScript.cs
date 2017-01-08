@@ -204,6 +204,10 @@ namespace AbstractData
                 lineObject = new dbRef(line);
                 //TODO: Check for error in line or implement an events system?
             }
+            else if (Comment.isComment(line))
+            {
+                lineObject = new Comment(line);
+            }
 
             if(lineObject != null) //Set the line number
             {
