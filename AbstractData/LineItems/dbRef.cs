@@ -105,9 +105,9 @@ namespace AbstractData
         }
         #endregion
 
-        public void execute(adScript script)
+        public void execute(ref adScript script)
         {
-            throw new NotImplementedException();
+            script.addDatabaseReference(db);
         }
 
         public string generateString()

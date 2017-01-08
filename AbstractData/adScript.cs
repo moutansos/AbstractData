@@ -14,6 +14,7 @@ namespace AbstractData
 
         private List<Variable> globalVariablesList;
         private List<Variable> localVariablesList;
+        private List<IDatabase> databaseReferenceList;
 
         #region Constructors
         public adScript(string fileName)
@@ -39,6 +40,7 @@ namespace AbstractData
             //Reset storage structures
             globalVariablesList = new List<Variable>();
             localVariablesList = new List<Variable>();
+            databaseReferenceList = new List<IDatabase>();
             #endregion
 
             int lineCounter = 1;
@@ -152,11 +154,19 @@ namespace AbstractData
             return getLocalVariable(varID).value;
         }
         #endregion
+
+        public void addDatabaseReference(IDatabase db)
+        {
+            if (databaseReferenceList.Where(a => a.id == db.id).Count() == 0)
+            {
+                databaseReferenceList.Add(db);
+            }
+        }
     }
 
     public interface ILine
     {
-        void execute(adScript script);
+        void execute(ref adScript script);
         void parseString();
         string generateString();
 

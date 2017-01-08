@@ -9,6 +9,7 @@ namespace AbstractData
     public interface IDatabase
     {
         dbType type { get; }
+        string id { get; set; }
         bool isMultiTable { get; }
         string table { get; set; }
         string refString { get; }

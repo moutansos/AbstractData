@@ -12,6 +12,8 @@ namespace AbstractData
         //Constants
         public const string idInScript = "SQLServerDB";
 
+        private string ID;
+
         private string tableName;
         private string connectionString;
 
@@ -49,6 +51,12 @@ namespace AbstractData
         public string refString
         {
             get { return connectionString; }
+        }
+
+        public string id
+        {
+            get { return ID; }
+            set { ID = value; }
         }
         #endregion
 

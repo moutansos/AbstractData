@@ -13,6 +13,8 @@ namespace AbstractData
         //Constants
         public const string idInScript = "ExcelFile";
 
+        private string ID;
+
         private string tableName;
         private string fullFilePath;
         //IDEA: What if file paths could be downloadable from http/s?
@@ -58,6 +60,12 @@ namespace AbstractData
         public string refString
         {
             get { return fileName; }
+        }
+
+        public string id
+        {
+            get { return ID; }
+            set { ID = value; }
         }
         #endregion
 
