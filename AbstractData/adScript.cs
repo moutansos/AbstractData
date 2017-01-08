@@ -52,7 +52,7 @@ namespace AbstractData
             {
                 if (!string.IsNullOrWhiteSpace(line))
                 {
-                    ILine lineObject = getLineObjectForLine(line);
+                    ILine lineObject = getLineObjectForLine(line, lineCounter);
 
                     if(lineObject != null)
                     {
@@ -161,7 +161,7 @@ namespace AbstractData
         }
         #endregion
 
-        private ILine getLineObjectForLine(string line)
+        private ILine getLineObjectForLine(string line, int lineNumber)
         {
             #region Check and clean the string
             if (string.IsNullOrWhiteSpace(line))
@@ -176,6 +176,11 @@ namespace AbstractData
             {
                 lineObject = new dbRef(line);
                 //TODO: Check for error in line or implement an events system?
+            }
+
+            if(lineObject != null) //Set the line number
+            {
+                lineObject.lineNumber = lineNumber;
             }
 
             return lineObject;
