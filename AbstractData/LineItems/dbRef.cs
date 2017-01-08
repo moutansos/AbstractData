@@ -23,6 +23,11 @@ namespace AbstractData
             originalString = original;
         }
 
+        public dbRef(IDatabase db, string refId)
+        {
+            this.db = db;
+            referenceID = refId;
+        }
         #endregion
 
         #region Properties
@@ -108,13 +113,18 @@ namespace AbstractData
         public string generateString()
         {
             if (db == null ||
-               refID == null)
+                refID == null)
             {
                 return null;
             }
 
-            //TODO: Generate the string
-            return "";
+            string type = getDbType(db.type);
+            cleanRefString = db.refString;
+            refString = "\"" + cleanRefString + "\"";
+
+            originalString = type + " " + refID + " = " + refString;
+
+            return originalString;
         }
 
         public void parseString()

@@ -43,7 +43,7 @@ namespace AbstractData
         }
 
         public static string returnAllButInside(string masterString, char start, char end)
-        {
+        { //TODO: Finish this
             string returnString = "";
             bool replaceInside = false;
             for (int i = 0; i < masterString.Length; i++)

@@ -21,5 +21,17 @@ namespace adTests
             Assert.AreEqual("\"<<connectionString>>\"", dbref.referenceString);
             Assert.AreEqual("<<connectionString>>", dbref.cleanReferenceString);
         }
+
+        [TestMethod]
+        public void StringGenerationTest1()
+        {
+
+            //Begin test
+            ExcelFile excelFile = new ExcelFile("<<TestPath>>");
+            dbRef dbref = new dbRef(excelFile, "excelFile");
+
+            //Check
+            Assert.AreEqual("ExcelFile excelFile = \"<<TestPath>>\"", dbref.generateString());
+        }
     }
 }

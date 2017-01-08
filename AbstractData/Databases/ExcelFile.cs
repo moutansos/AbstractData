@@ -52,6 +52,12 @@ namespace AbstractData
             set { fullFilePath = value; } //TODO: Add RegEx validation for windows and linux file paths that end in xlsx
                                           //In validation method, check for machine OS before checking the file path. Also
                                           //check to see if the file exists. After all this, run createFileIfNotExist()
+                                          //Add an exception for <<TestPath>> for parsing tests.
+        }
+
+        public string refString
+        {
+            get { return fileName; }
         }
         #endregion
 

@@ -45,6 +45,11 @@ namespace AbstractData
         {
             get { return dbType.SQLServerDB; }
         }
+
+        public string refString
+        {
+            get { return connectionString; }
+        }
         #endregion
 
         public void addData(DataEntry data)

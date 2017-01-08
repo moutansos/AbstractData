@@ -11,6 +11,7 @@ namespace AbstractData
         dbType type { get; }
         bool isMultiTable { get; }
         string table { get; set; }
+        string refString { get; }
         void addData(DataEntry data);
         void close();
     }
