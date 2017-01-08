@@ -17,6 +17,11 @@ namespace AbstractData
         private List<IDatabase> databaseReferenceList;
 
         #region Constructors
+        public adScript()
+        {
+
+        }
+
         public adScript(string fileName)
         {
             dataStream = new System.IO.StreamReader(fileName);
@@ -69,6 +74,28 @@ namespace AbstractData
             }
 
 
+        }
+
+        public void runLine(string line)
+        {
+            if(globalVariablesList == null)
+            {
+                globalVariablesList = new List<Variable>();
+            }
+            if(localVariablesList == null)
+            {
+                localVariablesList = new List<Variable>();
+            }
+            if(databaseReferenceList == null)
+            {
+                databaseReferenceList = new List<IDatabase>();
+            }
+
+            ILine lineObj = getLineObjectForLine(line, -1);
+            if(lineObj != null)
+            {
+                lineObj.execute(this);
+            }
         }
 
         #region Variable Management
