@@ -12,9 +12,15 @@ TODO: SQL Server Databases
 TODO: PostgreSql Databases  
 TODO: MariaDB Databases  
 TODO: Oracle Databases  
-TODO: SQLite Databases  
+TODO: SQLite Databases 
 TODO: MongoDB ?  
 TODO: JSON File ?  
+
+## Build with Visual Studio
+This solution has been built for Visual Studio Community 2015 and can be edited and built in that environment.
+
+## Build without Visual Studio
+Without visual studio, download nuget bianaries from nuget.org and add nuget to your PATH. Then dowload Visual Studio 2015 Build Tools. After it has been installed then run the build.cmd file.
 
 ## Library Usage
 Currently unusable. As things come together there will be a way to include the library in projects from source and also from NuGet.
