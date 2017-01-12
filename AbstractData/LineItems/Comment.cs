@@ -13,9 +13,14 @@ namespace AbstractData
         private int lineNum;
 
         #region Constructors
-        public Comment(string originalString)
+        public Comment(string inputString)
         {
-            this.originalString = originalString;
+            this.originalString = inputString;
+        }
+
+        public Comment(string commentText, bool isNotOriginal)
+        {
+            this.commentText = commentText;
         }
         #endregion
 
@@ -70,6 +75,10 @@ namespace AbstractData
             }
         }
         
+        public string commentTextString
+        {
+            get { return commentText; }
+        }
         #endregion
 
         private void parseComment()
@@ -79,7 +88,7 @@ namespace AbstractData
 
         public string generateComment()
         {
-            original = "# " + commentText;
+            original = "#" + commentText;
             return original;
         }
 

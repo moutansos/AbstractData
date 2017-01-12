@@ -8,7 +8,7 @@ namespace adTests
     public class dbRefTests
     {
         [TestMethod]
-        public void ParseTest1()
+        public void dbRefParseTest1()
         {
             string testOriginalString = "SQLServerDB sqlDb = \"<<connectionString>>\"";
 
@@ -23,7 +23,7 @@ namespace adTests
         }
 
         [TestMethod]
-        public void StringGenerationTest1()
+        public void dbRefStringGenerationTest1()
         {
 
             //Begin test
