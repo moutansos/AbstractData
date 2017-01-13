@@ -96,6 +96,11 @@ namespace AbstractData
             }
         }
 
+        public void getData(Func<DataEntry> addData, List<string> columns)
+        {
+            throw new NotImplementedException();
+        }
+
         public void close()
         {
             if(currentWorkbook != null)

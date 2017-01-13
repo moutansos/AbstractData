@@ -14,6 +14,7 @@ namespace AbstractData
         string table { get; set; }
         string refString { get; }
         void addData(DataEntry data);
+        void getData(Func<DataEntry> addData, List<string> columns);
         void close();
     }
 

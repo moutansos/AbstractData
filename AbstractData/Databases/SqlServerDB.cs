@@ -118,5 +118,10 @@ namespace AbstractData
 
             return newData;
         }
+
+        public void getData(Func<DataEntry> addData, List<string> columns)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
