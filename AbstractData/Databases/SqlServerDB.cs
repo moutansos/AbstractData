@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -75,7 +76,13 @@ namespace AbstractData
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-
+                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
+                    {
+                        bulkCopy.DestinationTableName = "dbo.[" + table + "]";
+                        bulkCopy.WriteToServer(convertRecordsToTable(dataEntryCache));
+                    }
+                    //Reset the cache
+                    dataEntryCache.Clear();
                 }
             }
         }
@@ -83,6 +90,33 @@ namespace AbstractData
         public void close()
         {
             writeCache();
+        }
+
+        public DataTable convertRecordsToTable(List<DataEntry> dataList)
+        {
+            DataTable newData = new DataTable();
+            foreach(DataEntry entry in dataEntryCache)
+            {
+                IEnumerable<DataEntry.Field> fields = entry.getFields();
+                //Add Needed Columns
+                foreach(DataEntry.Field field in fields)
+                {
+                    if (!newData.Columns.Contains(field.column))
+                    {
+                        newData.Columns.Add(field.column);
+                    }
+                }
+
+                //Add the data to the table
+                DataRow newRow = newData.NewRow();
+                foreach(DataEntry.Field field in fields)
+                {
+                    newRow[field.column] = field.data;
+                }
+                newData.Rows.Add(newRow);
+            }
+
+            return newData;
         }
     }
 }
