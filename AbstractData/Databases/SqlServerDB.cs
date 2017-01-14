@@ -121,7 +121,33 @@ namespace AbstractData
 
         public void getData(Func<DataEntry> addData, List<string> columns)
         {
-            throw new NotImplementedException();
+            /*
+            using(SqlConnection conn = new SqlConnection(connectionString))
+            {
+                string sqlCommandText = "SELECT  ";
+                foreach (string column in columnsToRef)
+                {
+                    sqlCommandText = sqlCommandText + column + ",";
+                }
+                sqlCommandText = sqlCommandText.Remove(sqlCommandText.Length - 1);
+                sqlCommandText = sqlCommandText + " FROM dbo.[" + table + "]";
+                using (SqlCommand cmd = new SqlCommand(sqlCommandText, conn))
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        DataEntry newEntry = new DataEntry();
+                        foreach (string column in columnsToRef)
+                        {
+                            string dataToGet = reader.GetValue(columns.IndexOf(column)).ToString();
+                            newEntry.addField(column, dataToGet);
+                        }
+                        rowData.Add(newData);
+                    }
+                    reader.Close();
+                }
+            }
+            */
         }
     }
 }

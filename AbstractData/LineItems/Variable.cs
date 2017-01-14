@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 namespace AbstractData
 {
-    public class Variable
+    public class Variable : ILine
     {
+        private string errorText;
+
         private string varID;
         private string varValue; //Switch to a reference
         private string typeID;
+        private int line;
 
-        private string originalString;
+        private string lineString;
 
         #region Constructors
         public Variable(string originalString)
@@ -24,7 +27,7 @@ namespace AbstractData
         {
             this.id = varID;
             this.value = value;
-            this.type = type;
+            this.varType = type;
         }
         #endregion
 
@@ -41,7 +44,7 @@ namespace AbstractData
             set { varValue = value; }
         }
 
-        public string type
+        public string varType
         {
             get { return typeID; }
             set
@@ -50,12 +53,62 @@ namespace AbstractData
                 typeID = value;
             }
         }
+
+        public Type type
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int lineNumber
+        {
+            get { return line; }
+            set
+            {
+                if (value > 0)
+                {
+                    line = value;
+                }
+                else
+                {
+                    line = 0;
+                }
+            }
+        }
+
+        public string originalString
+        {
+            get
+            {
+                if (lineString == null)
+                {
+                    generateString();
+                }
+                return lineString;
+            }
+            set
+            {
+                lineString = value;
+                parseString();
+            }
+        }
+
+        public bool hasError
+        {
+            get
+            {
+                if (errorText != null) return true;
+                else return false;
+            }
+        }
         #endregion
 
         #region Validation Methods
         public void validateType(string type)
         {
-            if ((type != "Local") ||
+            if ((type != "Local") &&
                 (type != "Global"))
             {
                 throw new ArgumentException("The type being set to the variable is not valid. Must be a Local or Global type.");
@@ -63,29 +116,44 @@ namespace AbstractData
         }
         #endregion
 
-        private void parseAndSet()
+        public void execute(adScript script)
         {
-            int posOfFirstSpace = originalString.IndexOf(' ');
-            type = originalString.Substring(0, posOfFirstSpace); //Double check this to see if space is taken care of
-            string varAndId = originalString.Substring(posOfFirstSpace, originalString.Length); //this too
-            varID = varAndId.Split('=')[0].Trim();
-            value = varAndId.Split('=')[1].Trim();
+            if(varType == "Local")
+            {
+                script.setLocalVariable(this);
+            }
+            else if(varType == "Global")
+            {
+                script.setGlobalVariable(this);
+            }
+            else
+            {
+                throw new ArgumentException("INTERNAL ERROR: Invalid variable type was set");
+            }
         }
 
-        private string generateVariableString()
+        public void parseString()
         {
-            originalString = type + " " + id + " = " + value;
+            int posOfFirstSpace = originalString.IndexOf(' ');
+            varType = originalString.Substring(0, posOfFirstSpace);
+            string varAndId = originalString.Substring(posOfFirstSpace, originalString.Length - posOfFirstSpace); //this too
+            varID = varAndId.Split('=')[0].Trim();
+            value = varAndId.Split('=')[1].Trim();
+            varID = StringUtils.returnStringInside(varID, '{', '}');
+        }
+
+        public string generateString()
+        {
+            originalString = type + " {" + id + "} = " + value;
             return originalString;
         }
 
         #region Static Utils
-        /*
-        public static bool isVar(adLine line)
+        public static bool isVar(string line)
         {
-            string originalString = line.getOriginalString();
             //TODO: Add Regex Validation
-            if (originalString.StartsWith("Global") ||
-               originalString.StartsWith("Local"))
+            if (line.StartsWith("Global") ||
+                line.StartsWith("Local"))
             {
                 return true;
             }
@@ -93,7 +161,7 @@ namespace AbstractData
             {
                 return false;
             }
-        } */
+        }
         #endregion
     }
 }

@@ -13,10 +13,10 @@ namespace AbstractData
             //TODO: Rewrite to make end iterate from the end of the string and return the inside
             int startPos = -1;
             int endPos = -1;
-            for (int i = 0; i > masterString.Length; i++)
+            for (int i = 0; i < masterString.Length; i++)
             {
                 if (startPos == -1 &&
-                    endPos != -1 &&
+                    endPos == -1 &&
                     masterString[i] == start)
                 {
                     startPos = i;
@@ -37,7 +37,7 @@ namespace AbstractData
             }
             else
             {
-                return masterString.Substring(startPos, endPos - startPos);
+                return masterString.Substring(startPos + 1, endPos - startPos - 1);
             }
 
         }
