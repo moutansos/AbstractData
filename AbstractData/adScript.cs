@@ -15,6 +15,7 @@ namespace AbstractData
         private List<Variable> globalVariablesList;
         private List<Variable> localVariablesList;
         private List<IDatabase> databaseReferenceList;
+        private tableRef curTableRef;
 
         #region Constructors
         public adScript()
@@ -228,6 +229,26 @@ namespace AbstractData
                 databaseReferenceList.Add(db);
             }
         }
+
+        public IDatabase getDatabase(string dbName)
+        {
+            foreach(IDatabase database in databaseReferenceList)
+            {
+                if(database.id == dbName)
+                {
+                    return database;
+                }
+            }
+            return null;
+        }
+
+        #region Properties
+        public tableRef currentTableRef
+        {
+            get { return curTableRef; }
+            set { curTableRef = value; }
+        }
+        #endregion
     }
 
     public interface ILine
