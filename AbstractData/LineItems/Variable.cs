@@ -56,10 +56,7 @@ namespace AbstractData
 
         public Type type
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return typeof(Variable); }
         }
 
         public int lineNumber

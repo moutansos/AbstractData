@@ -9,7 +9,6 @@ namespace AbstractData_CLI
 {
     class Program
     {
-
         static void Main(string[] args)
         {
             Console.WriteLine("AbstractData - CLI v0.1\n\n");

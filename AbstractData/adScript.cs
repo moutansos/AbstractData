@@ -208,6 +208,10 @@ namespace AbstractData
             {
                 lineObject = new Comment(line);
             }
+            else if (Variable.isVar(line))
+            {
+                lineObject = new Variable(line);
+            }
 
             if(lineObject != null) //Set the line number
             {
