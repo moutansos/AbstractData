@@ -92,6 +92,26 @@ namespace AbstractData
         {
             get { return writeData; }
         }
+
+        public string readDbText
+        {
+            get { return readDb; }
+        }
+
+        public string readTableText
+        {
+            get { return readTable; }
+        }
+
+        public string writeDbText
+        {
+            get { return writeDb; }
+        }
+
+        public string writeTableText
+        {
+            get { return writeTable; }
+        }
         #endregion
 
         public void parseString()
@@ -102,16 +122,16 @@ namespace AbstractData
             if (innerTableRef.Contains("=>"))
             {
                 int indexOfSplit = innerTableRef.IndexOf("=>");
-                int indexOfSplitEnd = indexOfSplit + 1;
-                readText = innerTableRef.Substring(0, indexOfSplit);
-                writeText = innerTableRef.Substring(indexOfSplitEnd, innerTableRef.Length - indexOfSplitEnd);
+                int indexOfSplitEnd = indexOfSplit + 2;
+                readText = innerTableRef.Substring(0, indexOfSplit).Trim();
+                writeText = innerTableRef.Substring(indexOfSplitEnd, innerTableRef.Length - indexOfSplitEnd).Trim();
             }
             else if (innerTableRef.Contains("<="))
             {
                 int indexOfSplit = innerTableRef.IndexOf("<=");
-                int indexOfSplitEnd = indexOfSplit + 1;
-                writeText = innerTableRef.Substring(0, indexOfSplit);
-                readText = innerTableRef.Substring(indexOfSplitEnd, innerTableRef.Length - indexOfSplitEnd);
+                int indexOfSplitEnd = indexOfSplit + 2;
+                writeText = innerTableRef.Substring(0, indexOfSplit).Trim();
+                readText = innerTableRef.Substring(indexOfSplitEnd, innerTableRef.Length - indexOfSplitEnd).Trim();
             }
             else
             {
@@ -121,8 +141,8 @@ namespace AbstractData
             if (readText.Contains('.'))
             {
                 string[] readTextSplit = readText.Split('.');
-                readDb = readTextSplit[0];
-                readTable = readTextSplit[1];
+                readDb = readTextSplit[0].Trim();
+                readTable = readTextSplit[1].Trim();
             }
             else
             {
@@ -132,8 +152,8 @@ namespace AbstractData
             if (writeText.Contains('.'))
             {
                 string[] writeTextSplit = writeText.Split('.');
-                writeDb = writeTextSplit[0];
-                writeTable = writeTextSplit[1];
+                writeDb = writeTextSplit[0].Trim();
+                writeTable = writeTextSplit[1].Trim();
             }
             else
             {
@@ -167,7 +187,7 @@ namespace AbstractData
             {
                 writeRef = writeRef + "." + writeTable;
             }
-            lineString = "tableRefernce(" + readRef + " => " + writeRef + ")";
+            lineString = "tableReference(" + readRef + " => " + writeRef + ")";
             return originalString;
         }
 
