@@ -16,6 +16,7 @@ namespace AbstractData
         private List<Variable> localVariablesList;
         private List<IDatabase> databaseReferenceList;
         private tableRef curTableRef;
+        private List<dataRef> curDataReferences;
 
         #region Constructors
         public adScript()
@@ -213,6 +214,10 @@ namespace AbstractData
             {
                 lineObject = new Variable(line);
             }
+            else if (dataRef.isDataRef(line))
+            {
+                lineObject = new dataRef(line);
+            }
 
             if(lineObject != null) //Set the line number
             {
@@ -222,6 +227,7 @@ namespace AbstractData
             return lineObject;
         }
 
+        #region Database Methods
         public void addDatabaseReference(IDatabase db)
         {
             if (databaseReferenceList.Where(a => a.id == db.id).Count() == 0)
@@ -241,6 +247,23 @@ namespace AbstractData
             }
             return null;
         }
+        #endregion
+
+        #region Data Reference Methods
+        public void addDataRef(dataRef newRef)
+        {
+            if(curDataReferences == null)
+            {
+                curDataReferences = new List<dataRef>();
+            }
+            curDataReferences.Add(newRef);
+        }
+
+        public void clearDataRefs()
+        {
+            curDataReferences.Clear();
+        }
+        #endregion
 
         #region Properties
         public tableRef currentTableRef

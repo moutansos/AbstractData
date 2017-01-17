@@ -163,6 +163,7 @@ namespace AbstractData
 
         public void execute(adScript script)
         {
+            script.clearDataRefs();
             readData = script.getDatabase(readDb);
             //TODO: Validate readTable is in database
             writeData = script.getDatabase(writeDb);
