@@ -76,6 +76,26 @@ namespace AbstractData
         {
             get { return typeof(dataRef); }
         }
+
+        public reference readReference
+        {
+            get { return readField; }
+        }
+
+        public string readReferenceText
+        {
+            get { return readField.originalString; }
+        }
+
+        public string writeAssignment
+        {
+            get { return writeAssignment; }
+        }
+
+        public string writeAssignmentText
+        {
+            get { return writeField; }
+        }
         #endregion
 
         public void parseString()

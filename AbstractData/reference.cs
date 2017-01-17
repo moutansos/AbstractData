@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AbstractData
 {
-    class reference
+    public class reference
     {
         //TODO: Add query functionality
         private dbRef db;
@@ -16,7 +16,8 @@ namespace AbstractData
         #region Constructors
         public reference(string refString)
         {
-            originalString = lineSubString;
+            fields = new List<string>();
+            originalString = refString;
         }
         #endregion
 
