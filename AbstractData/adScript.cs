@@ -271,6 +271,11 @@ namespace AbstractData
             get { return curTableRef; }
             set { curTableRef = value; }
         }
+
+        public List<dataRef> currentDataRefs
+        {
+            get { return curDataReferences; }
+        }
         #endregion
     }
 
