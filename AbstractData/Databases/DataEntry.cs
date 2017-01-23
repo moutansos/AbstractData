@@ -35,7 +35,7 @@ namespace AbstractData
                     }
                     else
                     {
-                        dataVal = dataVal + getField(field);
+                        dataVal = dataVal + getField(field).data;
                     }
                 }
                 Field newField = new Field(dRef.writeAssignmentText, dataVal);

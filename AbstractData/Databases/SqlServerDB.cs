@@ -76,6 +76,7 @@ namespace AbstractData
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
+                    conn.Open();
                     using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
                     {
                         bulkCopy.DestinationTableName = "dbo.[" + table + "]";
@@ -126,6 +127,7 @@ namespace AbstractData
             //Open a Sql Connection
             using(SqlConnection conn = new SqlConnection(connectionString))
             {
+                conn.Open();
                 string sqlCommandText = "SELECT  ";
                 foreach (string column in readColumns)
                 {

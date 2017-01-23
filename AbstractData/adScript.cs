@@ -214,9 +214,17 @@ namespace AbstractData
             {
                 lineObject = new Variable(line);
             }
+            else if (tableRef.isTableRef(line))
+            {
+                lineObject = new tableRef(line);
+            }
             else if (dataRef.isDataRef(line))
             {
                 lineObject = new dataRef(line);
+            }
+            else if (moveCom.isMoveCom(line))
+            {
+                lineObject = new moveCom(line);
             }
 
             if(lineObject != null) //Set the line number
@@ -261,7 +269,10 @@ namespace AbstractData
 
         public void clearDataRefs()
         {
-            curDataReferences.Clear();
+            if(curDataReferences != null)
+            {
+                curDataReferences.Clear();
+            }
         }
         #endregion
 

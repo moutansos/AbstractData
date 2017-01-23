@@ -107,6 +107,7 @@ namespace AbstractData
 
         public void execute(adScript script)
         {
+            db.id = refID;
             script.addDatabaseReference(db);
         }
 

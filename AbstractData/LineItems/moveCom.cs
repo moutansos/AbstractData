@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AbstractData.LineItems
+namespace AbstractData
 {
     class moveCom : ILine
     {
@@ -12,6 +12,13 @@ namespace AbstractData.LineItems
         private string lineString;
         private int line;
         private string moveParams;
+
+        #region Constructor
+        public moveCom(string line)
+        {
+            originalString = line;
+        }
+        #endregion
 
         #region Properties
         public bool hasError
@@ -84,6 +91,7 @@ namespace AbstractData.LineItems
                         references = new List<dataRef>()
                     };
                     pack.references.Add(data);
+                    movePacks.Add(pack);
                 }
                 else
                 {
@@ -97,7 +105,11 @@ namespace AbstractData.LineItems
             foreach(var pack in movePacks)
             {
                 tableRef tRef = pack.tableReference;
+                tRef.readDatabase.table = tRef.readTableText;
+                tRef.writeDatabase.table = tRef.writeTableText;
                 tRef.readDatabase.getData(tRef.writeDatabase.addData, pack.references);
+                tRef.readDatabase.close();
+                tRef.writeDatabase.close();
             }
         }
 
@@ -126,7 +138,7 @@ namespace AbstractData.LineItems
                 }
             }
 
-            return new movePackage { isEmpty = false };
+            return new movePackage { isEmpty = true };
         }
 
         public struct movePackage
