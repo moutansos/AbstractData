@@ -80,7 +80,12 @@ namespace AbstractData
                     using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
                     {
                         bulkCopy.DestinationTableName = "dbo.[" + table + "]";
-                        bulkCopy.WriteToServer(convertRecordsToTable(dataEntryCache));
+                        DataTable cacheTable = convertRecordsToTable(dataEntryCache);
+                        foreach (DataColumn column in cacheTable.Columns)
+                        {
+                            bulkCopy.ColumnMappings.Add(column.ColumnName, column.ColumnName); //Map each to the field of its name
+                        }
+                        bulkCopy.WriteToServer(cacheTable);
                     }
                     //Reset the cache
                     dataEntryCache.Clear();
