@@ -4,17 +4,18 @@ AbstractData is a C# library and scripting language built to move data from one 
 
 Project Status: Under Development
 
-## What sort of data?
-TODO: Excel Files  
-TODO: CSV Files  
-TODO: Access Databases  
-TODO: SQL Server Databases  
-TODO: PostgreSql Databases  
-TODO: MariaDB Databases  
-TODO: Oracle Databases  
-TODO: SQLite Databases  
-TODO: MongoDB ?  
-TODO: JSON File ?  
+## What sort of data formats are compatible?
+- SQL Server Databases  
+- TODO: Excel Files  
+- TODO: CSV Files  
+- TODO: Access Databases  
+- TODO: PostgreSql Databases  
+- TODO: MariaDB Databases  
+- TODO: Oracle Databases  
+- TODO: SQLite Databases  
+- TODO: MongoDB Datablases ?  
+- TODO: Firebase ?
+- TODO: JSON Files ?  
 
 ## Build with Visual Studio
 This solution has been built for Visual Studio Community 2015 and can be edited and built in that environment.
