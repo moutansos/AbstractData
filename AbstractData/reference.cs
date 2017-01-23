@@ -9,7 +9,6 @@ namespace AbstractData
     public class reference
     {
         //TODO: Add query functionality
-        private dbRef db;
         private string lineSubString;
         private List<string> fields;
 
@@ -30,6 +29,16 @@ namespace AbstractData
                 lineSubString = value;
                 parseString();
             }
+        }
+
+        public IEnumerable<string> refFields
+        {
+            get { return fields.Where(f => !(f.StartsWith("\"") && f.EndsWith("\""))); }
+        }
+
+        public IEnumerable<string> allFields
+        {
+            get { return fields; }
         }
         #endregion
 

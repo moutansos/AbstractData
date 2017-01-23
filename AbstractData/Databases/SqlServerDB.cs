@@ -121,11 +121,13 @@ namespace AbstractData
 
         public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
         {
-            /*
+            List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
+
+            //Open a Sql Connection
             using(SqlConnection conn = new SqlConnection(connectionString))
             {
                 string sqlCommandText = "SELECT  ";
-                foreach (string column in columnsToRef)
+                foreach (string column in readColumns)
                 {
                     sqlCommandText = sqlCommandText + column + ",";
                 }
@@ -137,17 +139,20 @@ namespace AbstractData
                     while (reader.Read())
                     {
                         DataEntry newEntry = new DataEntry();
-                        foreach (string column in columnsToRef)
+                        foreach (string column in readColumns)
                         {
-                            string dataToGet = reader.GetValue(columns.IndexOf(column)).ToString();
+                            string dataToGet = reader.GetValue(readColumns.IndexOf(column)).ToString();
                             newEntry.addField(column, dataToGet);
                         }
-                        rowData.Add(newData);
+                        //Add the data to the database
+                        newEntry.convertToWriteEntry(dRefs);
+                        addData(newEntry);
                     }
                     reader.Close();
                 }
             }
-            */
+            
         }
     }
 }
+

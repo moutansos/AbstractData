@@ -156,5 +156,16 @@ namespace AbstractData
             }
             return false;
         }
+
+        public static List<string> getColumnsForRefs(IEnumerable<dataRef> dRefs)
+        {
+            //Find the needed columns
+            List<string> readColumns = new List<string>();
+            foreach (dataRef dRef in dRefs)
+            {
+                readColumns.AddRange(dRef.readReference.refFields);
+            }
+            return readColumns;
+        }
     }
 }
