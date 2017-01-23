@@ -84,21 +84,52 @@ namespace AbstractData
                     currentWorksheet = currentWorkbook.Worksheet(table);
                 }
             }
+
+            ClosedXML.Excel.IXLRow currentRow = currentWorksheet.LastRowUsed();
+            if(currentRow == null)
+            {
+                currentRow = currentWorksheet.Row(1);
+            }
             else
             {
-                ClosedXML.Excel.IXLRow currentRow = currentWorksheet.LastCellUsed().WorksheetRow().RowBelow();
-                var dataFields = data.getFields();
-                foreach(var field in dataFields)
-                {
-                    ClosedXML.Excel.IXLCell cell = currentRow.Cell(field.column);
-                    cell.Value = field.data;
-                }
+                currentRow = currentRow.RowBelow();
+            }
+            var dataFields = data.getFields();
+            foreach(var field in dataFields)
+            {
+                ClosedXML.Excel.IXLCell cell = currentRow.Cell(field.column);
+                cell.Value = field.data;
             }
         }
 
-        public void getData(Action<DataEntry> addData, List<dataRef> dRef)
+        public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
         {
-            throw new NotImplementedException();
+            List<string> columnsToGet = dataRef.getColumnsForRefs(dRefs);
+            if(currentWorkbook == null)
+            {
+                currentWorkbook = new ClosedXML.Excel.XLWorkbook(fileName);
+            }
+            if(currentWorksheet == null || currentWorksheet.Name != table)
+            {
+                if(!currentWorkbook.Worksheets.TryGetWorksheet(table, out currentWorksheet))
+                {
+                    throw new ArgumentException("The sheet name " + table + " is invalid");
+                }
+            }
+
+            ClosedXML.Excel.IXLRow currentRow = currentWorksheet.FirstRowUsed();
+            for(int i = currentRow.RowNumber(); i <= currentWorksheet.LastRowUsed().RowNumber(); i++)
+            {
+                currentRow = currentWorksheet.Row(i);
+                DataEntry newEntry = new DataEntry();
+                foreach(string column in columnsToGet)
+                {
+                    ClosedXML.Excel.IXLCell cell = currentRow.Cell(column);
+                    newEntry.addField(column, cell.GetValue<string>());
+                }
+                newEntry.convertToWriteEntry(dRefs);
+                addData(newEntry);
+            }
         }
 
         public void close()
