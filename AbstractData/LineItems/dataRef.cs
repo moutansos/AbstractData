@@ -82,6 +82,11 @@ namespace AbstractData
             get { return readField; }
         }
 
+        public tableRef tableReference
+        {
+            get { return tableRef; }
+        }
+
         public string readReferenceText
         {
             get { return readField.originalString; }

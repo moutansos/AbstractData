@@ -96,7 +96,7 @@ namespace AbstractData
             }
         }
 
-        public void getData(Func<DataEntry> addData, List<string> columns)
+        public void getData(Action<DataEntry> addData, List<dataRef> dRef)
         {
             throw new NotImplementedException();
         }

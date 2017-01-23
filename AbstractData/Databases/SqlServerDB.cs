@@ -119,7 +119,7 @@ namespace AbstractData
             return newData;
         }
 
-        public void getData(Func<DataEntry> addData, List<string> columns)
+        public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
         {
             /*
             using(SqlConnection conn = new SqlConnection(connectionString))

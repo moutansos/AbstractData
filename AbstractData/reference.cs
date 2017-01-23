@@ -53,5 +53,6 @@ namespace AbstractData
                 fields.Add(lineSubString.Trim());
             }
         }
+
     }
 }

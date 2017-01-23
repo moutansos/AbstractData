@@ -70,9 +70,34 @@ namespace AbstractData.LineItems
         public void execute(adScript script)
         {
             List<dataRef> currentDataRefs = script.currentDataRefs;
-            foreach(var dataRef in currentDataRefs)
-            {
+            List<movePackage> movePacks = new List<movePackage>();
 
+            //Setup Move Packages
+            foreach (dataRef data in currentDataRefs)
+            {
+                movePackage pack = matchRefInMovePack(movePacks, data);
+                if (pack.isEmpty) //No package found. Make a new one
+                {
+                    pack = new movePackage {
+                        isEmpty = false,
+                        tableReference = data.tableReference,
+                        references = new List<dataRef>()
+                    };
+                    pack.references.Add(data);
+                }
+                else
+                {
+                    movePacks.Remove(pack); //Remove from collection
+                    pack.references.Add(data); //Change data
+                    movePacks.Add(pack); //Add it back to collection
+                }
+            }
+
+            //Execute each movePack
+            foreach(var pack in movePacks)
+            {
+                tableRef tRef = pack.tableReference;
+                tRef.readDatabase.getData(tRef.writeDatabase.addData, pack.references);
             }
         }
 
@@ -89,6 +114,26 @@ namespace AbstractData.LineItems
                 return true;
             }
             return false;
+        }
+
+        private static movePackage matchRefInMovePack(List<movePackage> packs, dataRef dataReference)
+        {
+            foreach(var pack in packs)
+            {
+                if(dataReference.tableReference == pack.tableReference)
+                {
+                    return pack;
+                }
+            }
+
+            return new movePackage { isEmpty = false };
+        }
+
+        public struct movePackage
+        {
+            public bool isEmpty;
+            public tableRef tableReference;
+            public List<dataRef> references;
         }
     }
 }
