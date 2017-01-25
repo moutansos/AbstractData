@@ -47,6 +47,7 @@
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -58,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="adScript.cs" />
+    <Compile Include="Databases\CSVFile.cs" />
     <Compile Include="Databases\DataEntry.cs" />
     <Compile Include="Databases\ExcelFile.cs" />
     <Compile Include="Databases\SQLServerDB.cs" />
