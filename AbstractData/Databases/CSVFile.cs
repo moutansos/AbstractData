@@ -11,8 +11,8 @@ namespace AbstractData
 {
     public class CSVFile : IDatabase
     {
+        public const string idInScript = "CSVFile";
         private string fileName;
-        private int numberOfColumns;
 
         #region Constructors
         public CSVFile(string fileName)
@@ -75,7 +75,33 @@ namespace AbstractData
 
         public void addData(DataEntry data)
         {
-            throw new NotImplementedException();
+            data.csvFormatData();
+            int maxColumn = getBiggestFieldOrdinal(data);
+            string[] dataVals = new string[maxColumn];
+            foreach(DataEntry.Field field in data.getFields())
+            {
+                int ordinal = int.Parse(field.data);
+                dataVals[ordinal] = field.data;
+            }
+            string CSVLine = "";
+            for(int i = 0; i < dataVals.Length; i++)
+            {
+                if (i == 0)
+                {
+                    CSVLine = dataVals[i];
+                }
+                else
+                {
+                    CSVLine = CSVLine + "," + dataVals;
+                }
+            }
+
+            using(TextWriter writer = new StreamWriter(fileName, true))
+            {
+                writer.WriteLine(CSVLine);
+                writer.Close();
+            }
+            
         }
 
         public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
@@ -102,6 +128,25 @@ namespace AbstractData
         public void close()
         {
             throw new NotImplementedException();
+        }
+
+        private int getBiggestFieldOrdinal(DataEntry data)
+        {
+            int biggestNum = 0;
+            foreach(DataEntry.Field field in data.getFields())
+            {
+                int parseField = -1;
+                if(!int.TryParse(field.column, out parseField))
+                {
+                    throw new ArgumentException("The database is CSV, but the field name isn't a number.");
+                }
+
+                if(parseField > biggestNum)
+                {
+                    biggestNum = parseField;
+                }
+            }
+            return biggestNum;
         }
     }
 }

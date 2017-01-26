@@ -44,6 +44,21 @@ namespace AbstractData
             fields = newFields;
         }
 
+        #region CSVFile Methods
+        public void csvFormatData()
+        {
+            List<Field> newFields = new List<Field>();
+            foreach (Field field in fields)
+            {
+                if (field.data.Contains(","))
+                {
+                    field.data = "\"" + field.data + "\"";
+                }
+                newFields.Add(field);
+            }
+        }
+        #endregion
+
         public class Field
         {
             private string columnName;

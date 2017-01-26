@@ -171,7 +171,7 @@ namespace AbstractData
             {
                 return dbType.ExcelFile;
             }
-            else if(type == "CSVFile")
+            else if(type == CSVFile.idInScript)
             {
                 return dbType.CSVFile;
             }
@@ -209,7 +209,7 @@ namespace AbstractData
             }
             else if(type == dbType.CSVFile)
             {
-                return "CSVFile";
+                return CSVFile.idInScript;
             }
             else if(type == dbType.AccessDB)
             {
@@ -245,7 +245,7 @@ namespace AbstractData
             }
             else if(type == dbType.CSVFile)
             {
-                throw new NotImplementedException("CSVFile Database Not Implemented");
+                return new CSVFile(cleanRefString);
             }
             else if(type == dbType.AccessDB)
             {
