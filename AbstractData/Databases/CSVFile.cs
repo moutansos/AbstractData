@@ -13,6 +13,7 @@ namespace AbstractData
     {
         public const string idInScript = "CSVFile";
         private string fileName;
+        private string ID;
 
         #region Constructors
         public CSVFile(string fileName)
@@ -24,52 +25,36 @@ namespace AbstractData
         #region Properties
         public string id
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get { return ID; }
+            set { ID = value; }
         }
 
         public bool isMultiTable
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return false; }
         }
 
         public string refString
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return fileName; }
         }
 
         public string table
         {
             get
             {
-                throw new NotImplementedException();
+                return null;
             }
 
             set
             {
-                throw new NotImplementedException();
+                //PASS
             }
         }
 
         public dbType type
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return dbType.CSVFile; }
         }
         #endregion
 
@@ -77,10 +62,10 @@ namespace AbstractData
         {
             data.csvFormatData();
             int maxColumn = getBiggestFieldOrdinal(data);
-            string[] dataVals = new string[maxColumn];
+            string[] dataVals = new string[maxColumn + 1];
             foreach(DataEntry.Field field in data.getFields())
             {
-                int ordinal = int.Parse(field.data);
+                int ordinal = int.Parse(field.column);
                 dataVals[ordinal] = field.data;
             }
             string CSVLine = "";
@@ -92,7 +77,7 @@ namespace AbstractData
                 }
                 else
                 {
-                    CSVLine = CSVLine + "," + dataVals;
+                    CSVLine = CSVLine + "," + dataVals[i];
                 }
             }
 
@@ -127,7 +112,7 @@ namespace AbstractData
 
         public void close()
         {
-            throw new NotImplementedException();
+            //PASS
         }
 
         private int getBiggestFieldOrdinal(DataEntry data)

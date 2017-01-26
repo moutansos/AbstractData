@@ -33,6 +33,10 @@ namespace AbstractData
                     {
                         dataVal = dataVal + field.TrimStart('\"').TrimEnd('\"');
                     }
+                    else if(getField(field) == null)
+                    {
+                        continue;
+                    }
                     else
                     {
                         dataVal = dataVal + getField(field).data;
