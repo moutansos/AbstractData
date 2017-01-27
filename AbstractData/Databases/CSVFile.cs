@@ -12,13 +12,17 @@ namespace AbstractData
     public class CSVFile : IDatabase
     {
         public const string idInScript = "CSVFile";
+        private const int cacheLimit = 5000;
         private string fileName;
         private string ID;
+
+        private List<string> dataCache;
 
         #region Constructors
         public CSVFile(string fileName)
         {
             this.fileName = fileName;
+            dataCache = new List<string>();
         }
         #endregion
 
@@ -81,12 +85,25 @@ namespace AbstractData
                 }
             }
 
-            using(TextWriter writer = new StreamWriter(fileName, true))
+            if(dataCache.Count > cacheLimit)
             {
-                writer.WriteLine(CSVLine);
-                writer.Close();
+                writeCache();
             }
             
+        }
+
+        public void writeCache()
+        {
+            using (TextWriter writer = new StreamWriter(fileName, true))
+            {
+                foreach(string line in dataCache)
+                {
+                    writer.WriteLine(line);
+                }
+                writer.Close();
+            }
+
+            dataCache.Clear();
         }
 
         public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
@@ -112,7 +129,7 @@ namespace AbstractData
 
         public void close()
         {
-            //PASS
+            writeCache();
         }
 
         private int getBiggestFieldOrdinal(DataEntry data)
