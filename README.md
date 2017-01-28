@@ -7,7 +7,7 @@ Project Status: Under Development
 ## What sort of data formats are compatible?
 - SQL Server Databases  
 - Excel Files  
-- TODO: CSV Files  
+- CSV Files  
 - TODO: Access Databases  
 - TODO: PostgreSql Databases  
 - TODO: MariaDB Databases  
