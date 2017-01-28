@@ -1,38 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.OleDb;
+using System.IO;
+using System.Data;
+using System.Data.SqlClient;
 
-namespace AbstractData
+namespace AbstractData.Databases
 {
-    class SQLServerDB : IDatabase
+    class AccessDB : IDatabase
     {
-        //Constants
-        public const string idInScript = "SQLServerDB";
+        public const string idInScript = "AccessDB";
         private const int cacheLimit = 5000;
 
         private string ID;
 
+        private string fileName;
         private string tableName;
-        private string connectionString;
 
         List<DataEntry> dataEntryCache;
 
-        #region Constructors
-        public SQLServerDB(string connectionString)
-        {
-            dataEntryCache = new List<DataEntry>();
-            this.connectionString = connectionString;
-        }
-        #endregion
-
         #region Properties
+        public string id
+        {
+            get { return ID; }
+            set { ID = value; }
+        }
+
         public bool isMultiTable
         {
             get { return true; }
+        }
+
+        public string refString
+        {
+            get { return fileName; }
         }
 
         public string table
@@ -47,25 +51,14 @@ namespace AbstractData
 
         public dbType type
         {
-            get { return dbType.SQLServerDB; }
-        }
-
-        public string refString
-        {
-            get { return connectionString; }
-        }
-
-        public string id
-        {
-            get { return ID; }
-            set { ID = value; }
+            get { return dbType.AccessDB; }
         }
         #endregion
 
         public void addData(DataEntry data)
         {
             dataEntryCache.Add(data);
-            if(dataEntryCache.Count > cacheLimit)
+            if (dataEntryCache.Count > cacheLimit)
             {
                 writeCache();
             }
@@ -73,15 +66,18 @@ namespace AbstractData
 
         public void writeCache()
         {
-            if(dataEntryCache.Count > 0)
+            /*
+            string connectionString = getConnectionString(fileName);
+
+            if (dataEntryCache.Count > 0)
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (OleDbConnection conn = new OleDbConnection(connectionString))
                 {
                     conn.Open();
                     using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
                     {
-                        bulkCopy.DestinationTableName = "dbo.[" + table + "]";
-                        DataTable cacheTable = convertRecordsToTable(dataEntryCache);
+                        bulkCopy.DestinationTableName = "[" + table + "]";
+                        DataTable cacheTable = SQLServerDB.convertRecordsToTable(dataEntryCache);
                         foreach (DataColumn column in cacheTable.Columns)
                         {
                             bulkCopy.ColumnMappings.Add(column.ColumnName, column.ColumnName); //Map each to the field of its name
@@ -91,47 +87,21 @@ namespace AbstractData
                     //Reset the cache
                     dataEntryCache.Clear();
                 }
-            }
-        }
-
-        public void close()
-        {
-            writeCache();
-        }
-
-        public static DataTable convertRecordsToTable(List<DataEntry> dataList)
-        {
-            DataTable newData = new DataTable();
-            foreach(DataEntry entry in dataList)
-            {
-                IEnumerable<DataEntry.Field> fields = entry.getFields();
-                //Add Needed Columns
-                foreach(DataEntry.Field field in fields)
-                {
-                    if (!newData.Columns.Contains(field.column))
-                    {
-                        newData.Columns.Add(field.column);
-                    }
-                }
-
-                //Add the data to the table
-                DataRow newRow = newData.NewRow();
-                foreach(DataEntry.Field field in fields)
-                {
-                    newRow[field.column] = field.data;
-                }
-                newData.Rows.Add(newRow);
-            }
-
-            return newData;
+            } */
+            throw new NotImplementedException();
         }
 
         public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
         {
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
+            string connectionString = getConnectionString(fileName);
+            if(connectionString == null)
+            {
+                throw new ArgumentException("The provided access file name was invalid");
+            }
 
-            //Open a Sql Connection
-            using(SqlConnection conn = new SqlConnection(connectionString))
+            //Open a Ole Connection
+            using (OleDbConnection conn = new OleDbConnection(connectionString))
             {
                 conn.Open();
                 string sqlCommandText = "SELECT  ";
@@ -140,9 +110,9 @@ namespace AbstractData
                     sqlCommandText = sqlCommandText + column + ",";
                 }
                 sqlCommandText = sqlCommandText.Remove(sqlCommandText.Length - 1);
-                sqlCommandText = sqlCommandText + " FROM dbo.[" + table + "]";
-                using (SqlCommand cmd = new SqlCommand(sqlCommandText, conn))
-                using (SqlDataReader reader = cmd.ExecuteReader())
+                sqlCommandText = sqlCommandText + " FROM [" + table + "]";
+                using (OleDbCommand cmd = new OleDbCommand(sqlCommandText, conn))
+                using (OleDbDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
@@ -159,8 +129,24 @@ namespace AbstractData
                     reader.Close();
                 }
             }
-            
+        }
+
+        public void close()
+        {
+            throw new NotImplementedException();
+        }
+
+        private static string getConnectionString(string file)
+        {
+            FileInfo fileInfo = new FileInfo(file);
+            if (fileInfo.Exists)
+            {
+                return "Provider=Microsoft.ACE.OLEDB.12.0; Data Source=" + file + "; Persist Security Info=False;";
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
-
