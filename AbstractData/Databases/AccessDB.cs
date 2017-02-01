@@ -66,29 +66,31 @@ namespace AbstractData.Databases
 
         public void writeCache()
         {
-            /*
             string connectionString = getConnectionString(fileName);
 
             if (dataEntryCache.Count > 0)
             {
                 using (OleDbConnection conn = new OleDbConnection(connectionString))
                 {
+                    DataTable schemaTable = getSchemaTable(conn);
+                    Dictionary<string, Type> columnTypes = getColumnTypes(schemaTable);
+
                     conn.Open();
-                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
+
+                    foreach(DataEntry data in dataEntryCache)
                     {
-                        bulkCopy.DestinationTableName = "[" + table + "]";
-                        DataTable cacheTable = SQLServerDB.convertRecordsToTable(dataEntryCache);
-                        foreach (DataColumn column in cacheTable.Columns)
+                        using(OleDbCommand cmd = buildInsertCommand(data, columnTypes))
                         {
-                            bulkCopy.ColumnMappings.Add(column.ColumnName, column.ColumnName); //Map each to the field of its name
+                            cmd.Connection = conn;
+                            cmd.ExecuteNonQuery();
                         }
-                        bulkCopy.WriteToServer(cacheTable);
                     }
+
                     //Reset the cache
                     dataEntryCache.Clear();
                 }
-            } */
-            throw new NotImplementedException();
+            }
+            //throw new NotImplementedException();
         }
 
         public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
@@ -147,6 +149,100 @@ namespace AbstractData.Databases
             {
                 return null;
             }
+        }
+
+        private OleDbCommand buildInsertCommand(DataEntry dataEntry, Dictionary<string, Type> columnTypes)
+        {
+            string insertString = "INSERT INTO " + tableName + "([";
+
+            IEnumerable<DataEntry.Field> fields = dataEntry.getFields();
+
+            //Add columns to insert statement
+            foreach(var field in fields)
+            {
+                insertString = insertString + field.column + "], [";
+            }
+
+            insertString = insertString.Remove(insertString.Length - 3) + ") VALUES (";
+            //Add values placeholders
+            for (int i = 0; i < fields.Count(); i++)
+            {
+                insertString = insertString + "?, ";
+            }
+            insertString = insertString.Remove(insertString.Length - 2) + ")";
+            OleDbCommand cmd = new OleDbCommand(insertString);
+            foreach (var field in fields)
+            {
+                Type columnType = columnTypes[field.column];
+                if (columnType == typeof(DateTime))
+                {
+                    OleDbParameter param = new OleDbParameter("@" + field.column, field.dataAsDate);
+                    cmd.Parameters.Add(param);
+                }
+                else if (columnType == typeof(string))
+                {
+                    OleDbParameter param = new OleDbParameter("@" + field.column, field.data);
+                    cmd.Parameters.Add(param);
+                }
+                else if (columnType == typeof(int))
+                {
+                    OleDbParameter param = new OleDbParameter("@" + field.column, field.dataAsInt);
+                    cmd.Parameters.Add(param);
+                }
+                else if (columnType == typeof(double))
+                {
+                    OleDbParameter param = new OleDbParameter("@" + field.column, field.dataAsDouble);
+                    cmd.Parameters.Add(param);
+                }
+                else if (columnType == typeof(float))
+                {
+                    OleDbParameter param = new OleDbParameter("@" + field.column, field.dataAsFloat);
+                    cmd.Parameters.Add(param);
+                }
+                else if(columnType == typeof(bool))
+                {
+                    OleDbParameter param = new OleDbParameter("@" + field.column, field.dataAsBool);
+                    cmd.Parameters.Add(param);
+                }
+                else if(columnType == typeof(decimal))
+                {
+                    OleDbParameter param = new OleDbParameter("@" + field.column, field.dataAsDecimal);
+                    cmd.Parameters.Add(param);
+                }
+                else if(columnType == typeof(Guid))
+                {
+                    OleDbParameter param = new OleDbParameter("@" + field.column,  field.dataAsGuid);
+                    cmd.Parameters.Add(param);
+                }
+                else
+                {
+                    throw new ArgumentException("The type " + columnType + " of the column " + field.column + " is invalid.");
+                }
+            }
+            return cmd;
+        }
+
+        private DataTable getSchemaTable(OleDbConnection conn)
+        {
+            OleDbCommand cmd = new OleDbCommand("SELECT * FROM " + tableName);
+            cmd.Connection = conn;
+            OleDbDataReader reader = cmd.ExecuteReader(CommandBehavior.KeyInfo);
+            DataTable schemaTable = reader.GetSchemaTable();
+            return schemaTable;
+        }
+
+        private Dictionary<string, Type> getColumnTypes(DataTable schemaTable)
+        {
+            Dictionary<string, Type> typeDict = new Dictionary<string, Type>();
+
+            foreach(DataRow row in schemaTable.Rows)
+            {
+                string columnName = row["ColumnName"].ToString();
+                Type columnType = Type.GetType(row["DataType"].ToString());
+                typeDict.Add(columnName, columnType);
+            }
+
+            return typeDict;
         }
     }
 }

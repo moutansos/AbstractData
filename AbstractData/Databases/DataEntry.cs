@@ -85,6 +85,43 @@ namespace AbstractData
                 get { return dataString; }
                 set { dataString = value; }
             }
+
+            #region Conversion Properties
+            public DateTime dataAsDate
+            {
+                get { return DateTime.Parse(dataString); }
+            }
+
+            public int dataAsInt
+            {
+                get { return int.Parse(dataString); }
+            }
+
+            public double dataAsDouble
+            {
+                get { return double.Parse(dataString); }
+            }
+
+            public float dataAsFloat
+            {
+                get { return float.Parse(dataString); }
+            }
+
+            public bool dataAsBool
+            {
+                get { return bool.Parse(dataString); }
+            }
+
+            public decimal dataAsDecimal
+            {
+                get { return decimal.Parse(dataString); }
+            }
+
+            public Guid dataAsGuid
+            {
+                get { return Guid.Parse(dataString); }
+            }
+            #endregion
         }
 
         public Field getField(string columnName)
