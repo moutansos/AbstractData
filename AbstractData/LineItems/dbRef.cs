@@ -175,7 +175,7 @@ namespace AbstractData
             {
                 return dbType.CSVFile;
             }
-            else if(type == "AccessDB")
+            else if(type == AccessDB.idInScript)
             {
                 return dbType.AccessDB;
             }
@@ -213,7 +213,7 @@ namespace AbstractData
             }
             else if(type == dbType.AccessDB)
             {
-                return "AccessDB";
+                return AccessDB.idInScript;
             }
             else if(type == dbType.SQLServerDB)
             {
@@ -249,7 +249,7 @@ namespace AbstractData
             }
             else if(type == dbType.AccessDB)
             {
-                throw new NotImplementedException("AccessDB Database Not Implemented");
+                return new AccessDB(cleanRefString);
             }
             else if(type == dbType.SQLServerDB)
             {

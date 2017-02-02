@@ -8,7 +8,7 @@ using System.IO;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace AbstractData.Databases
+namespace AbstractData
 {
     class AccessDB : IDatabase
     {
@@ -21,6 +21,14 @@ namespace AbstractData.Databases
         private string tableName;
 
         List<DataEntry> dataEntryCache;
+
+        #region Constructors
+        public AccessDB(string file)
+        {
+            dataEntryCache = new List<DataEntry>();
+            fileName = file;
+        }
+        #endregion
 
         #region Properties
         public string id
