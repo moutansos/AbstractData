@@ -152,12 +152,12 @@ namespace AbstractData
         {
             //TODO: Add RegEx validation
             if(candidateString.StartsWith(ExcelFile.idInScript) ||
-               candidateString.StartsWith("CSVFile") ||
-               candidateString.StartsWith("AccessDB") ||
+               candidateString.StartsWith(CSVFile.idInScript) ||
+               candidateString.StartsWith(AccessDB.idInScript) ||
                candidateString.StartsWith(SQLServerDB.idInScript) ||
                candidateString.StartsWith("PostgreSqlDB") ||
                candidateString.StartsWith("MariaDB") ||
-               candidateString.StartsWith("SQLiteDB"))
+               candidateString.StartsWith(SQLiteDB.idInScript))
             {
                 return true;
             }
@@ -191,7 +191,7 @@ namespace AbstractData
             {
                 return dbType.MariaDB;
             }
-            else if(type == "SQLiteDB")
+            else if(type == SQLiteDB.idInScript)
             {
                 return dbType.SQLiteDB;
             }
@@ -229,7 +229,7 @@ namespace AbstractData
             }
             else if(type == dbType.SQLiteDB)
             {
-                return "SQLiteDB";
+                return SQLiteDB.idInScript;
             }
             else
             {
@@ -265,7 +265,7 @@ namespace AbstractData
             }
             else if(type == dbType.SQLiteDB)
             {
-                throw new NotImplementedException("SQLiteDB Database Not Implemented");
+                return new SQLiteDB(cleanRefString);
             }
             else
             {
