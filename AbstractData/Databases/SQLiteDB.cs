@@ -144,7 +144,7 @@ namespace AbstractData
         private DataTable getSchemaTable(SQLiteConnection conn)
         {
             SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM " + tableName);
-            using (SQLiteConnection newConn = new SQLiteConnection(conn))
+            using (SQLiteConnection newConn = new SQLiteConnection(getSQLiteConnectionString()))
             {
                 newConn.Open();
                 cmd.Connection = new SQLiteConnection(newConn);
@@ -166,7 +166,7 @@ namespace AbstractData
                 insertString = insertString + field.column + ", ";
             }
 
-            insertString = insertString.Remove(insertString.Length - 3) + ") VALUES (";
+            insertString = insertString.Remove(insertString.Length - 2) + ") VALUES (";
             //Add values placeholders
             for (int i = 0; i < fields.Count(); i++)
             {
