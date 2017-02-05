@@ -1,4 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/0ws893ovb4pv6v3f?svg=true)](https://ci.appveyor.com/project/BenBrougher/abstractdata)
+[![Join the chat at https://gitter.im/AbstractData/Lobby]
+(https://img.shields.io/badge/GITTER-JOIN%20CHAT-brightgreen.svg)](https://gitter.im/AbstractData/Lobby)
+
 # AbstractData
 AbstractData is a C# library and scripting language built to move data from one place to another.
 
