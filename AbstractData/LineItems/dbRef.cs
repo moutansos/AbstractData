@@ -155,7 +155,7 @@ namespace AbstractData
                candidateString.StartsWith(CSVFile.idInScript) ||
                candidateString.StartsWith(AccessDB.idInScript) ||
                candidateString.StartsWith(SQLServerDB.idInScript) ||
-               candidateString.StartsWith("PostgreSqlDB") ||
+               candidateString.StartsWith(PostgreSqlDB.idInScript) ||
                candidateString.StartsWith("MariaDB") ||
                candidateString.StartsWith(SQLiteDB.idInScript))
             {
@@ -183,7 +183,7 @@ namespace AbstractData
             {
                 return dbType.SQLServerDB;
             }
-            else if(type == "PostgreSqlDB")
+            else if(type == PostgreSqlDB.idInScript)
             {
                 return dbType.PostgreSqlDB;
             }
@@ -221,7 +221,7 @@ namespace AbstractData
             }
             else if(type == dbType.PostgreSqlDB)
             {
-                return "PostgreSqlDB";
+                return PostgreSqlDB.idInScript;
             }
             else if(type == dbType.MariaDB)
             {
@@ -257,7 +257,7 @@ namespace AbstractData
             }
             else if(type == dbType.PostgreSqlDB)
             {
-                throw new NotImplementedException("PostgreSqlDB Database Not Implemented");
+                return new PostgreSqlDB(cleanRefString);
             }
             else if(type == dbType.MariaDB)
             {

@@ -3,27 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.SQLite;
+using Npgsql;
+using NpgsqlTypes;
 using System.Data;
 
 namespace AbstractData
 {
-    public class SQLiteDB : IDatabase
+    class PostgreSqlDB : IDatabase
     {
-        public const string idInScript = "SQLiteDB";
+        public const string idInScript = "PostgreSqlDB";
         private const int cacheLimit = 5000;
 
         private string ID;
-        private string fileName;
+        private string connectionString;
         private string tableName;
 
         private List<DataEntry> dataEntryCache;
 
-        #region  Constructors
-        public SQLiteDB(string file)
+        #region Constructors
+        public PostgreSqlDB(string connectionString)
         {
             dataEntryCache = new List<DataEntry>();
-            fileName = file;
+            this.connectionString = connectionString;
         }
         #endregion
 
@@ -41,7 +42,7 @@ namespace AbstractData
 
         public string refString
         {
-            get { return fileName; }
+            get { return connectionString; }
         }
 
         public string table
@@ -56,25 +57,16 @@ namespace AbstractData
 
         public dbType type
         {
-            get { return dbType.SQLiteDB; }
+            get { return dbType.PostgreSqlDB; }
         }
         #endregion
-
-        public void addData(DataEntry data)
-        {
-            dataEntryCache.Add(data);
-            if (dataEntryCache.Count > cacheLimit)
-            {
-                writeCache();
-            }
-        }
 
         public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
         {
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
 
             //Open a Sql Connection
-            using (SQLiteConnection conn = new SQLiteConnection(getSQLiteConnectionString()))
+            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
             {
                 conn.Open();
                 string sqlCommandText = "SELECT  ";
@@ -84,8 +76,8 @@ namespace AbstractData
                 }
                 sqlCommandText = sqlCommandText.Remove(sqlCommandText.Length - 1);
                 sqlCommandText = sqlCommandText + " FROM " + table;
-                using (SQLiteCommand cmd = new SQLiteCommand(sqlCommandText, conn))
-                using (SQLiteDataReader reader = cmd.ExecuteReader())
+                using (NpgsqlCommand cmd = new NpgsqlCommand(sqlCommandText, conn))
+                using (NpgsqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
@@ -105,11 +97,20 @@ namespace AbstractData
 
         }
 
+        public void addData(DataEntry data)
+        {
+            dataEntryCache.Add(data);
+            if (dataEntryCache.Count > cacheLimit)
+            {
+                writeCache();
+            }
+        }
+
         public void writeCache()
         {
             if (dataEntryCache.Count > 0)
             {
-                using (SQLiteConnection conn = new SQLiteConnection(getSQLiteConnectionString()))
+                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
                 {
                     DataTable schemaTable = getSchemaTable();
                     Dictionary<string, Type> columnTypes = getColumnTypes(schemaTable);
@@ -118,7 +119,7 @@ namespace AbstractData
 
                     foreach (DataEntry data in dataEntryCache)
                     {
-                        using (SQLiteCommand cmd = buildInsertCommand(data, columnTypes))
+                        using (NpgsqlCommand cmd = buildInsertCommand(data, columnTypes))
                         {
                             cmd.Connection = conn;
                             cmd.ExecuteNonQuery();
@@ -136,25 +137,34 @@ namespace AbstractData
             writeCache();
         }
 
-        private string getSQLiteConnectionString()
-        {
-            return "Data Source=" + fileName + ";Version=3;";
-        }
-
         private DataTable getSchemaTable()
         {
-            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM " + tableName);
-            using (SQLiteConnection newConn = new SQLiteConnection(getSQLiteConnectionString()))
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM " + tableName);
+            using (NpgsqlConnection newConn = new NpgsqlConnection(connectionString))
             {
                 newConn.Open();
                 cmd.Connection = newConn;
-                SQLiteDataReader reader = cmd.ExecuteReader(CommandBehavior.KeyInfo);
+                NpgsqlDataReader reader = cmd.ExecuteReader(CommandBehavior.KeyInfo);
                 DataTable schemaTable = reader.GetSchemaTable();
                 return schemaTable;
             }
         }
 
-        private SQLiteCommand buildInsertCommand(DataEntry dataEntry, Dictionary<string, Type> columnTypes)
+        private Dictionary<string, Type> getColumnTypes(DataTable schemaTable)
+        {
+            Dictionary<string, Type> typeDict = new Dictionary<string, Type>();
+
+            foreach (DataRow row in schemaTable.Rows)
+            {
+                string columnName = row["ColumnName"].ToString();
+                Type columnType = Type.GetType(row["DataType"].ToString());
+                typeDict.Add(columnName, columnType);
+            }
+
+            return typeDict;
+        }
+
+        private NpgsqlCommand buildInsertCommand(DataEntry dataEntry, Dictionary<string, Type> columnTypes)
         {
             string insertString = "INSERT INTO " + tableName + "(";
 
@@ -173,48 +183,48 @@ namespace AbstractData
                 insertString = insertString + "?, ";
             }
             insertString = insertString.Remove(insertString.Length - 2) + ")";
-            SQLiteCommand cmd = new SQLiteCommand(insertString);
+            NpgsqlCommand cmd = new NpgsqlCommand(insertString);
             foreach (var field in fields)
             {
                 Type columnType = columnTypes[field.column];
                 if (columnType == typeof(DateTime))
                 {
-                    SQLiteParameter param = new SQLiteParameter("@" + field.column, field.dataAsDate);
+                    NpgsqlParameter param = new NpgsqlParameter("@" + field.column, field.dataAsDate);
                     cmd.Parameters.Add(param);
                 }
                 else if (columnType == typeof(string))
                 {
-                    SQLiteParameter param = new SQLiteParameter("@" + field.column, field.data);
+                    NpgsqlParameter param = new NpgsqlParameter("@" + field.column, field.data);
                     cmd.Parameters.Add(param);
                 }
                 else if (columnType == typeof(int))
                 {
-                    SQLiteParameter param = new SQLiteParameter("@" + field.column, field.dataAsInt);
+                    NpgsqlParameter param = new NpgsqlParameter("@" + field.column, field.dataAsInt);
                     cmd.Parameters.Add(param);
                 }
                 else if (columnType == typeof(double))
                 {
-                    SQLiteParameter param = new SQLiteParameter("@" + field.column, field.dataAsDouble);
+                    NpgsqlParameter param = new NpgsqlParameter("@" + field.column, field.dataAsDouble);
                     cmd.Parameters.Add(param);
                 }
                 else if (columnType == typeof(float))
                 {
-                    SQLiteParameter param = new SQLiteParameter("@" + field.column, field.dataAsFloat);
+                    NpgsqlParameter param = new NpgsqlParameter("@" + field.column, field.dataAsFloat);
                     cmd.Parameters.Add(param);
                 }
                 else if (columnType == typeof(bool))
                 {
-                    SQLiteParameter param = new SQLiteParameter("@" + field.column, field.dataAsBool);
+                    NpgsqlParameter param = new NpgsqlParameter("@" + field.column, field.dataAsBool);
                     cmd.Parameters.Add(param);
                 }
                 else if (columnType == typeof(decimal))
                 {
-                    SQLiteParameter param = new SQLiteParameter("@" + field.column, field.dataAsDecimal);
+                    NpgsqlParameter param = new NpgsqlParameter("@" + field.column, field.dataAsDecimal);
                     cmd.Parameters.Add(param);
                 }
                 else if (columnType == typeof(Guid))
                 {
-                    SQLiteParameter param = new SQLiteParameter("@" + field.column, field.dataAsGuid);
+                    NpgsqlParameter param = new NpgsqlParameter("@" + field.column, field.dataAsGuid);
                     cmd.Parameters.Add(param);
                 }
                 else
@@ -223,20 +233,6 @@ namespace AbstractData
                 }
             }
             return cmd;
-        }
-
-        private Dictionary<string, Type> getColumnTypes(DataTable schemaTable)
-        {
-            Dictionary<string, Type> typeDict = new Dictionary<string, Type>();
-
-            foreach (DataRow row in schemaTable.Rows)
-            {
-                string columnName = row["ColumnName"].ToString();
-                Type columnType = Type.GetType(row["DataType"].ToString());
-                typeDict.Add(columnName, columnType);
-            }
-
-            return typeDict;
         }
     }
 }
