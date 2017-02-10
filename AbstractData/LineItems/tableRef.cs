@@ -138,9 +138,9 @@ namespace AbstractData
                 throw new ArgumentException("There is no directional operator in the tableRef");
             }
 
-            if (readText.Contains('.'))
+            if (readText.Contains('>'))
             {
-                string[] readTextSplit = readText.Split('.');
+                string[] readTextSplit = readText.Split('>');
                 readDb = readTextSplit[0].Trim();
                 readTable = readTextSplit[1].Trim();
             }

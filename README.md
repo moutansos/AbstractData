@@ -43,7 +43,7 @@ Below is an example of how to use the interpreter
 >> CSVFile csv1 = "C:\--path to csv file--"
 >>
 >> # Table references tell where the data will move to. In this data moves from Sheet1 in the excel file to the CSV file.
->> tableReference(excel1.Sheet1 => csv1)
+>> tableReference(excel1>Sheet1 => csv1)
 >> # Data references tells which columns or fields to move where. In this case letter columns to ordinal columns in the csv file
 >> A => 0
 >> B => 1
@@ -52,7 +52,7 @@ Below is an example of how to use the interpreter
 >> # The move command executes the references and moves the data
 >> move()
 >>
->> tableReference(excel1.Sheet1 => sqlite1.Table1)
+>> tableReference(excel1>Sheet1 => sqlite1>Table1)
 >> A => Field1
 >> B => Field2
 >> C => Field3

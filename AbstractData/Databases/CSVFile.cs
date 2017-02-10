@@ -84,6 +84,7 @@ namespace AbstractData
                     CSVLine = CSVLine + "," + dataVals[i];
                 }
             }
+            dataCache.Add(CSVLine);
 
             if(dataCache.Count > cacheLimit)
             {

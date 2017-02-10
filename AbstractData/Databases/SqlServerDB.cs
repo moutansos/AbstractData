@@ -140,7 +140,26 @@ namespace AbstractData
                     sqlCommandText = sqlCommandText + column + ",";
                 }
                 sqlCommandText = sqlCommandText.Remove(sqlCommandText.Length - 1);
-                sqlCommandText = sqlCommandText + " FROM dbo.[" + table + "]";
+                if (table.Contains('.'))
+                {
+                    /*
+                    string[] tableNameArray = table.Split('.');
+                    for(int i = 0; i < tableNameArray.Length; i++)
+                    {
+                        if(i == 0)
+                        {
+                            sqlCommandText = sqlCommandText + " FROM dbo.[" + tableNameArray[i] + "]";
+                        }
+                        else
+                        {
+                            sqlCommandText = sqlCommandText + ".[" + tableNameArray[i] + "]";
+                        }
+                    }*/
+                    sqlCommandText = sqlCommandText + " FROM " + table;
+                }else
+                {
+                    sqlCommandText = sqlCommandText + " FROM dbo.[" + table + "]";
+                }
                 using (SqlCommand cmd = new SqlCommand(sqlCommandText, conn))
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
