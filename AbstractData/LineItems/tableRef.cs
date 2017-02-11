@@ -149,9 +149,9 @@ namespace AbstractData
                 readDb = readText;
             }
 
-            if (writeText.Contains('.'))
+            if (writeText.Contains('>'))
             {
-                string[] writeTextSplit = writeText.Split('.');
+                string[] writeTextSplit = writeText.Split('>');
                 writeDb = writeTextSplit[0].Trim();
                 writeTable = writeTextSplit[1].Trim();
             }
@@ -182,11 +182,11 @@ namespace AbstractData
             string writeRef = writeDb;
             if(readTable != null)
             {
-                readRef = readRef + "." + readTable;
+                readRef = readRef + ">" + readTable;
             }
             if(writeTable != null)
             {
-                writeRef = writeRef + "." + writeTable;
+                writeRef = writeRef + ">" + writeTable;
             }
             lineString = "tableReference(" + readRef + " => " + writeRef + ")";
             return originalString;

@@ -11,7 +11,7 @@ namespace adTests
         [TestMethod]
         public void tableRefParseTest1()
         {
-            string testOriginalString = "tableReference(sqlDb.Table1 => excelFile.Sheet1)";
+            string testOriginalString = "tableReference(sqlDb>Table1 => excelFile>Sheet1)";
 
             //Begin test
             tableRef tableRef = new tableRef(testOriginalString);
@@ -31,7 +31,7 @@ namespace adTests
 
             //Check
             string tableRefTest = tableRef.generateString();
-            Assert.AreEqual("tableReference(sqlDb.Table1 => excelFile.Sheet1)", tableRef.generateString());
+            Assert.AreEqual("tableReference(sqlDb>Table1 => excelFile>Sheet1)", tableRef.generateString());
         }
     }
 }
