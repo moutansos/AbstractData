@@ -35,7 +35,7 @@ namespace AbstractData
         }
         #endregion
 
-        #region Fields
+        #region Properties
         public bool hasError
         {
             get
