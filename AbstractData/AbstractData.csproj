@@ -127,6 +127,7 @@
     <Compile Include="Exceptions.cs" />
     <Compile Include="Databases\IDatabase.cs" />
     <Compile Include="LineItems\moveCom.cs" />
+    <Compile Include="LineItems\runCom.cs" />
     <Compile Include="LineItems\tableRef.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="reference.cs" />

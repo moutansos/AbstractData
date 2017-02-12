@@ -226,6 +226,10 @@ namespace AbstractData
             {
                 lineObject = new moveCom(line);
             }
+            else if (runCom.isARunCom(line))
+            {
+                lineObject = new runCom(line);
+            }
 
             if(lineObject != null) //Set the line number
             {

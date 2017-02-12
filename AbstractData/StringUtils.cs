@@ -11,6 +11,9 @@ namespace AbstractData
         public static string returnStringInside(string masterString, char start, char end)
         {
             //TODO: Rewrite to make end iterate from the end of the string and return the inside
+            //      This will elimenate issue with giving the value inside quotes and also resove 
+            //      issues with matching on characters inside the quotes.
+
             int startPos = -1;
             int endPos = -1;
             for (int i = 0; i < masterString.Length; i++)
