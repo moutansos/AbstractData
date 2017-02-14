@@ -18,6 +18,9 @@ namespace AbstractData
         private tableRef curTableRef;
         private List<dataRef> curDataReferences;
 
+        //An action for handling output
+        public Action<string> output;
+
         #region Constructors
         public adScript()
         {
@@ -50,24 +53,7 @@ namespace AbstractData
             databaseReferenceList = new List<IDatabase>();
             #endregion
 
-            //Parse Script
-            int lineCounter = 1;
-
-            string line;
-            List<ILine> scriptLines = new List<ILine>();
-            while ((line = dataStream.ReadLine()) != null) //Parse in file and set up structures
-            {
-                if (!string.IsNullOrWhiteSpace(line))
-                {
-                    ILine lineObject = getLineObjectForLine(line, lineCounter);
-
-                    if(lineObject != null)
-                    {
-                        scriptLines.Add(lineObject);
-                    }
-                }
-                lineCounter++;
-            }
+            List<ILine> scriptLines = parseLines(dataStream);
 
             //Execute Script
             foreach(ILine lineObj in scriptLines)
@@ -190,7 +176,7 @@ namespace AbstractData
         }
         #endregion
 
-        private ILine getLineObjectForLine(string line, int lineNumber)
+        private static ILine getLineObjectForLine(string line, int lineNumber)
         {
             #region Check and clean the string
             if (string.IsNullOrWhiteSpace(line))
@@ -237,6 +223,30 @@ namespace AbstractData
             }
 
             return lineObject;
+        }
+
+        private static List<ILine> parseLines(System.IO.StreamReader stream)
+        {
+            //Parse Script
+            int lineCounter = 1;
+
+            string line;
+            List<ILine> scriptLines = new List<ILine>();
+            while ((line = stream.ReadLine()) != null) //Parse in file and set up structures
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    ILine lineObject = getLineObjectForLine(line, lineCounter);
+
+                    if (lineObject != null)
+                    {
+                        scriptLines.Add(lineObject);
+                    }
+                }
+                lineCounter++;
+            }
+
+            return scriptLines;
         }
 
         #region Database Methods
@@ -292,17 +302,5 @@ namespace AbstractData
             get { return curDataReferences; }
         }
         #endregion
-    }
-
-    public interface ILine
-    {
-        void execute(adScript script);
-        void parseString();
-        string generateString();
-
-        Type type { get; }
-        int lineNumber { get; set; }
-        string originalString { get; set; }
-        bool hasError { get; }
     }
 }
