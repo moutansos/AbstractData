@@ -15,6 +15,9 @@ namespace adTests
             //Begin test
             dbRef dbref = new dbRef(testOriginalString);
 
+            string output = null;
+            dbref.parseString(ref output);
+
             //Check
             Assert.AreEqual(dbType.SQLServerDB, dbref.databaseType);
             Assert.AreEqual("sqlDb", dbref.referenceID);

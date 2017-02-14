@@ -15,6 +15,9 @@ namespace adTests
             //Setup Object
             dataRef dataRef = new dataRef(testOriginalString);
 
+            string output = null;
+            dataRef.parseString(ref output);
+
             //Check Results
             Assert.AreEqual("\"Test: \" + Column1", dataRef.readReferenceText);
             Assert.AreEqual("B", dataRef.writeAssignmentText);

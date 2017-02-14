@@ -94,7 +94,6 @@ namespace AbstractData
             set
             {
                 lineString = value;
-                parseString();
             }
         }
 
@@ -105,7 +104,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void execute(adScript script)
+        public void execute(adScript script, ref string output)
         {
             db.id = refID;
             script.addDatabaseReference(db);
@@ -128,7 +127,7 @@ namespace AbstractData
             return originalString;
         }
 
-        public void parseString()
+        public void parseString(ref string output)
         {
             string line = originalString;
             //DB Type

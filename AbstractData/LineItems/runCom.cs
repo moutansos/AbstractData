@@ -66,7 +66,6 @@ namespace AbstractData
             set
             {
                 lineString = value;
-                parseString();
             }
         }
 
@@ -95,7 +94,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString()
+        public void parseString(ref string output)
         {
             //Eventually use this for returning the string when it is rewritten
             //scriptFile = StringUtils.returnStringInside(lineString, '\"', '\"');
@@ -104,7 +103,7 @@ namespace AbstractData
             scriptFile = StringUtils.returnStringInside(lineString, '(', ')').TrimStart('\"').TrimEnd('\"');
         }
 
-        public void execute(adScript script)
+        public void execute(adScript script, ref string output)
         {
             adScript newScript = new adScript(scriptFile);
             newScript.runScript();

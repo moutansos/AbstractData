@@ -16,6 +16,9 @@ namespace adTests
             //Begin test
             tableRef tableRef = new tableRef(testOriginalString);
 
+            string output = null;
+            tableRef.parseString(ref output);
+
             //Check
             Assert.AreEqual("sqlDb", tableRef.readDbText);
             Assert.AreEqual("Table1", tableRef.readTableText);

@@ -63,7 +63,6 @@ namespace AbstractData
             set
             {
                 original = value;
-                parseString();
             }
         }
 
@@ -80,11 +79,6 @@ namespace AbstractData
             get { return commentText; }
         }
         #endregion
-
-        private void parseComment()
-        {
-            commentText = original.TrimStart('#');
-        }
 
         public string generateComment()
         {
@@ -103,12 +97,12 @@ namespace AbstractData
         }
         #endregion
 
-        public void execute(adScript script)
+        public void execute(adScript script, ref string comment)
         {
             
         }
 
-        public void parseString()
+        public void parseString(ref string comment)
         {
             commentText = original.TrimStart('#');
         }

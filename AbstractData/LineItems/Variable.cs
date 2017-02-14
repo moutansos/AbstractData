@@ -88,7 +88,6 @@ namespace AbstractData
             set
             {
                 lineString = value;
-                parseString();
             }
         }
 
@@ -113,7 +112,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void execute(adScript script)
+        public void execute(adScript script, ref string output)
         {
             if(varType == "Local")
             {
@@ -129,7 +128,7 @@ namespace AbstractData
             }
         }
 
-        public void parseString()
+        public void parseString(ref string output)
         {
             int posOfFirstSpace = originalString.IndexOf(' ');
             varType = originalString.Substring(0, posOfFirstSpace);

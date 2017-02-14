@@ -15,6 +15,9 @@ namespace adTests
             //Begin test
             Variable var = new Variable(testOriginalString);
 
+            string output = null;
+            var.parseString(ref output);
+
             //Check
             Assert.AreEqual("staticVar", var.id);
             Assert.AreEqual("\"Static Variable\"", var.value);

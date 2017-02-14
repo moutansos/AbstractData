@@ -18,7 +18,7 @@ namespace AbstractData
         private tableRef curTableRef;
         private List<dataRef> curDataReferences;
 
-        //An action for handling output
+        //An action for handling output - Set by the user of the library
         public Action<string> output;
 
         #region Constructors
@@ -58,7 +58,14 @@ namespace AbstractData
             //Execute Script
             foreach(ILine lineObj in scriptLines)
             {
-                lineObj.execute(this);
+                string outputStr = null;
+                lineObj.execute(this, ref outputStr);
+
+                if(outputStr != null &&
+                   output != null)
+                {
+                    output(outputStr);
+                }
             }
 
 
@@ -82,7 +89,14 @@ namespace AbstractData
             ILine lineObj = getLineObjectForLine(line, -1);
             if(lineObj != null)
             {
-                lineObj.execute(this);
+                string outputStr = null;
+                lineObj.execute(this, ref outputStr);
+
+                if(outputStr != null &&
+                   outputStr != null)
+                {
+                    output(outputStr); //Send the message to the action
+                }
             }
         }
 
@@ -225,7 +239,7 @@ namespace AbstractData
             return lineObject;
         }
 
-        private static List<ILine> parseLines(System.IO.StreamReader stream)
+        private List<ILine> parseLines(System.IO.StreamReader stream)
         {
             //Parse Script
             int lineCounter = 1;
@@ -237,6 +251,15 @@ namespace AbstractData
                 if (!string.IsNullOrWhiteSpace(line))
                 {
                     ILine lineObject = getLineObjectForLine(line, lineCounter);
+
+                    string outputStr = null;
+                    lineObject.parseString(ref outputStr);
+
+                    if(outputStr != null &&
+                       output != null)
+                    {
+                        output(outputStr); //Send the message to the action
+                    }
 
                     if (lineObject != null)
                     {

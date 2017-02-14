@@ -68,7 +68,6 @@ namespace AbstractData
             set
             {
                 lineString = value;
-                parseString();
             }
         }
 
@@ -103,7 +102,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString()
+        public void parseString(ref string output)
         {
             if (lineString.Contains("=>")) //TODO: Move this into string utils and implement it here and in tableRef
             {
@@ -131,7 +130,7 @@ namespace AbstractData
             }
         }
 
-        public void execute(adScript script)
+        public void execute(adScript script, ref string output)
         {
             //TODO: Add checks to see if there is any table referenced currently. Throw error if otherwise
             tableRef = script.currentTableRef; //Grab the table reference

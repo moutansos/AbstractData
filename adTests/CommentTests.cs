@@ -19,6 +19,8 @@ namespace adTests
 
             //Setup Object
             Comment comment = new Comment(testOriginalString);
+            string output = null;
+            comment.parseString(ref output);
 
             //Check Results
             Assert.AreEqual(" <<TestText>>", comment.commentTextString);

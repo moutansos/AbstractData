@@ -59,7 +59,6 @@ namespace AbstractData
             set
             {
                 lineString = value;
-                parseString();
             }
         }
 
@@ -69,12 +68,12 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString()
+        public void parseString(ref string output)
         {
             moveParams = StringUtils.returnStringInside(lineString, '(', ')');
         }
 
-        public void execute(adScript script)
+        public void execute(adScript script, ref string output)
         {
             List<dataRef> currentDataRefs = script.currentDataRefs;
             List<movePackage> movePacks = new List<movePackage>();

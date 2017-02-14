@@ -74,7 +74,6 @@ namespace AbstractData
             set
             {
                 lineString = value;
-                parseString();
             }
         }
 
@@ -114,7 +113,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString()
+        public void parseString(ref string output)
         {
             string innerTableRef = StringUtils.returnStringInside(lineString, '(', ')');
             string readText = string.Empty;
@@ -161,7 +160,7 @@ namespace AbstractData
             }
         }
 
-        public void execute(adScript script)
+        public void execute(adScript script, ref string output)
         {
             script.clearDataRefs();
             readData = script.getDatabase(readDb);
