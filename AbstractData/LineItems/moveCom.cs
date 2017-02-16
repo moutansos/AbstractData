@@ -71,6 +71,9 @@ namespace AbstractData
         public void parseString(ref string output)
         {
             moveParams = StringUtils.returnStringInside(lineString, '(', ')');
+
+            //TODO: Add RegEx Validation
+            output = null;
         }
 
         public void execute(adScript script, ref string output)
@@ -110,6 +113,9 @@ namespace AbstractData
                 tRef.readDatabase.close();
                 tRef.writeDatabase.close();
             }
+
+            //Check for errors
+            output = null;
         }
 
         public string generateString()

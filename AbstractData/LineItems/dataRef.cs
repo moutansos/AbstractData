@@ -126,16 +126,23 @@ namespace AbstractData
             }
             else
             {
-                throw new ArgumentException("Error: Line was parsed as a dataRef but no reference operator was used.");
+                output = "Error: Line was parsed as a dataRef but no reference operator was used.";
             }
+
+            //TODO: Add regex validation
         }
 
         public void execute(adScript script, ref string output)
         {
-            //TODO: Add checks to see if there is any table referenced currently. Throw error if otherwise
-            tableRef = script.currentTableRef; //Grab the table reference
-
-            script.addDataRef(this);
+            if(script.currentTableRef == null)
+            {
+                output = "Error: No table reference is set";
+            }
+            else
+            {
+                tableRef = script.currentTableRef; //Grab the table reference
+                script.addDataRef(this);
+            }
         }
 
         public string generateString()
@@ -146,7 +153,6 @@ namespace AbstractData
 
         public static bool isDataRef(string line)
         {
-            //TODO: Add regex validation
             //TODO: Convert to an all but inside quotes and then check.
             if(line.Contains("<=") ||
                line.Contains("=>"))

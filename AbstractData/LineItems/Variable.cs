@@ -124,7 +124,7 @@ namespace AbstractData
             }
             else
             {
-                throw new ArgumentException("INTERNAL ERROR: Invalid variable type was set");
+                output = "Invalid variable type was set.";
             }
         }
 
@@ -136,6 +136,9 @@ namespace AbstractData
             varID = varAndId.Split('=')[0].Trim();
             value = varAndId.Split('=')[1].Trim();
             varID = StringUtils.returnStringInside(varID, '{', '}');
+
+            //TODO: Add RegEx Validation
+            output = null;
         }
 
         public string generateString()
@@ -144,10 +147,8 @@ namespace AbstractData
             return originalString;
         }
 
-        #region Static Utils
         public static bool isVar(string line)
         {
-            //TODO: Add Regex Validation
             if (line.StartsWith("Global") ||
                 line.StartsWith("Local"))
             {
@@ -158,6 +159,5 @@ namespace AbstractData
                 return false;
             }
         }
-        #endregion
     }
 }

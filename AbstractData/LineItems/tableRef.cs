@@ -134,7 +134,7 @@ namespace AbstractData
             }
             else
             {
-                throw new ArgumentException("There is no directional operator in the tableRef");
+                output = "There is no directional operator in the tableRef";
             }
 
             if (readText.Contains('>'))
@@ -158,6 +158,10 @@ namespace AbstractData
             {
                 writeDb = writeText;
             }
+
+            //TODO: Add RegEx validation
+
+            output = null;
         }
 
         public void execute(adScript script, ref string output)
@@ -169,7 +173,7 @@ namespace AbstractData
             if(readData == null ||
                writeData == null)
             {
-                throw new ArgumentException("Invalid database name. That database hasn't been initialied yet.");
+                output = "Invalid database name. That database hasn't been initialied yet.";
             }
 
             script.currentTableRef = this;
@@ -193,7 +197,6 @@ namespace AbstractData
 
         public static bool isTableRef(string line)
         {
-            //TODO: Add RegEx validation
             if (line.StartsWith("tableReference"))
             {
                 return true;

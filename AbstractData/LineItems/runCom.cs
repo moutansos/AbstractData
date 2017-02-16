@@ -101,13 +101,21 @@ namespace AbstractData
 
             //For now use this
             scriptFile = StringUtils.returnStringInside(lineString, '(', ')').TrimStart('\"').TrimEnd('\"');
+
+            //TODO: Add Regex Validation here
         }
 
         public void execute(adScript script, ref string output)
         {
-            adScript newScript = new adScript(scriptFile);
-            newScript.runScript();
-            GC.Collect();
+            //Perform Checks
+            FileInfo info = new FileInfo(scriptFile);
+            if (!info.Exists)
+            {
+                scriptFile = null;
+                output = "The specified file does not exist.";
+            }
+
+            runScript(ref output);
         }
 
         public string generateString()
@@ -118,7 +126,6 @@ namespace AbstractData
 
         public static bool isARunCom(string line)
         {
-            //Add Regex Validation here
             if (line.StartsWith("run("))
             {
                 return true;
@@ -126,6 +133,20 @@ namespace AbstractData
             else
             {
                 return false;
+            }
+        }
+
+        public void runScript(ref string output)
+        {
+            if (scriptFile != null)
+            {
+                adScript newScript = new adScript(scriptFile);
+
+                //TODO: Add try statement to this to catch the potential IO errors reading the stream.
+                newScript.runScript();
+
+                output = null;
+                GC.Collect();
             }
         }
     }
