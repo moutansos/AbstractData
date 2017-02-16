@@ -325,5 +325,50 @@ namespace AbstractData
             get { return curDataReferences; }
         }
         #endregion
+
+        public class Output
+        {
+            private bool error;
+            private string outputString;
+
+            #region Constructors
+            public Output()
+            {
+                error = false;
+                outputString = "";
+            }
+            #endregion
+
+            #region Properties
+            public bool isError
+            {
+                get { return error; }
+                set { error = value; }
+            }
+
+            public bool isEmpty
+            {
+                get { return (error = false && String.IsNullOrWhiteSpace(outputString)); }
+            }
+
+            public string value
+            {
+                get { return generateValue(); }
+                set { outputString = value; }
+            }
+            #endregion
+
+            private string generateValue()
+            {
+                if (error)
+                {
+                    return "Error: " + outputString;
+                }
+                else
+                {
+                    return outputString;
+                }
+            }
+        }
     }
 }
