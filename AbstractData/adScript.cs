@@ -9,7 +9,6 @@ namespace AbstractData
     public class adScript
     {
         System.IO.StreamReader dataStream;
-        //TODO: Setup an output stream for sending ouptut data from the scripts
         //TODO: Add a script command for printing to the output/log
 
         private List<Variable> globalVariablesList;
@@ -90,10 +89,20 @@ namespace AbstractData
             if(lineObj != null)
             {
                 string outputStr = null;
+                
+                //Parse
+                lineObj.parseString(ref outputStr);
+                if (outputStr != null &&
+                    outputStr != null)
+                {
+                    output(outputStr); //Send the message to the action
+                }
+
+                //Execute
                 lineObj.execute(this, ref outputStr);
 
-                if(outputStr != null &&
-                   outputStr != null)
+                if (outputStr != null &&
+                    outputStr != null)
                 {
                     output(outputStr); //Send the message to the action
                 }

@@ -72,10 +72,10 @@ namespace AbstractData
                 string sqlCommandText = "SELECT  ";
                 foreach (string column in readColumns)
                 {
-                    sqlCommandText = sqlCommandText + column + ",";
+                    sqlCommandText = sqlCommandText + "\"" + column + "\",";
                 }
                 sqlCommandText = sqlCommandText.Remove(sqlCommandText.Length - 1);
-                sqlCommandText = sqlCommandText + " FROM " + table;
+                sqlCommandText = sqlCommandText + " FROM \"" + table + "\"";
                 using (NpgsqlCommand cmd = new NpgsqlCommand(sqlCommandText, conn))
                 using (NpgsqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -139,7 +139,7 @@ namespace AbstractData
 
         private DataTable getSchemaTable()
         {
-            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM " + tableName);
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM \"" + tableName + "\"");
             using (NpgsqlConnection newConn = new NpgsqlConnection(connectionString))
             {
                 newConn.Open();
@@ -166,21 +166,21 @@ namespace AbstractData
 
         private NpgsqlCommand buildInsertCommand(DataEntry dataEntry, Dictionary<string, Type> columnTypes)
         {
-            string insertString = "INSERT INTO " + tableName + "(";
+            string insertString = "INSERT INTO \"" + tableName + "\"(";
 
             IEnumerable<DataEntry.Field> fields = dataEntry.getFields();
 
             //Add columns to insert statement
             foreach (var field in fields)
             {
-                insertString = insertString + field.column + ", ";
+                insertString = insertString + "\"" + field.column + "\"" + ", ";
             }
 
             insertString = insertString.Remove(insertString.Length - 2) + ") VALUES (";
             //Add values placeholders
-            for (int i = 0; i < fields.Count(); i++)
+            foreach (var field in fields)
             {
-                insertString = insertString + "?, ";
+                insertString = insertString + "@"+ field.column + ", ";
             }
             insertString = insertString.Remove(insertString.Length - 2) + ")";
             NpgsqlCommand cmd = new NpgsqlCommand(insertString);
