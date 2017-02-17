@@ -113,7 +113,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString(ref string output)
+        public void parseString(ref adScript.Output output)
         {
             string innerTableRef = StringUtils.returnStringInside(lineString, '(', ')');
             string readText = string.Empty;
@@ -134,7 +134,7 @@ namespace AbstractData
             }
             else
             {
-                output = "There is no directional operator in the tableRef";
+                output = new adScript.Output("There is no directional operator in the tableRef", true);
             }
 
             if (readText.Contains('>'))
@@ -164,7 +164,7 @@ namespace AbstractData
             output = null;
         }
 
-        public void execute(adScript script, ref string output)
+        public void execute(adScript script, ref adScript.Output output)
         {
             script.clearDataRefs();
             readData = script.getDatabase(readDb);
@@ -173,7 +173,7 @@ namespace AbstractData
             if(readData == null ||
                writeData == null)
             {
-                output = "Invalid database name. That database hasn't been initialied yet.";
+                output = new adScript.Output("Invalid database name. That database hasn't been initialied yet.", true);
             }
 
             script.currentTableRef = this;

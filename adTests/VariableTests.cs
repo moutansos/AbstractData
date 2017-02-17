@@ -15,7 +15,7 @@ namespace adTests
             //Begin test
             Variable var = new Variable(testOriginalString);
 
-            string output = null;
+            adScript.Output output = null;
             var.parseString(ref output);
 
             //Check

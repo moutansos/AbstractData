@@ -104,7 +104,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void execute(adScript script, ref string output)
+        public void execute(adScript script, ref adScript.Output output)
         {
             db.id = refID;
             script.addDatabaseReference(db);
@@ -127,7 +127,7 @@ namespace AbstractData
             return originalString;
         }
 
-        public void parseString(ref string output)
+        public void parseString(ref adScript.Output output)
         {
             string line = originalString;
             //DB Type
@@ -150,13 +150,13 @@ namespace AbstractData
             //TODO: Add RegEx validation
             if (type == dbType.Unknown)
             {
-                output = "The input database type of: " + type + " was not valid";
+                output = new adScript.Output("The input database type of: " + type + " was not valid", true);
             }
             else if(!refString.StartsWith("\"") ||
                     !refString.EndsWith("\""))
             {
                 //Perhaps change this later to accept variables. Not sure if that's needed though.
-                output = "The database assignment only accepts a string value.";
+                output = new adScript.Output("The database assignment only accepts a string value.", true);
             }
         }
 

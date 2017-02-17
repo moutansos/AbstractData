@@ -102,7 +102,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString(ref string output)
+        public void parseString(ref adScript.Output output)
         {
             if (lineString.Contains("=>")) //TODO: Move this into string utils and implement it here and in tableRef
             {
@@ -126,17 +126,17 @@ namespace AbstractData
             }
             else
             {
-                output = "Error: Line was parsed as a dataRef but no reference operator was used.";
+                output = new adScript.Output("Line was parsed as a dataRef but no reference operator was used.", true);
             }
 
             //TODO: Add regex validation
         }
 
-        public void execute(adScript script, ref string output)
+        public void execute(adScript script, ref adScript.Output output)
         {
             if(script.currentTableRef == null)
             {
-                output = "Error: No table reference is set";
+                output = new adScript.Output("No table reference is set", true);
             }
             else
             {

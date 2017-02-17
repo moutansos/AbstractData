@@ -97,12 +97,12 @@ namespace AbstractData
         }
         #endregion
 
-        public void execute(adScript script, ref string output)
+        public void execute(adScript script, ref adScript.Output output)
         {
             output = null;
         }
 
-        public void parseString(ref string output)
+        public void parseString(ref adScript.Output output)
         {
             commentText = original.TrimStart('#');
             output = null;

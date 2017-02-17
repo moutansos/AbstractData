@@ -19,7 +19,7 @@ namespace adTests
 
             //Setup Object
             Comment comment = new Comment(testOriginalString);
-            string output = null;
+            adScript.Output output = null;
             comment.parseString(ref output);
 
             //Check Results

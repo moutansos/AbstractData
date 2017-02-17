@@ -57,13 +57,13 @@ namespace AbstractData
             //Execute Script
             foreach(ILine lineObj in scriptLines)
             {
-                string outputStr = null;
-                lineObj.execute(this, ref outputStr);
+                Output outputObj = null;
+                lineObj.execute(this, ref outputObj);
 
-                if(outputStr != null &&
+                if(outputObj != null &&
                    output != null)
                 {
-                    output(outputStr);
+                    output(outputObj.value);
                 }
             }
 
@@ -88,23 +88,23 @@ namespace AbstractData
             ILine lineObj = getLineObjectForLine(line, -1);
             if(lineObj != null)
             {
-                string outputStr = null;
+                Output outputObj = null;
                 
                 //Parse
-                lineObj.parseString(ref outputStr);
-                if (outputStr != null &&
-                    outputStr != null)
+                lineObj.parseString(ref outputObj);
+                if (outputObj != null &&
+                    output != null)
                 {
-                    output(outputStr); //Send the message to the action
+                    output(outputObj.value); //Send the message to the action
                 }
 
                 //Execute
-                lineObj.execute(this, ref outputStr);
+                lineObj.execute(this, ref outputObj);
 
-                if (outputStr != null &&
-                    outputStr != null)
+                if (outputObj != null &&
+                    outputObj != null)
                 {
-                    output(outputStr); //Send the message to the action
+                    output(outputObj.value); //Send the message to the action
                 }
             }
         }
@@ -261,13 +261,13 @@ namespace AbstractData
                 {
                     ILine lineObject = getLineObjectForLine(line, lineCounter);
 
-                    string outputStr = null;
-                    lineObject.parseString(ref outputStr);
+                    Output outputObj = null;
+                    lineObject.parseString(ref outputObj);
 
-                    if(outputStr != null &&
+                    if(outputObj != null &&
                        output != null)
                     {
-                        output(outputStr); //Send the message to the action
+                        output(outputObj.value); //Send the message to the action
                     }
 
                     if (lineObject != null)
@@ -343,8 +343,20 @@ namespace AbstractData
             #region Constructors
             public Output()
             {
-                error = false;
-                outputString = "";
+                isError = false;
+                value = "";
+            }
+
+            public Output(string message)
+            {
+                isError = false;
+                value = message;
+            }
+
+            public Output(string message, bool isError)
+            {
+                this.isError = isError;
+                value = message;
             }
             #endregion
 

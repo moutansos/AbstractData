@@ -15,7 +15,7 @@ namespace adTests
             //Begin test
             dbRef dbref = new dbRef(testOriginalString);
 
-            string output = null;
+            adScript.Output output = null;
             dbref.parseString(ref output);
 
             //Check

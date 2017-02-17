@@ -16,7 +16,7 @@ namespace adTests
             //Begin test
             tableRef tableRef = new tableRef(testOriginalString);
 
-            string output = null;
+            adScript.Output output = null;
             tableRef.parseString(ref output);
 
             //Check

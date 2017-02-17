@@ -94,7 +94,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString(ref string output)
+        public void parseString(ref adScript.Output output)
         {
             //Eventually use this for returning the string when it is rewritten
             //scriptFile = StringUtils.returnStringInside(lineString, '\"', '\"');
@@ -103,16 +103,17 @@ namespace AbstractData
             scriptFile = StringUtils.returnStringInside(lineString, '(', ')').TrimStart('\"').TrimEnd('\"');
 
             //TODO: Add Regex Validation here
+            output = null;
         }
 
-        public void execute(adScript script, ref string output)
+        public void execute(adScript script, ref adScript.Output output)
         {
             //Perform Checks
             FileInfo info = new FileInfo(scriptFile);
             if (!info.Exists)
             {
                 scriptFile = null;
-                output = "The specified file does not exist.";
+                output = new adScript.Output("The specified file does not exist.", true);
             }
 
             runScript(ref output);
@@ -136,7 +137,7 @@ namespace AbstractData
             }
         }
 
-        public void runScript(ref string output)
+        public void runScript(ref adScript.Output output)
         {
             if (scriptFile != null)
             {

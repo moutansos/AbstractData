@@ -112,7 +112,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void execute(adScript script, ref string output)
+        public void execute(adScript script, ref adScript.Output output)
         {
             if(varType == "Local")
             {
@@ -124,11 +124,11 @@ namespace AbstractData
             }
             else
             {
-                output = "Invalid variable type was set.";
+                output = new adScript.Output("Invalid variable type was set.", true);
             }
         }
 
-        public void parseString(ref string output)
+        public void parseString(ref adScript.Output output)
         {
             int posOfFirstSpace = originalString.IndexOf(' ');
             varType = originalString.Substring(0, posOfFirstSpace);

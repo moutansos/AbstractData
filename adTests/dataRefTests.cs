@@ -15,7 +15,7 @@ namespace adTests
             //Setup Object
             dataRef dataRef = new dataRef(testOriginalString);
 
-            string output = null;
+            adScript.Output output = null;
             dataRef.parseString(ref output);
 
             //Check Results
