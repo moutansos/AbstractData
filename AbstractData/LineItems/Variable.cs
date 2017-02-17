@@ -8,8 +8,6 @@ namespace AbstractData
 {
     public class Variable : ILine
     {
-        private string errorText;
-
         private string varID;
         private string varValue; //Switch to a reference
         private string typeID;
@@ -88,15 +86,6 @@ namespace AbstractData
             set
             {
                 lineString = value;
-            }
-        }
-
-        public bool hasError
-        {
-            get
-            {
-                if (errorText != null) return true;
-                else return false;
             }
         }
         #endregion

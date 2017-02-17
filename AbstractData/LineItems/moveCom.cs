@@ -8,7 +8,6 @@ namespace AbstractData
 {
     class moveCom : ILine
     {
-        private string errorText;
         private string lineString;
         private int line;
         private string moveParams;
@@ -21,15 +20,6 @@ namespace AbstractData
         #endregion
 
         #region Properties
-        public bool hasError
-        {
-            get
-            {
-                if (errorText != null) return true;
-                else return false;
-            }
-        }
-
         public int lineNumber
         {
             get { return line; }

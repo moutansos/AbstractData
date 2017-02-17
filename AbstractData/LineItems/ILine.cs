@@ -11,6 +11,5 @@ namespace AbstractData
         Type type { get; }
         int lineNumber { get; set; }
         string originalString { get; set; }
-        bool hasError { get; }
     }
 }

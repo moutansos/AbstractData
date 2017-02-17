@@ -9,7 +9,6 @@ namespace AbstractData
 {
     class runCom : ILine
     {
-        private string errorText;
         private int line;
         private string lineString;
 
@@ -28,15 +27,6 @@ namespace AbstractData
         #endregion
 
         #region Properties
-        public bool hasError
-        {
-            get
-            {
-                if (errorText != null) return true;
-                else return false;
-            }
-        }
-
         public int lineNumber
         {
             get { return line; }

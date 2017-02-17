@@ -65,14 +65,6 @@ namespace AbstractData
                 original = value;
             }
         }
-
-        public bool hasError
-        {
-            get
-            {
-                return false;
-            }
-        }
         
         public string commentTextString
         {

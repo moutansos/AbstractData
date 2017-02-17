@@ -8,7 +8,6 @@ namespace AbstractData
 {
     public class dbRef : ILine
     {
-        private string errorText;
         private int line;
         private string lineString;
         private string refString;
@@ -53,15 +52,6 @@ namespace AbstractData
         public string cleanReferenceString
         {
             get { return cleanRefString; }
-        }
-
-        public bool hasError
-        {
-            get
-            {
-                if (errorText != null) return true;
-                else return false;
-            }
         }
 
         public int lineNumber
