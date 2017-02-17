@@ -23,6 +23,7 @@ namespace adTests
             comment.parseString(ref output);
 
             //Check Results
+            Assert.IsTrue(output == null || !output.isError);
             Assert.AreEqual(" <<TestText>>", comment.commentTextString);
         }
 

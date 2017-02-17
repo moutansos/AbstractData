@@ -19,6 +19,7 @@ namespace adTests
             dataRef.parseString(ref output);
 
             //Check Results
+            Assert.IsTrue(output == null || !output.isError);
             Assert.AreEqual("\"Test: \" + Column1", dataRef.readReferenceText);
             Assert.AreEqual("B", dataRef.writeAssignmentText);
         }

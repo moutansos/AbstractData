@@ -20,6 +20,7 @@ namespace adTests
             tableRef.parseString(ref output);
 
             //Check
+            Assert.IsTrue(output == null || !output.isError);
             Assert.AreEqual("sqlDb", tableRef.readDbText);
             Assert.AreEqual("Table1", tableRef.readTableText);
             Assert.AreEqual("excelFile", tableRef.writeDbText);

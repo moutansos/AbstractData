@@ -19,6 +19,7 @@ namespace adTests
             var.parseString(ref output);
 
             //Check
+            Assert.IsTrue(output == null || !output.isError);
             Assert.AreEqual("staticVar", var.id);
             Assert.AreEqual("\"Static Variable\"", var.value);
             Assert.AreEqual("Global", var.varType);
