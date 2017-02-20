@@ -104,6 +104,10 @@ namespace AbstractData
             {
                 scriptFile = null;
                 output = new adScript.Output("The specified file does not exist.", true);
+                if (line > 0)
+                {
+                    output.lineNumber = line;
+                }
             }
 
             if (scriptFile != null)

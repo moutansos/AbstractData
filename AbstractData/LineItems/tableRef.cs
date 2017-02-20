@@ -125,6 +125,10 @@ namespace AbstractData
             else
             {
                 output = new adScript.Output("There is no directional operator in the tableRef", true);
+                if (line > 0)
+                {
+                    output.lineNumber = line;
+                }
             }
 
             if (readText.Contains('>'))
@@ -164,6 +168,10 @@ namespace AbstractData
                writeData == null)
             {
                 output = new adScript.Output("Invalid database name. That database hasn't been initialied yet.", true);
+                if (line > 0)
+                {
+                    output.lineNumber = line;
+                }
             }
 
             script.currentTableRef = this;

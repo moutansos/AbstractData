@@ -339,24 +339,28 @@ namespace AbstractData
         {
             private bool error;
             private string outputString;
+            private int line;
 
             #region Constructors
             public Output()
             {
                 isError = false;
                 value = "";
+                line = -1;
             }
 
             public Output(string message)
             {
                 isError = false;
                 value = message;
+                line = -1;
             }
 
             public Output(string message, bool isError)
             {
                 this.isError = isError;
                 value = message;
+                line = -1;
             }
             #endregion
 
@@ -372,6 +376,12 @@ namespace AbstractData
                 get { return (error = false && String.IsNullOrWhiteSpace(outputString)); }
             }
 
+            public int lineNumber
+            {
+                get { return line; }
+                set { line = value; }
+            }
+
             public string value
             {
                 get { return generateValue(); }
@@ -381,9 +391,13 @@ namespace AbstractData
 
             private string generateValue()
             {
-                if (error)
+                if (error && line == -1)
                 {
                     return "Error: " + outputString;
+                }
+                else if(error && line != -1)
+                {
+                    return "Error on line " + line + ": " + outputString;
                 }
                 else
                 {

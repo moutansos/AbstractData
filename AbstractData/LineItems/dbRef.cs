@@ -141,12 +141,20 @@ namespace AbstractData
             if (type == dbType.Unknown)
             {
                 output = new adScript.Output("The input database type of: " + type + " was not valid", true);
+                if (this.line > 0)
+                {
+                    output.lineNumber = this.line;
+                }
             }
             else if(!refString.StartsWith("\"") ||
                     !refString.EndsWith("\""))
             {
                 //Perhaps change this later to accept variables. Not sure if that's needed though.
                 output = new adScript.Output("The database assignment only accepts a string value.", true);
+                if (this.line > 0)
+                {
+                    output.lineNumber = this.line;
+                }
             }
         }
 

@@ -117,6 +117,10 @@ namespace AbstractData
             else
             {
                 output = new adScript.Output("Line was parsed as a dataRef but no reference operator was used.", true);
+                if(line > 0)
+                {
+                    output.lineNumber = line;
+                }
             }
 
             //TODO: Add regex validation
@@ -127,6 +131,10 @@ namespace AbstractData
             if(script.currentTableRef == null)
             {
                 output = new adScript.Output("No table reference is set", true);
+                if (line > 0)
+                {
+                    output.lineNumber = line;
+                }
             }
             else
             {

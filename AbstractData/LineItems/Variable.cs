@@ -114,6 +114,10 @@ namespace AbstractData
             else
             {
                 output = new adScript.Output("Invalid variable type was set.", true);
+                if (line > 0)
+                {
+                    output.lineNumber = line;
+                }
             }
         }
 
