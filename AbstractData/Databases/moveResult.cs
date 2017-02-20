@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AbstractData.Databases
+namespace AbstractData
 {
-    class moveResult
+    public class moveResult
     {
         private long traversal;
         private long moved;
@@ -14,8 +14,8 @@ namespace AbstractData.Databases
         #region Constructors
         public moveResult()
         {
-            traversalCounter = 0;
-            movedCounter = 0;
+            traversal = 0;
+            moved = 0;
         }
         #endregion
 
@@ -23,36 +23,14 @@ namespace AbstractData.Databases
         public long traversalCounter
         {
             get { return traversal; }
-            set
-            {
-                //Only alow increment
-                if (value == traversal + 1)
-                {
-                    traversal = value;
-                }
-                else
-                {
-                    throw new ArgumentException("Invalid assignment to reslut class");
-                }
-            }
         }
 
         public long movedCounter
         {
-            get { return traversal; }
-            set
-            {
-                //Only alow increment
-                if (value == moved + 1)
-                {
-                    moved = value;
-                }
-                else
-                {
-                    throw new ArgumentException("Invalid assignment to reslut class");
-                }
-            }
+            get { return moved; }
         }
+
+        public string resultText => "Traversed " + traversalCounter + " rows and moved " + movedCounter + " rows";
         #endregion
 
         #region Counter Mangement
@@ -70,6 +48,16 @@ namespace AbstractData.Databases
         {
             resetTraversalCounter();
             resetMovedCounter();
+        }
+
+        public void incrementMovedCounter()
+        {
+            moved++;
+        }
+
+        public void incrementTraversalCounter()
+        {
+            traversal++;
         }
         #endregion
 

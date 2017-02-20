@@ -106,7 +106,15 @@ namespace AbstractData
                 output = new adScript.Output("The specified file does not exist.", true);
             }
 
-            runScript(ref output);
+            if (scriptFile != null)
+            {
+                adScript newScript = new adScript(scriptFile);
+                newScript.output = script.output;
+
+                //TODO: Add try statement to this to catch the potential IO errors reading the stream.
+                newScript.runScript();
+                GC.Collect();
+            }
         }
 
         public string generateString()
@@ -124,20 +132,6 @@ namespace AbstractData
             else
             {
                 return false;
-            }
-        }
-
-        public void runScript(ref adScript.Output output)
-        {
-            if (scriptFile != null)
-            {
-                adScript newScript = new adScript(scriptFile);
-
-                //TODO: Add try statement to this to catch the potential IO errors reading the stream.
-                newScript.runScript();
-
-                output = null;
-                GC.Collect();
             }
         }
     }

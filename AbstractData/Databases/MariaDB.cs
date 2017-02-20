@@ -71,7 +71,7 @@ namespace AbstractData
             throw new NotImplementedException();
         }
 
-        public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
         {
             throw new NotImplementedException();
         }

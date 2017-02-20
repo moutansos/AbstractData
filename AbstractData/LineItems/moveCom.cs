@@ -99,10 +99,13 @@ namespace AbstractData
                 tableRef tRef = pack.tableReference;
                 tRef.readDatabase.table = tRef.readTableText;
                 tRef.writeDatabase.table = tRef.writeTableText;
-                tRef.readDatabase.getData(tRef.writeDatabase.addData, pack.references);
+                moveResult result = tRef.readDatabase.getData(tRef.writeDatabase.addData, pack.references);
                 tRef.readDatabase.close();
                 tRef.writeDatabase.close();
-
+                if (script.output != null)
+                {
+                    script.output(result.resultText);
+                }
             }
 
             //Check for errors

@@ -107,8 +107,10 @@ namespace AbstractData
             dataCache.Clear();
         }
 
-        public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
         {
+            moveResult result = new moveResult();
+
             using (TextFieldParser parser = new TextFieldParser(fileName))
             {
                 parser.TextFieldType = FieldType.Delimited;
@@ -124,8 +126,14 @@ namespace AbstractData
                     }
                     newEntry.convertToWriteEntry(dRefs);
                     addData(newEntry);
+
+                    //Increment counters
+                    result.incrementTraversalCounter();
+                    result.incrementMovedCounter(); //TODO: Change this when implementing conditionals
                 }
             }
+
+            return result;
         }
 
         public void close()

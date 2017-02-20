@@ -69,9 +69,10 @@ namespace AbstractData
             }
         }
 
-        public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
         {
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
+            moveResult result = new moveResult();
 
             //Open a Sql Connection
             using (SQLiteConnection conn = new SQLiteConnection(getSQLiteConnectionString()))
@@ -98,11 +99,16 @@ namespace AbstractData
                         //Add the data to the database
                         newEntry.convertToWriteEntry(dRefs);
                         addData(newEntry);
+
+                        //Increment counters
+                        result.incrementTraversalCounter();
+                        result.incrementMovedCounter(); //TODO: Change this when implementing conditionals
                     }
                     reader.Close();
                 }
             }
 
+            return result;
         }
 
         public void writeCache()
