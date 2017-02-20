@@ -118,6 +118,7 @@
     <Compile Include="Databases\DataEntry.cs" />
     <Compile Include="Databases\ExcelFile.cs" />
     <Compile Include="Databases\MariaDB.cs" />
+    <Compile Include="Databases\moveResult.cs" />
     <Compile Include="Databases\PostgreSqlDB.cs" />
     <Compile Include="Databases\SQLiteDB.cs" />
     <Compile Include="Databases\SQLServerDB.cs" />

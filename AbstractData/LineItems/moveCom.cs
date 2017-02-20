@@ -102,6 +102,7 @@ namespace AbstractData
                 tRef.readDatabase.getData(tRef.writeDatabase.addData, pack.references);
                 tRef.readDatabase.close();
                 tRef.writeDatabase.close();
+
             }
 
             //Check for errors
