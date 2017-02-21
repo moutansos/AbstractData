@@ -15,7 +15,11 @@ namespace adTests
             //Begin test
             dbRef dbref = new dbRef(testOriginalString);
 
+            adScript.Output output = null;
+            dbref.parseString(ref output);
+
             //Check
+            Assert.IsTrue(output == null || !output.isError);
             Assert.AreEqual(dbType.SQLServerDB, dbref.databaseType);
             Assert.AreEqual("sqlDb", dbref.referenceID);
             Assert.AreEqual("\"<<connectionString>>\"", dbref.referenceString);

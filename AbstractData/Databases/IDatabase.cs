@@ -14,7 +14,7 @@ namespace AbstractData
         string table { get; set; }
         string refString { get; }
         void addData(DataEntry data);
-        void getData(Action<DataEntry> addData, List<dataRef> dRefs);
+        moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs);
         void close();
     }
 

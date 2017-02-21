@@ -69,9 +69,10 @@ namespace AbstractData
             }
         }
 
-        public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
         {
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
+            moveResult result = new moveResult();
 
             //Open a Sql Connection
             using (SQLiteConnection conn = new SQLiteConnection(getSQLiteConnectionString()))
@@ -98,23 +99,29 @@ namespace AbstractData
                         //Add the data to the database
                         newEntry.convertToWriteEntry(dRefs);
                         addData(newEntry);
+
+                        //Increment counters
+                        result.incrementTraversalCounter();
+                        result.incrementMovedCounter(); //TODO: Change this when implementing conditionals
                     }
                     reader.Close();
                 }
             }
 
+            return result;
         }
 
         public void writeCache()
         {
             if (dataEntryCache.Count > 0)
             {
+                DataTable schemaTable = getSchemaTable();
+                Dictionary<string, Type> columnTypes = getColumnTypes(schemaTable);
+
                 using (SQLiteConnection conn = new SQLiteConnection(getSQLiteConnectionString()))
                 {
-                    DataTable schemaTable = getSchemaTable();
-                    Dictionary<string, Type> columnTypes = getColumnTypes(schemaTable);
-
                     conn.Open();
+                    SQLiteTransaction transaction = conn.BeginTransaction();
 
                     foreach (DataEntry data in dataEntryCache)
                     {
@@ -124,6 +131,7 @@ namespace AbstractData
                             cmd.ExecuteNonQuery();
                         }
                     }
+                    transaction.Commit();
                 }
 
                 //Reset the cache

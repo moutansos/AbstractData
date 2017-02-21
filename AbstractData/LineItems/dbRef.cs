@@ -8,7 +8,6 @@ namespace AbstractData
 {
     public class dbRef : ILine
     {
-        private string errorText;
         private int line;
         private string lineString;
         private string refString;
@@ -55,15 +54,6 @@ namespace AbstractData
             get { return cleanRefString; }
         }
 
-        public bool hasError
-        {
-            get
-            {
-                if (errorText != null) return true;
-                else return false;
-            }
-        }
-
         public int lineNumber
         {
             get { return line; }
@@ -94,7 +84,6 @@ namespace AbstractData
             set
             {
                 lineString = value;
-                parseString();
             }
         }
 
@@ -105,7 +94,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void execute(adScript script)
+        public void execute(adScript script, ref adScript.Output output)
         {
             db.id = refID;
             script.addDatabaseReference(db);
@@ -128,29 +117,49 @@ namespace AbstractData
             return originalString;
         }
 
-        public void parseString()
+        public void parseString(ref adScript.Output output)
         {
             string line = originalString;
             //DB Type
             int posOfFirstSpace = line.IndexOf(' ');
-            string typeString = line.Substring(0, posOfFirstSpace).Trim(); //Verify the math on this one
+            string typeString = line.Substring(0, posOfFirstSpace).Trim();
             dbType type = getDbType(typeString);
 
             //Ref ID
             int posOfEquals = line.IndexOf('=');
-            refID = line.Substring(posOfFirstSpace, posOfEquals - posOfFirstSpace).Trim(); //This one too
+            refID = line.Substring(posOfFirstSpace, posOfEquals - posOfFirstSpace).Trim();
 
             //Ref String
-            refString = line.Substring(posOfEquals + 1, line.Length - (posOfEquals + 1)).Trim(); //Again, this one too
+            refString = line.Substring(posOfEquals + 1, line.Length - (posOfEquals + 1)).Trim();
             cleanRefString = refString.Trim('\"');
 
             //Get the database
             db = getDatabase(type);
+
+            //Error Checking
+            //TODO: Add RegEx validation
+            if (type == dbType.Unknown)
+            {
+                output = new adScript.Output("The input database type of: " + type + " was not valid", true);
+                if (this.line > 0)
+                {
+                    output.lineNumber = this.line;
+                }
+            }
+            else if(!refString.StartsWith("\"") ||
+                    !refString.EndsWith("\""))
+            {
+                //Perhaps change this later to accept variables. Not sure if that's needed though.
+                output = new adScript.Output("The database assignment only accepts a string value.", true);
+                if (this.line > 0)
+                {
+                    output.lineNumber = this.line;
+                }
+            }
         }
 
         public static bool isDbRef(string candidateString)
         {
-            //TODO: Add RegEx validation
             if(candidateString.StartsWith(ExcelFile.idInScript) ||
                candidateString.StartsWith(CSVFile.idInScript) ||
                candidateString.StartsWith(AccessDB.idInScript) ||
@@ -197,7 +206,7 @@ namespace AbstractData
             }
             else
             {
-                throw new ArgumentException("The input database type of: " + type + " was not valid");
+                return dbType.Unknown;
             }
         }
 

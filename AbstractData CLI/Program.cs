@@ -15,6 +15,7 @@ namespace AbstractData_CLI
 
             bool console = true;
             adScript interp = new adScript();
+            interp.output = Output; //Assign somewhere for the output to go
 
             while (console)
             {
@@ -27,6 +28,11 @@ namespace AbstractData_CLI
                 }
                 interp.runLine(input);
             }
+        }
+
+        static void Output(string msg)
+        {
+            Console.WriteLine(msg);
         }
     }
 }

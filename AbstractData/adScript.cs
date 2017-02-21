@@ -9,7 +9,6 @@ namespace AbstractData
     public class adScript
     {
         System.IO.StreamReader dataStream;
-        //TODO: Setup an output stream for sending ouptut data from the scripts
         //TODO: Add a script command for printing to the output/log
 
         private List<Variable> globalVariablesList;
@@ -18,7 +17,7 @@ namespace AbstractData
         private tableRef curTableRef;
         private List<dataRef> curDataReferences;
 
-        //An action for handling output
+        //An action for handling output - Set by the user of the library
         public Action<string> output;
 
         #region Constructors
@@ -53,12 +52,30 @@ namespace AbstractData
             databaseReferenceList = new List<IDatabase>();
             #endregion
 
-            List<ILine> scriptLines = parseLines(dataStream);
+            bool errorFound = false;
 
-            //Execute Script
-            foreach(ILine lineObj in scriptLines)
+            List<ILine> scriptLines = parseLines(dataStream, ref errorFound);
+
+            if (!errorFound)
             {
-                lineObj.execute(this);
+                //Execute Script
+                foreach (ILine lineObj in scriptLines)
+                {
+                    Output outputObj = null;
+                    lineObj.execute(this, ref outputObj);
+
+                    if (outputObj != null &&
+                       output != null)
+                    {
+                        output(outputObj.value);
+                    }
+
+                    if(outputObj != null && outputObj.isError)
+                    {
+                        errorFound = true;
+                        break;
+                    }
+                }
             }
 
 
@@ -82,7 +99,28 @@ namespace AbstractData
             ILine lineObj = getLineObjectForLine(line, -1);
             if(lineObj != null)
             {
-                lineObj.execute(this);
+                Output outputObj = null;
+                
+                //Parse
+                lineObj.parseString(ref outputObj);
+                if (outputObj != null &&
+                    output != null)
+                {
+                    output(outputObj.value); //Send the message to the action
+                }
+
+                //Execute if no error
+                if(outputObj == null ||
+                   !outputObj.isError)
+                {
+                    lineObj.execute(this, ref outputObj);
+                }
+
+                if (outputObj != null &&
+                    output != null)
+                {
+                    output(outputObj.value); //Send the message to the action
+                }
             }
         }
 
@@ -225,22 +263,41 @@ namespace AbstractData
             return lineObject;
         }
 
-        private static List<ILine> parseLines(System.IO.StreamReader stream)
+        private List<ILine> parseLines(System.IO.StreamReader stream, ref bool errorFound)
         {
             //Parse Script
             int lineCounter = 1;
 
             string line;
             List<ILine> scriptLines = new List<ILine>();
-            while ((line = stream.ReadLine()) != null) //Parse in file and set up structures
+            while ((line = stream.ReadLine()) != null &&
+                   !errorFound) //Parse in file and set up structures as long as there isn't an error
             {
                 if (!string.IsNullOrWhiteSpace(line))
                 {
                     ILine lineObject = getLineObjectForLine(line, lineCounter);
 
-                    if (lineObject != null)
+                    Output outputObj = null;
+                    lineObject.parseString(ref outputObj);
+
+                    if(output != null && 
+                       outputObj != null && 
+                       outputObj.isError) //Check for an error
                     {
-                        scriptLines.Add(lineObject);
+                        errorFound = true;
+                    }
+                    else
+                    {
+                        if (outputObj != null &&
+                            output != null)
+                        {
+                            output(outputObj.value); //Send the message to the action
+                        }
+
+                        if (lineObject != null)
+                        {
+                            scriptLines.Add(lineObject);
+                        }
                     }
                 }
                 lineCounter++;
@@ -302,5 +359,76 @@ namespace AbstractData
             get { return curDataReferences; }
         }
         #endregion
+
+        public class Output
+        {
+            private bool error;
+            private string outputString;
+            private int line;
+
+            #region Constructors
+            public Output()
+            {
+                isError = false;
+                value = "";
+                line = -1;
+            }
+
+            public Output(string message)
+            {
+                isError = false;
+                value = message;
+                line = -1;
+            }
+
+            public Output(string message, bool isError)
+            {
+                this.isError = isError;
+                value = message;
+                line = -1;
+            }
+            #endregion
+
+            #region Properties
+            public bool isError
+            {
+                get { return error; }
+                set { error = value; }
+            }
+
+            public bool isEmpty
+            {
+                get { return (error = false && String.IsNullOrWhiteSpace(outputString)); }
+            }
+
+            public int lineNumber
+            {
+                get { return line; }
+                set { line = value; }
+            }
+
+            public string value
+            {
+                get { return generateValue(); }
+                set { outputString = value; }
+            }
+            #endregion
+
+            private string generateValue()
+            {
+                if (error && line == -1)
+                {
+                    return "Error: " + outputString;
+                }
+                else if(error && line != -1)
+                {
+                    return "Error on line " + line + ": " + outputString;
+                }
+                else
+                {
+                    return outputString;
+                }
+            }
+        }
     }
 }

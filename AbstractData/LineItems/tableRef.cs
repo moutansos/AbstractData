@@ -8,7 +8,6 @@ namespace AbstractData
 {
     public class tableRef : ILine
     {
-        private string errorText;
         private int line;
         private string lineString;
 
@@ -36,15 +35,6 @@ namespace AbstractData
         #endregion
 
         #region Properties
-        public bool hasError
-        {
-            get
-            {
-                if (errorText != null) return true;
-                else return false;
-            }
-        }
-
         public int lineNumber
         {
             get { return line; }
@@ -74,7 +64,6 @@ namespace AbstractData
             set
             {
                 lineString = value;
-                parseString();
             }
         }
 
@@ -114,7 +103,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString()
+        public void parseString(ref adScript.Output output)
         {
             string innerTableRef = StringUtils.returnStringInside(lineString, '(', ')');
             string readText = string.Empty;
@@ -135,7 +124,11 @@ namespace AbstractData
             }
             else
             {
-                throw new ArgumentException("There is no directional operator in the tableRef");
+                output = new adScript.Output("There is no directional operator in the tableRef", true);
+                if (line > 0)
+                {
+                    output.lineNumber = line;
+                }
             }
 
             if (readText.Contains('>'))
@@ -159,9 +152,13 @@ namespace AbstractData
             {
                 writeDb = writeText;
             }
+
+            //TODO: Add RegEx validation
+
+            output = null;
         }
 
-        public void execute(adScript script)
+        public void execute(adScript script, ref adScript.Output output)
         {
             script.clearDataRefs();
             readData = script.getDatabase(readDb);
@@ -170,7 +167,11 @@ namespace AbstractData
             if(readData == null ||
                writeData == null)
             {
-                throw new ArgumentException("Invalid database name. That database hasn't been initialied yet.");
+                output = new adScript.Output("Invalid database name. That database hasn't been initialied yet.", true);
+                if (line > 0)
+                {
+                    output.lineNumber = line;
+                }
             }
 
             script.currentTableRef = this;
@@ -194,7 +195,6 @@ namespace AbstractData
 
         public static bool isTableRef(string line)
         {
-            //TODO: Add RegEx validation
             if (line.StartsWith("tableReference"))
             {
                 return true;

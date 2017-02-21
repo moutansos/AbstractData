@@ -9,7 +9,6 @@ namespace AbstractData
 {
     class runCom : ILine
     {
-        private string errorText;
         private int line;
         private string lineString;
 
@@ -28,15 +27,6 @@ namespace AbstractData
         #endregion
 
         #region Properties
-        public bool hasError
-        {
-            get
-            {
-                if (errorText != null) return true;
-                else return false;
-            }
-        }
-
         public int lineNumber
         {
             get { return line; }
@@ -66,7 +56,6 @@ namespace AbstractData
             set
             {
                 lineString = value;
-                parseString();
             }
         }
 
@@ -95,20 +84,41 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString()
+        public void parseString(ref adScript.Output output)
         {
             //Eventually use this for returning the string when it is rewritten
             //scriptFile = StringUtils.returnStringInside(lineString, '\"', '\"');
 
             //For now use this
             scriptFile = StringUtils.returnStringInside(lineString, '(', ')').TrimStart('\"').TrimEnd('\"');
+
+            //TODO: Add Regex Validation here
+            output = null;
         }
 
-        public void execute(adScript script)
+        public void execute(adScript script, ref adScript.Output output)
         {
-            adScript newScript = new adScript(scriptFile);
-            newScript.runScript();
-            GC.Collect();
+            //Perform Checks
+            FileInfo info = new FileInfo(scriptFile);
+            if (!info.Exists)
+            {
+                scriptFile = null;
+                output = new adScript.Output("The specified file does not exist.", true);
+                if (line > 0)
+                {
+                    output.lineNumber = line;
+                }
+            }
+
+            if (scriptFile != null)
+            {
+                adScript newScript = new adScript(scriptFile);
+                newScript.output = script.output;
+
+                //TODO: Add try statement to this to catch the potential IO errors reading the stream.
+                newScript.runScript();
+                GC.Collect();
+            }
         }
 
         public string generateString()
@@ -119,7 +129,6 @@ namespace AbstractData
 
         public static bool isARunCom(string line)
         {
-            //Add Regex Validation here
             if (line.StartsWith("run("))
             {
                 return true;

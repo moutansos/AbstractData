@@ -102,8 +102,10 @@ namespace AbstractData
             }
         }
 
-        public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
         {
+            moveResult result = new moveResult();
+
             List<string> columnsToGet = dataRef.getColumnsForRefs(dRefs);
             if(currentWorkbook == null)
             {
@@ -129,7 +131,13 @@ namespace AbstractData
                 }
                 newEntry.convertToWriteEntry(dRefs);
                 addData(newEntry);
+
+                //Increment counters
+                result.incrementTraversalCounter();
+                result.incrementMovedCounter(); //TODO: Change this when implementing conditionals
             }
+
+            return result;
         }
 
         public void close()

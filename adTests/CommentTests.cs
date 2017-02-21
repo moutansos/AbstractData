@@ -19,8 +19,11 @@ namespace adTests
 
             //Setup Object
             Comment comment = new Comment(testOriginalString);
+            adScript.Output output = null;
+            comment.parseString(ref output);
 
             //Check Results
+            Assert.IsTrue(output == null || !output.isError);
             Assert.AreEqual(" <<TestText>>", comment.commentTextString);
         }
 

@@ -8,8 +8,6 @@ namespace AbstractData
 {
     public class Variable : ILine
     {
-        private string errorText;
-
         private string varID;
         private string varValue; //Switch to a reference
         private string typeID;
@@ -88,16 +86,6 @@ namespace AbstractData
             set
             {
                 lineString = value;
-                parseString();
-            }
-        }
-
-        public bool hasError
-        {
-            get
-            {
-                if (errorText != null) return true;
-                else return false;
             }
         }
         #endregion
@@ -113,7 +101,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void execute(adScript script)
+        public void execute(adScript script, ref adScript.Output output)
         {
             if(varType == "Local")
             {
@@ -125,11 +113,15 @@ namespace AbstractData
             }
             else
             {
-                throw new ArgumentException("INTERNAL ERROR: Invalid variable type was set");
+                output = new adScript.Output("Invalid variable type was set.", true);
+                if (line > 0)
+                {
+                    output.lineNumber = line;
+                }
             }
         }
 
-        public void parseString()
+        public void parseString(ref adScript.Output output)
         {
             int posOfFirstSpace = originalString.IndexOf(' ');
             varType = originalString.Substring(0, posOfFirstSpace);
@@ -137,6 +129,9 @@ namespace AbstractData
             varID = varAndId.Split('=')[0].Trim();
             value = varAndId.Split('=')[1].Trim();
             varID = StringUtils.returnStringInside(varID, '{', '}');
+
+            //TODO: Add RegEx Validation
+            output = null;
         }
 
         public string generateString()
@@ -145,10 +140,8 @@ namespace AbstractData
             return originalString;
         }
 
-        #region Static Utils
         public static bool isVar(string line)
         {
-            //TODO: Add Regex Validation
             if (line.StartsWith("Global") ||
                 line.StartsWith("Local"))
             {
@@ -159,6 +152,5 @@ namespace AbstractData
                 return false;
             }
         }
-        #endregion
     }
 }

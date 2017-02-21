@@ -8,7 +8,6 @@ namespace AbstractData
 {
     public class dataRef : ILine
     {
-        private string errorText;
         private int line;
         private string lineString;
 
@@ -30,15 +29,6 @@ namespace AbstractData
         #endregion
 
         #region Properties
-        public bool hasError
-        {
-            get
-            {
-                if (errorText != null) return true;
-                else return false;
-            }
-        }
-
         public int lineNumber
         {
             get { return line; }
@@ -68,7 +58,6 @@ namespace AbstractData
             set
             {
                 lineString = value;
-                parseString();
             }
         }
 
@@ -103,7 +92,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString()
+        public void parseString(ref adScript.Output output)
         {
             if (lineString.Contains("=>")) //TODO: Move this into string utils and implement it here and in tableRef
             {
@@ -127,16 +116,31 @@ namespace AbstractData
             }
             else
             {
-                throw new ArgumentException("Error: Line was parsed as a dataRef but no reference operator was used.");
+                output = new adScript.Output("Line was parsed as a dataRef but no reference operator was used.", true);
+                if(line > 0)
+                {
+                    output.lineNumber = line;
+                }
             }
+
+            //TODO: Add regex validation
         }
 
-        public void execute(adScript script)
+        public void execute(adScript script, ref adScript.Output output)
         {
-            //TODO: Add checks to see if there is any table referenced currently. Throw error if otherwise
-            tableRef = script.currentTableRef; //Grab the table reference
-
-            script.addDataRef(this);
+            if(script.currentTableRef == null)
+            {
+                output = new adScript.Output("No table reference is set", true);
+                if (line > 0)
+                {
+                    output.lineNumber = line;
+                }
+            }
+            else
+            {
+                tableRef = script.currentTableRef; //Grab the table reference
+                script.addDataRef(this);
+            }
         }
 
         public string generateString()
@@ -147,7 +151,6 @@ namespace AbstractData
 
         public static bool isDataRef(string line)
         {
-            //TODO: Add regex validation
             //TODO: Convert to an all but inside quotes and then check.
             if(line.Contains("<=") ||
                line.Contains("=>"))

@@ -101,10 +101,12 @@ namespace AbstractData
             //throw new NotImplementedException();
         }
 
-        public void getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
         {
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
             string connectionString = getConnectionString(fileName);
+            moveResult result = new moveResult();
+
             if(connectionString == null)
             {
                 throw new ArgumentException("The provided access file name was invalid");
@@ -135,10 +137,16 @@ namespace AbstractData
                         //Add the data to the database
                         newEntry.convertToWriteEntry(dRefs);
                         addData(newEntry);
+
+                        //Increment counters
+                        result.incrementTraversalCounter();
+                        result.incrementMovedCounter(); //TODO: Change this when implementing conditionals
                     }
                     reader.Close();
                 }
             }
+
+            return result;
         }
 
         public void close()
