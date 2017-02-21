@@ -115,12 +115,13 @@ namespace AbstractData
         {
             if (dataEntryCache.Count > 0)
             {
+                DataTable schemaTable = getSchemaTable();
+                Dictionary<string, Type> columnTypes = getColumnTypes(schemaTable);
+
                 using (SQLiteConnection conn = new SQLiteConnection(getSQLiteConnectionString()))
                 {
-                    DataTable schemaTable = getSchemaTable();
-                    Dictionary<string, Type> columnTypes = getColumnTypes(schemaTable);
-
                     conn.Open();
+                    SQLiteTransaction transaction = conn.BeginTransaction();
 
                     foreach (DataEntry data in dataEntryCache)
                     {
@@ -130,6 +131,7 @@ namespace AbstractData
                             cmd.ExecuteNonQuery();
                         }
                     }
+                    transaction.Commit();
                 }
 
                 //Reset the cache
