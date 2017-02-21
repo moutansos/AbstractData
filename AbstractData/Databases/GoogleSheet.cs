@@ -6,71 +6,78 @@ using System.Threading.Tasks;
 
 namespace AbstractData
 {
-    class GoogleSheet : IDatabase
+    public class GoogleSheet : IDatabase
     {
+        public const string idInScript = "GoogleSheet";
+        private const int cacheLimit = 5000;
+
+        private string ID;
+        private string refStr;
+        private string tableName;
+
+        private List<DataEntry> dataEntryCache;
+
+        #region Constructors
+        public GoogleSheet(string refStr)
+        {
+            dataEntryCache = new List<DataEntry>();
+            this.refStr = refStr;
+        }
+        #endregion
+
         #region Properites
         public string id
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get { return ID; }
+            set { ID = value; }
         }
 
         public bool isMultiTable
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return true; }
         }
 
         public string refString
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return refStr; }
         }
 
         public string table
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
+            get { return tableName; }
             set
             {
-                throw new NotImplementedException();
+                writeCache();
+                tableName = value;
             }
         }
 
         public dbType type
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return dbType.GoogleSheet; }
         }
         #endregion
 
+        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        {
+            throw new NotImplementedException();
+        }
+
         public void addData(DataEntry data)
+        {
+            dataEntryCache.Add(data);
+            if (dataEntryCache.Count > cacheLimit)
+            {
+                writeCache();
+            }
+        }
+
+        public void writeCache()
         {
             throw new NotImplementedException();
         }
 
         public void close()
-        {
-            throw new NotImplementedException();
-        }
-
-        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
         {
             throw new NotImplementedException();
         }
