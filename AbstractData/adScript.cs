@@ -52,18 +52,29 @@ namespace AbstractData
             databaseReferenceList = new List<IDatabase>();
             #endregion
 
-            List<ILine> scriptLines = parseLines(dataStream);
+            bool errorFound = false;
 
-            //Execute Script
-            foreach(ILine lineObj in scriptLines)
+            List<ILine> scriptLines = parseLines(dataStream, ref errorFound);
+
+            if (!errorFound)
             {
-                Output outputObj = null;
-                lineObj.execute(this, ref outputObj);
-
-                if(outputObj != null &&
-                   output != null)
+                //Execute Script
+                foreach (ILine lineObj in scriptLines)
                 {
-                    output(outputObj.value);
+                    Output outputObj = null;
+                    lineObj.execute(this, ref outputObj);
+
+                    if (outputObj != null &&
+                       output != null)
+                    {
+                        output(outputObj.value);
+                    }
+
+                    if(outputObj != null && outputObj.isError)
+                    {
+                        errorFound = true;
+                        break;
+                    }
                 }
             }
 
@@ -98,11 +109,15 @@ namespace AbstractData
                     output(outputObj.value); //Send the message to the action
                 }
 
-                //Execute
-                lineObj.execute(this, ref outputObj);
+                //Execute if no error
+                if(outputObj == null ||
+                   !outputObj.isError)
+                {
+                    lineObj.execute(this, ref outputObj);
+                }
 
                 if (outputObj != null &&
-                    outputObj != null)
+                    output != null)
                 {
                     output(outputObj.value); //Send the message to the action
                 }
@@ -248,14 +263,15 @@ namespace AbstractData
             return lineObject;
         }
 
-        private List<ILine> parseLines(System.IO.StreamReader stream)
+        private List<ILine> parseLines(System.IO.StreamReader stream, ref bool errorFound)
         {
             //Parse Script
             int lineCounter = 1;
 
             string line;
             List<ILine> scriptLines = new List<ILine>();
-            while ((line = stream.ReadLine()) != null) //Parse in file and set up structures
+            while ((line = stream.ReadLine()) != null &&
+                   !errorFound) //Parse in file and set up structures as long as there isn't an error
             {
                 if (!string.IsNullOrWhiteSpace(line))
                 {
@@ -264,15 +280,24 @@ namespace AbstractData
                     Output outputObj = null;
                     lineObject.parseString(ref outputObj);
 
-                    if(outputObj != null &&
-                       output != null)
+                    if(output != null && 
+                       outputObj != null && 
+                       outputObj.isError) //Check for an error
                     {
-                        output(outputObj.value); //Send the message to the action
+                        errorFound = true;
                     }
-
-                    if (lineObject != null)
+                    else
                     {
-                        scriptLines.Add(lineObject);
+                        if (outputObj != null &&
+                            output != null)
+                        {
+                            output(outputObj.value); //Send the message to the action
+                        }
+
+                        if (lineObject != null)
+                        {
+                            scriptLines.Add(lineObject);
+                        }
                     }
                 }
                 lineCounter++;
