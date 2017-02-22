@@ -149,7 +149,7 @@
     <Compile Include="Databases\CSVFile.cs" />
     <Compile Include="Databases\DataEntry.cs" />
     <Compile Include="Databases\ExcelFile.cs" />
-    <Compile Include="Databases\GoogleSheet.cs" />
+    <Compile Include="Databases\GoogleSheets.cs" />
     <Compile Include="Databases\MariaDB.cs" />
     <Compile Include="Databases\moveResult.cs" />
     <Compile Include="Databases\PostgreSqlDB.cs" />
