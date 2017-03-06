@@ -22,7 +22,7 @@ namespace AbstractData
     {
         ExcelFile,
         CSVFile,
-        GoogleSheet,
+        GoogleSheets,
         AccessDB,
         SQLServerDB,
         PostgreSqlDB,

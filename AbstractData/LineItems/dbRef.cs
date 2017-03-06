@@ -131,7 +131,18 @@ namespace AbstractData
 
             //Ref String
             refString = line.Substring(posOfEquals + 1, line.Length - (posOfEquals + 1)).Trim();
-            cleanRefString = refString.Trim('\"');
+            if(refString.StartsWith("\"") || refString.EndsWith("\""))
+            {
+                cleanRefString = refString.Trim('\"');
+            }
+            else if (refString.ToLower().StartsWith("new"))
+            {
+                parseConstructorRef(refString, ref output); // Provides parsing for the constructor syntax
+            }
+            else
+            {
+                output = new adScript.Output("The reference string for the database: " + refID + " is invalid", true);
+            }
 
             //Get the database
             db = getDatabase(type);
@@ -240,6 +251,10 @@ namespace AbstractData
             {
                 return SQLiteDB.idInScript;
             }
+            else if(type == dbType.GoogleSheets)
+            {
+                return GoogleSheets.idInScript;
+            }
             else
             {
                 throw new Exception("Fatal Exception: Internal error reading database type");
@@ -276,11 +291,34 @@ namespace AbstractData
             {
                 return new SQLiteDB(cleanRefString);
             }
+            else if(type == dbType.GoogleSheets)
+            {
+                return new GoogleSheets(refString); //Return the unclean one for google sheets
+            }
             else
             {
                 throw new Exception("Fatal Exception: Internal error reading database type");
             }
 
+        }
+
+        public void parseConstructorRef(string refString, ref adScript.Output output)
+        {
+            int posOfFirstSpace = refString.IndexOf(' ');
+            int posOfFirstParenth = refString.IndexOf('(');
+            int posOfLastParenth = refString.LastIndexOf(')');
+            string constructorType = refString.Substring(posOfFirstSpace, refString.Length - posOfFirstSpace - posOfFirstParenth); //TODO: Check if this is right
+            string innerVars = refString.Substring(posOfFirstParenth, refString.Length - posOfFirstParenth - posOfLastParenth); //TODO: Check this too
+            if (constructorType != getDbType(databaseType))
+            {
+                output = new adScript.Output("The database types in the dbRef do not match");
+            }
+            else
+            {
+                //Continue with the parsing
+                string cleanInnerVars = StringUtils.returnAllButInside(innerVars, '\"', '\"');
+                
+            }
         }
     }
 }

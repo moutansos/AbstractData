@@ -46,21 +46,42 @@ namespace AbstractData
         }
 
         public static string returnAllButInside(string masterString, char start, char end)
-        { //TODO: Finish this
-            string returnString = "";
-            bool replaceInside = false;
-            for (int i = 0; i < masterString.Length; i++)
+        {
+            //Replace escaped quotes
+            while (masterString.Contains("\\\""))
             {
-                if (!replaceInside && masterString[i] == start)
-                {
-                    replaceInside = true;
-                }
-                else if (replaceInside && masterString[i] == end)
-                {
+                masterString = masterString.Replace("\\\"", "  ");
+            }
 
+            string newString = "";
+            bool spaceChars = false;
+            for(int i = 0; i < masterString.Length; i++)
+            {
+                if (spaceChars == false &&
+                    masterString[i] == start)
+                {
+                    newString = newString + masterString[i];
+                    spaceChars = true;
+                }
+                else if(spaceChars == true &&
+                          masterString[i] != end)
+                {
+                    newString = newString + ' ';
+                }
+                else if(spaceChars == true &&
+                          masterString[i] == end)
+                {
+                    newString = newString + masterString[i];
+                    spaceChars = false;
+                }
+                else
+                {
+                    newString = newString + masterString[i];
                 }
             }
-            return "";
+
+            return newString;
+
         }
     }
 }

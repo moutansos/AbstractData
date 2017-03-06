@@ -1,4 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Sheets.v4;
+using Google.Apis.Sheets.v4.Data;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -18,12 +23,15 @@ namespace AbstractData
 
         private string ID;
         private string refStr;
-        private string tableName;
+        private string tableRange;
 
-        private string apiKey; //The api key for the google sheets user
-        private string sheetUrl; //The shared url of the sheet
+        private string sheetUrl; //The url of the sheet
         private string sheetId; //The id for the spreadsheet
-
+        private UserCredential credential;
+        private string clientSecretFile;
+        private string clientCredentialFile;
+        private static string[] Scopes = { SheetsService.Scope.Spreadsheets };
+        private const string ApplicationName = "AbstractData";
 
         private List<DataEntry> dataEntryCache;
 
@@ -59,17 +67,17 @@ namespace AbstractData
 
         public string table
         {
-            get { return tableName; }
+            get { return tableRange; }
             set
             {
                 writeCache();
-                tableName = value;
+                tableRange = value;
             }
         }
 
         public dbType type
         {
-            get { return dbType.GoogleSheet; }
+            get { return dbType.GoogleSheets; }
         }
         #endregion
 
@@ -77,38 +85,60 @@ namespace AbstractData
         {
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
             moveResult result = new moveResult();
-            string jsonString = string.Empty;
-            string url = buildReadRequestURL();
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.AutomaticDecompression = DecompressionMethods.GZip;
+            UserCredential credential;
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
+            using (var stream =
+                new FileStream(clientSecretFile, FileMode.Open, FileAccess.Read))
             {
-                jsonString = reader.ReadToEnd();
+                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    GoogleClientSecrets.Load(stream).Secrets,
+                    Scopes,
+                    "user",
+                    CancellationToken.None,
+                    new FileDataStore(clientCredentialFile, true)).Result;
+                Console.WriteLine("Credential file saved to: " + clientCredentialFile);
             }
 
-            SheetsData data = JsonConvert.DeserializeObject<SheetsData>(jsonString);
-
-            foreach(List<string> row in data.values)
+            // Create Google Sheets API service.
+            var service = new SheetsService(new BaseClientService.Initializer()
             {
-                DataEntry newEntry = new DataEntry();
-                foreach (string column in readColumns)
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName,
+            });
+
+            // Define request parameters.
+            SpreadsheetsResource.ValuesResource.GetRequest request = service.Spreadsheets.Values.Get(sheetId, tableRange);
+
+            ValueRange response = request.Execute();
+            IList<IList<Object>> values = response.Values;
+            if (values != null && values.Count > 0) //If there is any data to read
+            {
+                foreach (var row in values)
                 {
-                    string dataToGet = row[getColumn(column)];
-                    newEntry.addField(column, dataToGet);
+                    DataEntry newEntry = new DataEntry();
+                    foreach(var column in readColumns)
+                    {
+                        string dataToGet = "";
+                        try
+                        {
+                            dataToGet = row[convertColumnToIndex(column)].ToString();
+                        }
+                        catch(IndexOutOfRangeException) // If the value doesn't exist then leave it blank
+                        {
+                            //PASS
+                        }
+                        newEntry.addField(column, dataToGet);
+                    }
+                    //Add the entry to the database
+                    newEntry.convertToWriteEntry(dRefs);
+                    addData(newEntry);
+
+                    //Increment counters
+                    result.incrementTraversalCounter();
+                    result.incrementMovedCounter(); //TODO: Change this when implementing conditionals
                 }
-                //Add the data to the database
-                newEntry.convertToWriteEntry(dRefs);
-                addData(newEntry);
-
-                //Increment counters
-                result.incrementTraversalCounter();
-                result.incrementMovedCounter(); //TODO: Change this when implementing conditionals
             }
-
             return result;
         }
 
@@ -123,7 +153,10 @@ namespace AbstractData
 
         public void writeCache()
         {
-            throw new NotImplementedException();
+            if(dataEntryCache.Count > 0)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public void close()
@@ -131,46 +164,21 @@ namespace AbstractData
             writeCache();
         }
 
-        #region Parsing Methods
-        private void parseRefStr()
+        private static int convertColumnToIndex(string columnName)
         {
-            throw new NotImplementedException();
-        }
+            if (string.IsNullOrEmpty(columnName)) throw new ArgumentNullException("The column name is invalid");
 
-        private void parseUrlString()
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
+            columnName = columnName.ToUpperInvariant();
 
-        public string getReadRange()
-        {
-            //TODO: Check to make sure table name is valid
-            return tableName + "!A:Z";
-        }
+            int sum = 0;
 
-        public string buildReadRequestURL()
-        {
-            //TODO: Check sheetId, readrange and apikey for validity
-            return @"https://sheets.googleapis.com/v4/spreadsheets/" + sheetId + @"/values/" + getReadRange() + @"?key=" + apiKey;
-        }
+            for (int i = 0; i < columnName.Length; i++)
+            {
+                sum *= 26;
+                sum += (columnName[i] - 'A' + 1);
+            }
 
-        public int getColumn(string c)
-        {
-            c = c.Trim();
-            return getColumn(c[0]);
-        }
-
-        public int getColumn(char c)
-        {
-            return char.ToUpper(c) - 65; //startIndex == 0
-        }
-
-        public class SheetsData
-        {
-            public string range { get; set; }
-            public string majorDimension { get; set; }
-            public List<List<string>> values { get; set; }
+            return sum;
         }
     }
 }
