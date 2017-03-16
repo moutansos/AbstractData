@@ -83,5 +83,60 @@ namespace AbstractData
             return newString;
 
         }
+
+        public static List<string> splitOnAllButInside(string masterString, char charToSplitOn, char startOfExlusion, char endOfExclusion)
+        {
+            List<string> returnSplit = new List<string>();
+            string cleanMasterString = returnAllButInside(masterString, startOfExlusion, endOfExclusion);
+            int numberOfSplitChars = cleanMasterString.Where(a => a == charToSplitOn).Count(); //Get the total number of split characters
+            int numberOfTerms = numberOfSplitChars + 1;
+            int indexOfPreviousSplitVar = 0;
+            for (int i = 0; i < numberOfTerms; i++)
+            {
+                int indexOfNextSplitVar = cleanMasterString.IndexOf(charToSplitOn, indexOfPreviousSplitVar);
+                if(indexOfNextSplitVar == -1)
+                {
+                    returnSplit.Add(masterString.Substring(indexOfPreviousSplitVar, masterString.Length - indexOfPreviousSplitVar));
+                }
+                else
+                {
+                    string newString = masterString.Substring(indexOfPreviousSplitVar, indexOfNextSplitVar - indexOfPreviousSplitVar);
+                    returnSplit.Add(newString);
+                    indexOfPreviousSplitVar = indexOfNextSplitVar + 1;
+                }
+            }
+            return returnSplit;
+        }
+
+        public class constructorVals
+        {
+            private Dictionary<string, reference> vals;
+
+            public constructorVals()
+            {
+                vals = new Dictionary<string, reference>();
+            }
+
+            public void addVal(string value, string textFromScript)
+            {
+                addVal(value, new reference(textFromScript));
+            }
+
+            public void addVal(string value, reference dataref)
+            {
+                vals.Add(value, dataref); 
+            }
+
+            public void removeVal(string value)
+            {
+                vals.Remove(value);
+            }
+
+            public string evaluate(string value)
+            {
+                reference data = vals[value];
+                return null;
+            }
+        }
     }
 }

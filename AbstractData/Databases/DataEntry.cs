@@ -21,26 +21,15 @@ namespace AbstractData
             return fields;
         }
 
-        public void convertToWriteEntry(List<dataRef> dRefs)
+        public void convertToWriteEntry(List<dataRef> dRefs, adScript script, ref adScript.Output output )
         {
             List<Field> newFields = new List<Field>();
             foreach(dataRef dRef in dRefs)
             {
-                string dataVal = "";
-                foreach(string field in dRef.readReference.allFields)
+                string dataVal = dRef.readReference.evalReference(this, script, ref output);
+                if(output != null && output.isError)
                 {
-                    if(field.StartsWith("\"") && field.EndsWith("\""))
-                    {
-                        dataVal = dataVal + field.TrimStart('\"').TrimEnd('\"');
-                    }
-                    else if(getField(field) == null)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        dataVal = dataVal + getField(field).data;
-                    }
+                    break; //Break execution on error
                 }
                 Field newField = new Field(dRef.writeAssignmentText, dataVal);
                 newFields.Add(newField);

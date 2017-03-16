@@ -3,16 +3,10 @@ using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace AbstractData
 {
@@ -81,7 +75,10 @@ namespace AbstractData
         }
         #endregion
 
-        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry> addData, 
+                                  List<dataRef> dRefs,
+                                  adScript script,
+                                  ref adScript.Output output)
         {
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
             moveResult result = new moveResult();
@@ -131,7 +128,7 @@ namespace AbstractData
                         newEntry.addField(column, dataToGet);
                     }
                     //Add the entry to the database
-                    newEntry.convertToWriteEntry(dRefs);
+                    newEntry.convertToWriteEntry(dRefs, script, ref output);
                     addData(newEntry);
 
                     //Increment counters

@@ -107,7 +107,10 @@ namespace AbstractData
             dataCache.Clear();
         }
 
-        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry> addData, 
+                                  List<dataRef> dRefs,
+                                  adScript script,
+                                  ref adScript.Output output)
         {
             moveResult result = new moveResult();
 
@@ -124,7 +127,7 @@ namespace AbstractData
                     {
                         newEntry.addField(i.ToString(), fields[i]);
                     }
-                    newEntry.convertToWriteEntry(dRefs);
+                    newEntry.convertToWriteEntry(dRefs, script, ref output);
                     addData(newEntry);
 
                     //Increment counters

@@ -9,7 +9,7 @@ namespace AbstractData
     public class Variable : ILine
     {
         private string varID;
-        private string varValue; //Switch to a reference
+        private string varValue;
         private string typeID;
         private int line;
 

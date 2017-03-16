@@ -71,7 +71,10 @@ namespace AbstractData
             throw new NotImplementedException();
         }
 
-        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry> addData, 
+                                  List<dataRef> dRefs,
+                                  adScript script,
+                                  ref adScript.Output output)
         {
             throw new NotImplementedException();
         }

@@ -69,7 +69,10 @@ namespace AbstractData
             }
         }
 
-        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry> addData, 
+                                  List<dataRef> dRefs,
+                                  adScript script,
+                                  ref adScript.Output output)
         {
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
             moveResult result = new moveResult();
@@ -97,7 +100,7 @@ namespace AbstractData
                             newEntry.addField(column, dataToGet);
                         }
                         //Add the data to the database
-                        newEntry.convertToWriteEntry(dRefs);
+                        newEntry.convertToWriteEntry(dRefs, script, ref output);
                         addData(newEntry);
 
                         //Increment counters

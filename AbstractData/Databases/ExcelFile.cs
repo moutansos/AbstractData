@@ -102,7 +102,10 @@ namespace AbstractData
             }
         }
 
-        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry> addData, 
+                                  List<dataRef> dRefs,
+                                  adScript script,
+                                  ref adScript.Output output)
         {
             moveResult result = new moveResult();
 
@@ -129,7 +132,7 @@ namespace AbstractData
                     ClosedXML.Excel.IXLCell cell = currentRow.Cell(column);
                     newEntry.addField(column, cell.GetValue<string>());
                 }
-                newEntry.convertToWriteEntry(dRefs);
+                newEntry.convertToWriteEntry(dRefs, script, ref output);
                 addData(newEntry);
 
                 //Increment counters

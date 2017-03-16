@@ -14,7 +14,10 @@ namespace AbstractData
         string table { get; set; }
         string refString { get; }
         void addData(DataEntry data);
-        moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs);
+        moveResult getData(Action<DataEntry> addData, 
+                           List<dataRef> dRefs,
+                           adScript script,
+                           ref adScript.Output output);
         void close();
     }
 
