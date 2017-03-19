@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -108,7 +109,7 @@ namespace AbstractData
             return returnSplit;
         }
 
-        public class constructorVals
+        public class constructorVals : IEnumerable<KeyValuePair<string, reference>>
         {
             private Dictionary<string, reference> vals;
 
@@ -117,13 +118,27 @@ namespace AbstractData
                 vals = new Dictionary<string, reference>();
             }
 
+            public constructorVals(string varsString)
+            {
+                vals = new Dictionary<string, reference>();
+                parseValString(varsString);
+            }
+
+            public reference this[string key]
+            {
+                get { return vals[key.Trim()]; }
+                set { vals[key.Trim()] = value; }
+            }
+
             public void addVal(string value, string textFromScript)
             {
-                addVal(value, new reference(textFromScript));
+                value = value.Trim();
+                addVal(value, new reference(textFromScript.Trim()));
             }
 
             public void addVal(string value, reference dataref)
             {
+                value = value.Trim();
                 vals.Add(value, dataref); 
             }
 
@@ -137,6 +152,28 @@ namespace AbstractData
                 reference data = vals[value];
                 return null;
             }
+
+            public void parseValString(string valsIn)
+            {
+                List<string> valStrings = splitOnAllButInside(valsIn, ',', '\"', '\"');
+                foreach(string val in valStrings)
+                {
+                    string[] valSplit = splitOnAllButInside(val, '=', '\"', '\"').ToArray();
+                    addVal(valSplit[0], new reference(valSplit[1].Trim()));
+                }
+            }
+
+            #region Enumerator Interface
+            public IEnumerator<KeyValuePair<string, reference>> GetEnumerator()
+            {
+                return vals.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return vals.GetEnumerator();
+            }
+            #endregion
         }
     }
 }

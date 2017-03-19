@@ -27,5 +27,17 @@ namespace adTests
             Assert.AreEqual(" test1 = \"This is a test 2\"", split[1]);
             Assert.AreEqual(" test3 = \"This is a test 3\"", split[2]);
         }
+
+        [TestMethod]
+        public void constructorValsParseTest()
+        {
+            string masterString = "test = \"This is a test 1\", test1 = \"This is a test 2\", test3 = \"This is a test 3\"";
+
+            StringUtils.constructorVals vals = new StringUtils.constructorVals(masterString);
+
+            Assert.AreEqual("\"This is a test 1\"", vals["test"].originalString);
+            Assert.AreEqual("\"This is a test 2\"", vals["test1"].originalString);
+            Assert.AreEqual("\"This is a test 3\"", vals["test3"].originalString);
+        }
     }
 }
