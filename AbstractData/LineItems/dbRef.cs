@@ -15,6 +15,7 @@ namespace AbstractData
 
         private IDatabase db;
         private string refID;
+        StringUtils.constructorVals constructorVals;
 
         #region Constructor
         public dbRef(string original)
@@ -293,7 +294,10 @@ namespace AbstractData
             }
             else if(type == dbType.GoogleSheets)
             {
-                return new GoogleSheets(refString); //Return the unclean one for google sheets
+                //TODO: Figure out how to manage if these are in error.
+                reference clientSecretPath = constructorVals["secretPath"];
+                reference credPath = constructorVals["credPath"];
+                return new GoogleSheets(credPath, clientSecretPath); //Return the unclean one for google sheets
             }
             else
             {
@@ -316,7 +320,11 @@ namespace AbstractData
             else
             {
                 //Continue with the parsing
-                string cleanInnerVars = StringUtils.returnAllButInside(innerVars, '\"', '\"');
+                StringUtils.constructorVals vals = new StringUtils.constructorVals(innerVars);
+                foreach(var val in vals)
+                {
+
+                }
                 
             }
         }

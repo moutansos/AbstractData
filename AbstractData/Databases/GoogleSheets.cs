@@ -21,24 +21,19 @@ namespace AbstractData
 
         private string sheetUrl; //The url of the sheet
         private string sheetId; //The id for the spreadsheet
-        private UserCredential credential;
-        private string clientSecretFile;
-        private string clientCredentialFile;
+        private reference clientSecretFile;
+        private reference clientCredentialFile;
         private static string[] Scopes = { SheetsService.Scope.Spreadsheets };
         private const string ApplicationName = "AbstractData";
 
         private List<DataEntry> dataEntryCache;
 
         #region Constructors
-        public GoogleSheets(string refStr)
+        public GoogleSheets(reference credPath, reference secretPath)
         {
             dataEntryCache = new List<DataEntry>();
-            this.refStr = refStr;
-
-            //Setup credential path
-            string credPath = Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
-            credPath = Path.Combine(credPath, ".credentials/sheets.googleapis.com-abstractdata.json");
-
+            clientSecretFile = secretPath;
+            clientCredentialFile = clientCredentialFile;
         }
         #endregion
 
@@ -83,17 +78,19 @@ namespace AbstractData
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
             moveResult result = new moveResult();
 
+            string secretFile = clientSecretFile.evalReference(null, script, ref output);
+            string credFile = clientCredentialFile.evalReference(null, script, ref output);
+
             UserCredential credential;
 
-            using (var stream =
-                new FileStream(clientSecretFile, FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream(secretFile, FileMode.Open, FileAccess.Read))
             {
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.Load(stream).Secrets,
                     Scopes,
                     "user",
                     CancellationToken.None,
-                    new FileDataStore(clientCredentialFile, true)).Result;
+                    new FileDataStore(credFile, true)).Result;
                 Console.WriteLine("Credential file saved to: " + clientCredentialFile);
             }
 
