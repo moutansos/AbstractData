@@ -17,12 +17,13 @@ namespace AbstractData
         private string ID;
 
         private string tableName;
-        private string connectionString;
+        private reference connectionString;
+        private string connStr;
 
         List<DataEntry> dataEntryCache;
 
         #region Constructors
-        public SQLServerDB(string connectionString)
+        public SQLServerDB(reference connectionString)
         {
             dataEntryCache = new List<DataEntry>();
             this.connectionString = connectionString;
@@ -52,7 +53,7 @@ namespace AbstractData
 
         public string refString
         {
-            get { return connectionString; }
+            get { return connectionString.originalString; }
         }
 
         public string id
@@ -62,11 +63,13 @@ namespace AbstractData
         }
         #endregion
 
-        public void addData(DataEntry data)
+        public void addData(DataEntry data,
+                            adScript script)
         {
             dataEntryCache.Add(data);
             if(dataEntryCache.Count > cacheLimit)
             {
+                evalConnectionString(script);
                 writeCache();
             }
         }
@@ -75,7 +78,7 @@ namespace AbstractData
         {
             if(dataEntryCache.Count > 0)
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(connStr))
                 {
                     conn.Open();
                     using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
@@ -126,16 +129,17 @@ namespace AbstractData
             return newData;
         }
 
-        public moveResult getData(Action<DataEntry> addData, 
+        public moveResult getData(Action<DataEntry, adScript> addData, 
                                   List<dataRef> dRefs,
                                   adScript script,
                                   ref adScript.Output output)
         {
+            evalConnectionString(script);
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
             moveResult result = new moveResult();
 
             //Open a Sql Connection
-            using(SqlConnection conn = new SqlConnection(connectionString))
+            using(SqlConnection conn = new SqlConnection(connStr))
             {
                 conn.Open();
                 string sqlCommandText = "SELECT  ";
@@ -177,7 +181,7 @@ namespace AbstractData
                         }
                         //Add the data to the database
                         newEntry.convertToWriteEntry(dRefs, script, ref output);
-                        addData(newEntry);
+                        addData(newEntry, script);
 
                         //Increment counters
                         result.incrementTraversalCounter();
@@ -188,6 +192,11 @@ namespace AbstractData
             }
             return result;   
         }
-    }
-}
 
+        private void evalConnectionString(adScript script)
+        {
+            adScript.Output output = null;
+            connStr = connectionString.evalReference(null, script, ref output);
+        }
+    } 
+}

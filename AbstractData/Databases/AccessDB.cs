@@ -16,14 +16,14 @@ namespace AbstractData
         private const int cacheLimit = 5000;
 
         private string ID;
-
-        private string fileName;
+        private reference fileName;
+        private string connectionString;
         private string tableName;
 
         List<DataEntry> dataEntryCache;
 
         #region Constructors
-        public AccessDB(string file)
+        public AccessDB(reference file)
         {
             dataEntryCache = new List<DataEntry>();
             fileName = file;
@@ -44,7 +44,7 @@ namespace AbstractData
 
         public string refString
         {
-            get { return fileName; }
+            get { return fileName.originalString; }
         }
 
         public string table
@@ -63,20 +63,20 @@ namespace AbstractData
         }
         #endregion
 
-        public void addData(DataEntry data)
+        public void addData(DataEntry data,
+                            adScript script)
         {
             dataEntryCache.Add(data);
             if (dataEntryCache.Count > cacheLimit)
             {
+                evaluateConnectionString(script);
                 writeCache();
             }
         }
 
         public void writeCache()
         {
-            string connectionString = getConnectionString(fileName);
-
-            if (dataEntryCache.Count > 0)
+            if (dataEntryCache.Count > 0 && connectionString != null)
             {
                 using (OleDbConnection conn = new OleDbConnection(connectionString))
                 {
@@ -101,13 +101,13 @@ namespace AbstractData
             //throw new NotImplementedException();
         }
 
-        public moveResult getData(Action<DataEntry> addData, 
+        public moveResult getData(Action<DataEntry, adScript> addData, 
                                   List<dataRef> dRefs, 
                                   adScript script, 
                                   ref adScript.Output output)
         {
+            evaluateConnectionString(script);
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
-            string connectionString = getConnectionString(fileName);
             moveResult result = new moveResult();
 
             if(connectionString == null)
@@ -139,7 +139,7 @@ namespace AbstractData
                         }
                         //Add the data to the database
                         newEntry.convertToWriteEntry(dRefs, script, ref output);
-                        addData(newEntry);
+                        addData(newEntry, script);
 
                         //Increment counters
                         result.incrementTraversalCounter();
@@ -159,6 +159,7 @@ namespace AbstractData
 
         private static string getConnectionString(string file)
         {
+            //TODO: Move the file exists logic to evaluateConnectionString method as to allow for output
             FileInfo fileInfo = new FileInfo(file);
             if (fileInfo.Exists)
             {
@@ -262,6 +263,12 @@ namespace AbstractData
             }
 
             return typeDict;
+        }
+
+        private void evaluateConnectionString(adScript script)
+        {
+            adScript.Output output = null;
+            connectionString = getConnectionString(fileName.evalReference(null, script, ref output));
         }
     }
 }

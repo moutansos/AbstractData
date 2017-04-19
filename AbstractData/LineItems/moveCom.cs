@@ -58,7 +58,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString(ref adScript.Output output)
+        public void parseString(adScript script, ref adScript.Output output)
         {
             moveParams = StringUtils.returnStringInside(lineString, '(', ')');
 

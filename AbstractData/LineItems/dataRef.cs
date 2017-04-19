@@ -92,7 +92,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString(ref adScript.Output output)
+        public void parseString(adScript script, ref adScript.Output output)
         {
             if (lineString.Contains("=>")) //TODO: Move this into string utils and implement it here and in tableRef
             {

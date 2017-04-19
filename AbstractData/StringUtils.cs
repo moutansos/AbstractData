@@ -142,14 +142,15 @@ namespace AbstractData
                 vals.Add(value, dataref); 
             }
 
-            public void removeVal(string value)
+            public void removeVal(string key)
             {
-                vals.Remove(value);
+                vals.Remove(key);
             }
 
-            public string evaluate(string value)
+            public string evaluate(string key, adScript script, ref adScript.Output output)
             {
-                reference data = vals[value];
+                reference data = vals[key];
+                data.evalReference(null, script, ref output);
                 return null;
             }
 

@@ -121,7 +121,7 @@ namespace AbstractData
             }
         }
 
-        public void parseString(ref adScript.Output output)
+        public void parseString(adScript script, ref adScript.Output output)
         {
             int posOfFirstSpace = originalString.IndexOf(' ');
             varType = originalString.Substring(0, posOfFirstSpace);

@@ -22,7 +22,9 @@ namespace AbstractData
         private string sheetUrl; //The url of the sheet
         private string sheetId; //The id for the spreadsheet
         private reference clientSecretFile;
+        private string secretFile;
         private reference clientCredentialFile;
+        private string credFile;
         private static string[] Scopes = { SheetsService.Scope.Spreadsheets };
         private const string ApplicationName = "AbstractData";
 
@@ -33,7 +35,7 @@ namespace AbstractData
         {
             dataEntryCache = new List<DataEntry>();
             clientSecretFile = secretPath;
-            clientCredentialFile = clientCredentialFile;
+            clientCredentialFile = credPath;
         }
         #endregion
 
@@ -70,7 +72,7 @@ namespace AbstractData
         }
         #endregion
 
-        public moveResult getData(Action<DataEntry> addData, 
+        public moveResult getData(Action<DataEntry, adScript> addData, 
                                   List<dataRef> dRefs,
                                   adScript script,
                                   ref adScript.Output output)
@@ -78,8 +80,7 @@ namespace AbstractData
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
             moveResult result = new moveResult();
 
-            string secretFile = clientSecretFile.evalReference(null, script, ref output);
-            string credFile = clientCredentialFile.evalReference(null, script, ref output);
+
 
             UserCredential credential;
 
@@ -126,7 +127,7 @@ namespace AbstractData
                     }
                     //Add the entry to the database
                     newEntry.convertToWriteEntry(dRefs, script, ref output);
-                    addData(newEntry);
+                    addData(newEntry, script);
 
                     //Increment counters
                     result.incrementTraversalCounter();
@@ -136,7 +137,8 @@ namespace AbstractData
             return result;
         }
 
-        public void addData(DataEntry data)
+        public void addData(DataEntry data,
+                            adScript script)
         {
             dataEntryCache.Add(data);
             if (dataEntryCache.Count > cacheLimit)
@@ -173,6 +175,13 @@ namespace AbstractData
             }
 
             return sum;
+        }
+
+        private void evalInputRefs(adScript script)
+        {
+            adScript.Output output = null;
+            secretFile = clientSecretFile.evalReference(null, script, ref output);
+            credFile = clientCredentialFile.evalReference(null, script, ref output);
         }
     }
 }

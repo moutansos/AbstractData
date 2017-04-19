@@ -102,7 +102,7 @@ namespace AbstractData
                 Output outputObj = null;
                 
                 //Parse
-                lineObj.parseString(ref outputObj);
+                lineObj.parseString(this, ref outputObj);
                 if (outputObj != null &&
                     output != null)
                 {
@@ -278,7 +278,7 @@ namespace AbstractData
                     ILine lineObject = getLineObjectForLine(line, lineCounter);
 
                     Output outputObj = null;
-                    lineObject.parseString(ref outputObj);
+                    lineObject.parseString(this, ref outputObj);
 
                     if(output != null && 
                        outputObj != null && 

@@ -15,13 +15,14 @@ namespace AbstractData
         private const int cacheLimit = 5000;
 
         private string ID;
-        private string connectionString;
+        private reference connectionString;
+        private string conStr;
         private string tableName;
 
         private List<DataEntry> dataEntryCache;
 
         #region Constructors
-        public PostgreSqlDB(string connectionString)
+        public PostgreSqlDB(reference connectionString)
         {
             dataEntryCache = new List<DataEntry>();
             this.connectionString = connectionString;
@@ -42,7 +43,7 @@ namespace AbstractData
 
         public string refString
         {
-            get { return connectionString; }
+            get { return connectionString.originalString; }
         }
 
         public string table
@@ -61,7 +62,7 @@ namespace AbstractData
         }
         #endregion
 
-        public moveResult getData(Action<DataEntry> addData, 
+        public moveResult getData(Action<DataEntry, adScript> addData, 
                                   List<dataRef> dRefs,
                                   adScript script,
                                   ref adScript.Output output)
@@ -69,8 +70,10 @@ namespace AbstractData
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
             moveResult result = new moveResult();
 
+            conStr = connectionString.evalReference(null, script, ref output);
+
             //Open a Sql Connection
-            using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+            using (NpgsqlConnection conn = new NpgsqlConnection(conStr))
             {
                 conn.Open();
                 string sqlCommandText = "SELECT  ";
@@ -93,7 +96,7 @@ namespace AbstractData
                         }
                         //Add the data to the database
                         newEntry.convertToWriteEntry(dRefs, script, ref output);
-                        addData(newEntry);
+                        addData(newEntry, script);
 
                         //Increment counters
                         result.incrementTraversalCounter();
@@ -105,22 +108,25 @@ namespace AbstractData
             return result;
         }
 
-        public void addData(DataEntry data)
+        public void addData(DataEntry data,
+                            adScript script)
         {
             dataEntryCache.Add(data);
             if (dataEntryCache.Count > cacheLimit)
             {
+                adScript.Output output = null;
+                conStr = connectionString.evalReference(null, script, ref output);
                 writeCache();
             }
         }
 
         public void writeCache()
         {
-            if (dataEntryCache.Count > 0)
+            if (dataEntryCache.Count > 0 && conStr != null)
             {
-                using (NpgsqlConnection conn = new NpgsqlConnection(connectionString))
+                using (NpgsqlConnection conn = new NpgsqlConnection(conStr))
                 {
-                    DataTable schemaTable = getSchemaTable();
+                    DataTable schemaTable = getSchemaTable(conStr);
                     Dictionary<string, Type> columnTypes = getColumnTypes(schemaTable);
 
                     conn.Open();
@@ -145,10 +151,10 @@ namespace AbstractData
             writeCache();
         }
 
-        private DataTable getSchemaTable()
+        private DataTable getSchemaTable(string conStr)
         {
             NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM \"" + tableName + "\"");
-            using (NpgsqlConnection newConn = new NpgsqlConnection(connectionString))
+            using (NpgsqlConnection newConn = new NpgsqlConnection(conStr))
             {
                 newConn.Open();
                 cmd.Connection = newConn;

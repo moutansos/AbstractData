@@ -61,7 +61,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void addData(DataEntry data)
+        public void addData(DataEntry data, adScript script)
         {
             throw new NotImplementedException();
         }
@@ -71,7 +71,7 @@ namespace AbstractData
             throw new NotImplementedException();
         }
 
-        public moveResult getData(Action<DataEntry> addData, 
+        public moveResult getData(Action<DataEntry, adScript> addData, 
                                   List<dataRef> dRefs,
                                   adScript script,
                                   ref adScript.Output output)
