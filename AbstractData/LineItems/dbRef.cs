@@ -150,8 +150,7 @@ namespace AbstractData
                     output.lineNumber = this.line;
                 }
             }
-            else if(!referenceString.StartsWith("\"") ||
-                    !referenceString.EndsWith("\"") ||
+            else if(!(referenceString.StartsWith("\"") && referenceString.EndsWith("\"")) &&
                     !referenceString.StartsWith("new"))
             {
                 //Perhaps change this later to accept variables. Not sure if that's needed though.
