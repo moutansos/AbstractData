@@ -170,7 +170,8 @@ namespace AbstractData
                candidateString.StartsWith(SQLServerDB.idInScript) ||
                candidateString.StartsWith(PostgreSqlDB.idInScript) ||
                candidateString.StartsWith("MariaDB") ||
-               candidateString.StartsWith(SQLiteDB.idInScript))
+               candidateString.StartsWith(SQLiteDB.idInScript) ||
+               candidateString.StartsWith(GoogleSheets.idInScript))
             {
                 return true;
             }
@@ -344,7 +345,8 @@ namespace AbstractData
                 {
                     reference clientSecretPath = constructorVals["secretPath"];
                     reference credPath = constructorVals["credPath"];
-                    return new GoogleSheets(credPath, clientSecretPath); //Return the unclean one for google sheets
+                    reference id = constructorVals["id"];
+                    return new GoogleSheets(id, credPath, clientSecretPath); //Return the unclean one for google sheets
                 }
                 else
                 {
@@ -364,8 +366,8 @@ namespace AbstractData
             int posOfFirstSpace = refString.IndexOf(' ');
             int posOfFirstParenth = refString.IndexOf('(');
             int posOfLastParenth = refString.LastIndexOf(')');
-            string constructorType = refString.Substring(posOfFirstSpace, refString.Length - posOfFirstSpace - posOfFirstParenth); //TODO: Check if this is right
-            string innerVars = refString.Substring(posOfFirstParenth, refString.Length - posOfFirstParenth - posOfLastParenth); //TODO: Check this too
+            string constructorType = refString.Substring(posOfFirstSpace + 1, refString.Length - (posOfLastParenth - posOfFirstParenth) - posOfFirstSpace - 2); //TODO: Check if this is right
+            string innerVars = refString.Substring(posOfFirstParenth + 1, posOfLastParenth - posOfFirstParenth - 1); //TODO: Check this too
             if (constructorType != getDbType(databaseType))
             {
                 output = new adScript.Output("The database types in the dbRef do not match");

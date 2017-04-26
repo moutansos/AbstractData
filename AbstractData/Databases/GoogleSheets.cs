@@ -19,7 +19,7 @@ namespace AbstractData
         private string refStr;
         private string tableRange;
 
-        private string sheetUrl; //The url of the sheet
+        private reference sheetIdRef;
         private string sheetId; //The id for the spreadsheet
         private reference clientSecretFile;
         private string secretFile;
@@ -31,11 +31,12 @@ namespace AbstractData
         private List<DataEntry> dataEntryCache;
 
         #region Constructors
-        public GoogleSheets(reference credPath, reference secretPath)
+        public GoogleSheets(reference sheetIdRef, reference credPath, reference secretPath)
         {
             dataEntryCache = new List<DataEntry>();
             clientSecretFile = secretPath;
             clientCredentialFile = credPath;
+            this.sheetIdRef = sheetIdRef;
         }
         #endregion
 
@@ -77,10 +78,9 @@ namespace AbstractData
                                   adScript script,
                                   ref adScript.Output output)
         {
+            evalInputRefs(script);
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
             moveResult result = new moveResult();
-
-
 
             UserCredential credential;
 
@@ -143,6 +143,7 @@ namespace AbstractData
             dataEntryCache.Add(data);
             if (dataEntryCache.Count > cacheLimit)
             {
+                evalInputRefs(script);
                 writeCache();
             }
         }
@@ -182,6 +183,19 @@ namespace AbstractData
             adScript.Output output = null;
             secretFile = clientSecretFile.evalReference(null, script, ref output);
             credFile = clientCredentialFile.evalReference(null, script, ref output);
+            sheetId = clientCredentialFile.evalReference(null, script, ref output);
+            sheetId = parseSheetIdFromURL(sheetId);
+        }
+
+        private static string parseSheetIdFromURL(string input)
+        {
+            if(Uri.IsWellFormedUriString(input, UriKind.Absolute))
+            {
+                Uri url = new Uri(input);
+                string id = url.Segments[2];
+                return id.TrimEnd('/');
+            }
+            return input;
         }
     }
 }
