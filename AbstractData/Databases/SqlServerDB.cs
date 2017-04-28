@@ -66,10 +66,14 @@ namespace AbstractData
         public void addData(DataEntry data,
                             adScript script)
         {
+            if(connStr == null)
+            {
+                evalConnectionString(script);
+            }
+
             dataEntryCache.Add(data);
             if(dataEntryCache.Count > cacheLimit)
             {
-                evalConnectionString(script);
                 writeCache();
             }
         }

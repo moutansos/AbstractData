@@ -128,7 +128,10 @@ namespace AbstractData
             string varAndId = originalString.Substring(posOfFirstSpace, originalString.Length - posOfFirstSpace); //this too
             varID = varAndId.Split('=')[0].Trim();
             value = varAndId.Split('=')[1].Trim();
-            varID = StringUtils.returnStringInside(varID, '{', '}');
+            if(varID.StartsWith("{") && varID.EndsWith("}"))
+            {
+                varID = StringUtils.returnStringInside(varID, '{', '}');
+            }
 
             //TODO: Add RegEx Validation
             output = null;

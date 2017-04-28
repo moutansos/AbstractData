@@ -183,7 +183,7 @@ namespace AbstractData
             adScript.Output output = null;
             secretFile = clientSecretFile.evalReference(null, script, ref output);
             credFile = clientCredentialFile.evalReference(null, script, ref output);
-            sheetId = clientCredentialFile.evalReference(null, script, ref output);
+            sheetId = sheetIdRef.evalReference(null, script, ref output);
             sheetId = parseSheetIdFromURL(sheetId);
         }
 
@@ -192,7 +192,7 @@ namespace AbstractData
             if(Uri.IsWellFormedUriString(input, UriKind.Absolute))
             {
                 Uri url = new Uri(input);
-                string id = url.Segments[2];
+                string id = url.Segments[3];
                 return id.TrimEnd('/');
             }
             return input;

@@ -110,6 +110,8 @@ namespace AbstractData
                     output = new adScript.Output("The variable name " + varID + " is undefined.", true);
                     return null; //Break if error
                 }
+
+                dataVal = dataVal + evalField(varVal, dataIn, script, ref output);
             }
             else if (dataIn == null ||
                      dataIn.getField(field) == null) //Pass if there is no data found

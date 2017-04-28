@@ -192,7 +192,12 @@ namespace AbstractData
 
         public string getGlobalVarString(string varID)
         {
-            return getGlobalVariable(varID).value;
+            Variable var = getGlobalVariable(varID);
+            if (var != null)
+            {
+                return var.value;
+            }
+            return null;
         }
 
         public Variable getLocalVariable(string varID)
@@ -210,7 +215,12 @@ namespace AbstractData
 
         public string getLocalVarString(string varID)
         {
-            return getLocalVariable(varID).value;
+            Variable var = getLocalVariable(varID);
+            if(var != null)
+            {
+                return var.value;
+            }
+            return null;
         }
         #endregion
 

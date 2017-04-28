@@ -111,6 +111,11 @@ namespace AbstractData
         public void addData(DataEntry data,
                             adScript script)
         {
+            if(conStr == null)
+            {
+                adScript.Output output = null;
+                conStr = connectionString.evalReference(null, script, ref output);
+            }
             dataEntryCache.Add(data);
             if (dataEntryCache.Count > cacheLimit)
             {

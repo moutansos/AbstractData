@@ -209,6 +209,10 @@ namespace AbstractData
             {
                 return dbType.SQLiteDB;
             }
+            else if(type == GoogleSheets.idInScript)
+            {
+                return dbType.GoogleSheets;
+            }
             else
             {
                 return dbType.Unknown;
@@ -368,7 +372,7 @@ namespace AbstractData
             int posOfLastParenth = refString.LastIndexOf(')');
             string constructorType = refString.Substring(posOfFirstSpace + 1, refString.Length - (posOfLastParenth - posOfFirstParenth) - posOfFirstSpace - 2); //TODO: Check if this is right
             string innerVars = refString.Substring(posOfFirstParenth + 1, posOfLastParenth - posOfFirstParenth - 1); //TODO: Check this too
-            if (constructorType != getDbType(databaseType))
+            if (getDbType(constructorType) == dbType.Unknown)
             {
                 output = new adScript.Output("The database types in the dbRef do not match");
             }

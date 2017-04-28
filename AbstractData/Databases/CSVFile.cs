@@ -88,9 +88,13 @@ namespace AbstractData
             }
             dataCache.Add(CSVLine);
 
-            if(dataCache.Count > cacheLimit)
+            if(file == null)
             {
                 evalFileName(script);
+            }
+
+            if(dataCache.Count > cacheLimit)
+            {
                 writeCache();
             }
             
@@ -98,16 +102,19 @@ namespace AbstractData
 
         public void writeCache()
         {
-            using (TextWriter writer = new StreamWriter(file, true))
+            if(dataCache.Count > 0)
             {
-                foreach(string line in dataCache)
+                using (TextWriter writer = new StreamWriter(file, true))
                 {
-                    writer.WriteLine(line);
+                    foreach (string line in dataCache)
+                    {
+                        writer.WriteLine(line);
+                    }
+                    writer.Close();
                 }
-                writer.Close();
-            }
 
-            dataCache.Clear();
+                dataCache.Clear();
+            }
         }
 
         public moveResult getData(Action<DataEntry, adScript> addData, 

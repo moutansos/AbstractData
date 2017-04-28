@@ -67,9 +67,14 @@ namespace AbstractData
                             adScript script)
         {
             dataEntryCache.Add(data);
-            if (dataEntryCache.Count > cacheLimit)
+
+            if(connectionString != null)
             {
                 evaluateConnectionString(script);
+            }
+
+            if (dataEntryCache.Count > cacheLimit)
+            {
                 writeCache();
             }
         }
