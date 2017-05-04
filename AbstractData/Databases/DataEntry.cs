@@ -16,7 +16,7 @@ namespace AbstractData
             fields.Add(newField);
         }
 
-        public IEnumerable<Field> getFields()
+        public List<Field> getFields()
         {
             return fields;
         }
