@@ -68,7 +68,7 @@ namespace AbstractData
         {
             dataEntryCache.Add(data);
 
-            if(connectionString != null)
+            if(connectionString == null)
             {
                 evaluateConnectionString(script);
             }
@@ -250,10 +250,14 @@ namespace AbstractData
         private DataTable getSchemaTable(OleDbConnection conn)
         {
             OleDbCommand cmd = new OleDbCommand("SELECT * FROM " + tableName);
-            cmd.Connection = conn;
-            OleDbDataReader reader = cmd.ExecuteReader(CommandBehavior.KeyInfo);
-            DataTable schemaTable = reader.GetSchemaTable();
-            return schemaTable;
+            using (OleDbConnection newConn = new OleDbConnection(conn.ConnectionString))
+            {
+                newConn.Open();
+                cmd.Connection = newConn;
+                OleDbDataReader reader = cmd.ExecuteReader(CommandBehavior.KeyInfo);
+                DataTable schemaTable = reader.GetSchemaTable();
+                return schemaTable;
+            }
         }
 
         private Dictionary<string, Type> getColumnTypes(DataTable schemaTable)
