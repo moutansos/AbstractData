@@ -3,7 +3,7 @@
 # AbstractData
 AbstractData is a C# library and scripting language built to move data from one place to another.
 
-Project Status: Under Development - Interpreter and basic string data is working
+Project Status: Under Development - scripts and console are working. Basic string data is the only data type attempted. 
 
 ## What sort of data formats are compatible?
 Currently the only thing in testing is text only. Some data adaption has been implemented but it is far from complete.
@@ -11,7 +11,7 @@ Currently the only thing in testing is text only. Some data adaption has been im
 - Excel Files  
 - CSV Files  
 - SQLite Databases  
-- TODO: Google Sheets  
+- Google Sheets  
 - TODO: Access Databases  
 - TODO: PostgreSql Databases  
 - TODO: MariaDB Databases  
