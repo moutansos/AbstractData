@@ -16,7 +16,7 @@ namespace adTests
             dataRef dataRef = new dataRef(testOriginalString);
 
             adScript.Output output = null;
-            dataRef.parseString(ref output);
+            dataRef.parseString(new adScript(), ref output);
 
             //Check Results
             Assert.IsTrue(output == null || !output.isError);

@@ -16,7 +16,7 @@ namespace adTests
             Variable var = new Variable(testOriginalString);
 
             adScript.Output output = null;
-            var.parseString(ref output);
+            var.parseString(new adScript(), ref output);
 
             //Check
             Assert.IsTrue(output == null || !output.isError);
