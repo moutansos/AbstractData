@@ -14,13 +14,14 @@ namespace AbstractData
         private const int cacheLimit = 5000;
 
         private string ID;
-        private string fileName;
+        private reference fileName;
+        private string connectionString;
         private string tableName;
 
         private List<DataEntry> dataEntryCache;
 
         #region  Constructors
-        public SQLiteDB(string file)
+        public SQLiteDB(reference file)
         {
             dataEntryCache = new List<DataEntry>();
             fileName = file;
@@ -41,7 +42,7 @@ namespace AbstractData
 
         public string refString
         {
-            get { return fileName; }
+            get { return fileName.originalString; }
         }
 
         public string table
@@ -60,8 +61,14 @@ namespace AbstractData
         }
         #endregion
 
-        public void addData(DataEntry data)
+        public void addData(DataEntry data,
+                            adScript script)
         {
+            if(fileName == null)
+            {
+                evalConnectionString(script);
+            }
+
             dataEntryCache.Add(data);
             if (dataEntryCache.Count > cacheLimit)
             {
@@ -69,13 +76,18 @@ namespace AbstractData
             }
         }
 
-        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry, adScript> addData, 
+                                  List<dataRef> dRefs,
+                                  adScript script,
+                                  ref adScript.Output output)
         {
+            evalConnectionString(script);
+            string conStr = connectionString;
             List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
             moveResult result = new moveResult();
 
             //Open a Sql Connection
-            using (SQLiteConnection conn = new SQLiteConnection(getSQLiteConnectionString()))
+            using (SQLiteConnection conn = new SQLiteConnection(conStr))
             {
                 conn.Open();
                 string sqlCommandText = "SELECT  ";
@@ -97,8 +109,8 @@ namespace AbstractData
                             newEntry.addField(column, dataToGet);
                         }
                         //Add the data to the database
-                        newEntry.convertToWriteEntry(dRefs);
-                        addData(newEntry);
+                        newEntry.convertToWriteEntry(dRefs, script, ref output);
+                        addData(newEntry, script);
 
                         //Increment counters
                         result.incrementTraversalCounter();
@@ -113,12 +125,12 @@ namespace AbstractData
 
         public void writeCache()
         {
-            if (dataEntryCache.Count > 0)
+            if (dataEntryCache.Count > 0 && connectionString != null)
             {
-                DataTable schemaTable = getSchemaTable();
+                DataTable schemaTable = getSchemaTable(connectionString);
                 Dictionary<string, Type> columnTypes = getColumnTypes(schemaTable);
 
-                using (SQLiteConnection conn = new SQLiteConnection(getSQLiteConnectionString()))
+                using (SQLiteConnection conn = new SQLiteConnection(getSQLiteConnectionString(connectionString)))
                 {
                     conn.Open();
                     SQLiteTransaction transaction = conn.BeginTransaction();
@@ -144,15 +156,15 @@ namespace AbstractData
             writeCache();
         }
 
-        private string getSQLiteConnectionString()
+        private string getSQLiteConnectionString(string file)
         {
-            return "Data Source=" + fileName + ";Version=3;";
+            return "Data Source=" + file + ";Version=3;";
         }
 
-        private DataTable getSchemaTable()
+        private DataTable getSchemaTable(string conStr)
         {
             SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM " + tableName);
-            using (SQLiteConnection newConn = new SQLiteConnection(getSQLiteConnectionString()))
+            using (SQLiteConnection newConn = new SQLiteConnection(conStr))
             {
                 newConn.Open();
                 cmd.Connection = newConn;
@@ -245,6 +257,13 @@ namespace AbstractData
             }
 
             return typeDict;
+        }
+
+        private void evalConnectionString(adScript script)
+        {
+            //TODO: Check if the file exists
+            adScript.Output output = null;
+            connectionString = getSQLiteConnectionString(fileName.evalReference(null, script, ref output));
         }
     }
 }

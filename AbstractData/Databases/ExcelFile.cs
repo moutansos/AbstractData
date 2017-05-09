@@ -16,7 +16,8 @@ namespace AbstractData
         private string ID;
 
         private string tableName;
-        private string fullFilePath;
+        private reference fileName;
+        private string file;
         //IDEA: What if file paths could be downloadable from http/s?
         //      as long as it is not an assignment file. If it is then 
         //      add to the cached file and warn the user.
@@ -25,9 +26,9 @@ namespace AbstractData
         private ClosedXML.Excel.IXLWorksheet currentWorksheet;
 
         #region Constructors
-        public ExcelFile(string filePath)
+        public ExcelFile(reference file)
         {
-            fileName = filePath;
+            fileName = file;
         }
         #endregion
 
@@ -48,18 +49,9 @@ namespace AbstractData
             set { tableName = value; } //TODO: Add validation that table is in this excel file
         }
 
-        public string fileName
-        {
-            get { return fullFilePath; }
-            set { fullFilePath = value; } //TODO: Add RegEx validation for windows and linux file paths that end in xlsx
-                                          //In validation method, check for machine OS before checking the file path. Also
-                                          //check to see if the file exists. After all this, run createFileIfNotExist()
-                                          //Add an exception for <<TestPath>> for parsing tests.
-        }
-
         public string refString
         {
-            get { return fileName; }
+            get { return fileName.originalString; }
         }
 
         public string id
@@ -69,11 +61,13 @@ namespace AbstractData
         }
         #endregion
 
-        public void addData(DataEntry data)
+        public void addData(DataEntry data,
+                            adScript script)
         {
             if(currentWorkbook == null)
             {
-                currentWorkbook = new ClosedXML.Excel.XLWorkbook(fileName);
+                evalFileName(script);
+                currentWorkbook = new ClosedXML.Excel.XLWorkbook(file);
             }
             if(currentWorksheet == null || currentWorksheet.Name != table)
             {
@@ -102,14 +96,18 @@ namespace AbstractData
             }
         }
 
-        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry, adScript> addData, 
+                                  List<dataRef> dRefs,
+                                  adScript script,
+                                  ref adScript.Output output)
         {
             moveResult result = new moveResult();
 
             List<string> columnsToGet = dataRef.getColumnsForRefs(dRefs);
             if(currentWorkbook == null)
             {
-                currentWorkbook = new ClosedXML.Excel.XLWorkbook(fileName);
+                evalFileName(script);
+                currentWorkbook = new ClosedXML.Excel.XLWorkbook(file);
             }
             if(currentWorksheet == null || currentWorksheet.Name != table)
             {
@@ -129,8 +127,8 @@ namespace AbstractData
                     ClosedXML.Excel.IXLCell cell = currentRow.Cell(column);
                     newEntry.addField(column, cell.GetValue<string>());
                 }
-                newEntry.convertToWriteEntry(dRefs);
-                addData(newEntry);
+                newEntry.convertToWriteEntry(dRefs, script, ref output);
+                addData(newEntry, script);
 
                 //Increment counters
                 result.incrementTraversalCounter();
@@ -156,6 +154,12 @@ namespace AbstractData
                 ClosedXML.Excel.XLWorkbook newWorkbook = new ClosedXML.Excel.XLWorkbook();
                 newWorkbook.SaveAs(path);
             }
+        }
+
+        private void evalFileName(adScript script)
+        {
+            adScript.Output output = null;
+            file = fileName.evalReference(null, script, ref output);
         }
     }
 }

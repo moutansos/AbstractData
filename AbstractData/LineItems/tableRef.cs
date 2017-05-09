@@ -103,7 +103,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString(ref adScript.Output output)
+        public void parseString(adScript script, ref adScript.Output output)
         {
             string innerTableRef = StringUtils.returnStringInside(lineString, '(', ')');
             string readText = string.Empty;

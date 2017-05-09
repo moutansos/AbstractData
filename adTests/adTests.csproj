@@ -54,7 +54,9 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
@@ -63,6 +65,7 @@
     <Compile Include="dataRefTests.cs" />
     <Compile Include="dbRefTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringUtilTests.cs" />
     <Compile Include="tableRefTests.cs" />
     <Compile Include="VariableTests.cs" />
   </ItemGroup>
@@ -75,6 +78,9 @@
       <Project>{9a8f286b-a698-4e6c-b8b2-73a205b1300b}</Project>
       <Name>AbstractData</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

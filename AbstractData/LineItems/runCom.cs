@@ -84,7 +84,7 @@ namespace AbstractData
         }
         #endregion
 
-        public void parseString(ref adScript.Output output)
+        public void parseString(adScript script, ref adScript.Output output)
         {
             //Eventually use this for returning the string when it is rewritten
             //scriptFile = StringUtils.returnStringInside(lineString, '\"', '\"');

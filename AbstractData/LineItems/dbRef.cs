@@ -10,11 +10,11 @@ namespace AbstractData
     {
         private int line;
         private string lineString;
-        private string refString;
-        private string cleanRefString; //No quotes
+        private reference refString;
 
         private IDatabase db;
         private string refID;
+        StringUtils.constructorVals constructorVals;
 
         #region Constructor
         public dbRef(string original)
@@ -46,12 +46,7 @@ namespace AbstractData
 
         public string referenceString
         {
-            get { return refString; }
-        }
-
-        public string cleanReferenceString
-        {
-            get { return cleanRefString; }
+            get { return refString.originalString; }
         }
 
         public int lineNumber
@@ -109,15 +104,13 @@ namespace AbstractData
             }
 
             string type = getDbType(db.type);
-            cleanRefString = db.refString;
-            refString = "\"" + cleanRefString + "\"";
 
-            originalString = type + " " + refID + " = " + refString;
+            originalString = type + " " + refID + " = " + refString.originalString;
 
             return originalString;
         }
 
-        public void parseString(ref adScript.Output output)
+        public void parseString(adScript script, ref adScript.Output output)
         {
             string line = originalString;
             //DB Type
@@ -130,8 +123,19 @@ namespace AbstractData
             refID = line.Substring(posOfFirstSpace, posOfEquals - posOfFirstSpace).Trim();
 
             //Ref String
-            refString = line.Substring(posOfEquals + 1, line.Length - (posOfEquals + 1)).Trim();
-            cleanRefString = refString.Trim('\"');
+            string referenceString = line.Substring(posOfEquals + 1, line.Length - (posOfEquals + 1)).Trim();
+            if(referenceString.StartsWith("\"") || referenceString.EndsWith("\""))
+            {
+                refString = new reference(referenceString);
+            }
+            else if (referenceString.ToLower().StartsWith("new"))
+            {
+                parseConstructorRef(referenceString, script, ref output); // Provides parsing for the constructor syntax
+            }
+            else
+            {
+                output = new adScript.Output("The reference string for the database: " + refID + " is invalid", true);
+            }
 
             //Get the database
             db = getDatabase(type);
@@ -146,11 +150,11 @@ namespace AbstractData
                     output.lineNumber = this.line;
                 }
             }
-            else if(!refString.StartsWith("\"") ||
-                    !refString.EndsWith("\""))
+            else if(!(referenceString.StartsWith("\"") && referenceString.EndsWith("\"")) &&
+                    !referenceString.StartsWith("new"))
             {
                 //Perhaps change this later to accept variables. Not sure if that's needed though.
-                output = new adScript.Output("The database assignment only accepts a string value.", true);
+                output = new adScript.Output("The database assignment only accepts a string value or a constructor.", true);
                 if (this.line > 0)
                 {
                     output.lineNumber = this.line;
@@ -166,7 +170,8 @@ namespace AbstractData
                candidateString.StartsWith(SQLServerDB.idInScript) ||
                candidateString.StartsWith(PostgreSqlDB.idInScript) ||
                candidateString.StartsWith("MariaDB") ||
-               candidateString.StartsWith(SQLiteDB.idInScript))
+               candidateString.StartsWith(SQLiteDB.idInScript) ||
+               candidateString.StartsWith(GoogleSheets.idInScript))
             {
                 return true;
             }
@@ -204,6 +209,10 @@ namespace AbstractData
             {
                 return dbType.SQLiteDB;
             }
+            else if(type == GoogleSheets.idInScript)
+            {
+                return dbType.GoogleSheets;
+            }
             else
             {
                 return dbType.Unknown;
@@ -240,6 +249,10 @@ namespace AbstractData
             {
                 return SQLiteDB.idInScript;
             }
+            else if(type == dbType.GoogleSheets)
+            {
+                return GoogleSheets.idInScript;
+            }
             else
             {
                 throw new Exception("Fatal Exception: Internal error reading database type");
@@ -250,23 +263,68 @@ namespace AbstractData
         {
             if(type == dbType.ExcelFile)
             {
-                return new ExcelFile(cleanRefString);
+                //TODO: Handle errors on reference creation and constructor vals reference
+                if(constructorVals != null)
+                {
+                    reference fileName = constructorVals["fileName"];
+                    return new ExcelFile(fileName);
+                }
+                else
+                {
+                    return new ExcelFile(refString);
+                }
             }
             else if(type == dbType.CSVFile)
             {
-                return new CSVFile(cleanRefString);
+                //TODO: Handle errors on reference creation and constructor vals reference
+                if(constructorVals != null)
+                {
+                    reference fileName = constructorVals["fileName"];
+                    return new CSVFile(fileName);
+                }
+                else
+                {
+                    return new CSVFile(refString);
+                }
             }
             else if(type == dbType.AccessDB)
             {
-                return new AccessDB(cleanRefString);
+                //TODO: Handle errors on reference creation and constructor vals reference
+                if(constructorVals != null)
+                {
+                    reference fileName = constructorVals["fileName"];
+                    return new AccessDB(fileName);
+                }
+                else
+                {
+                    return new AccessDB(refString);
+                }
             }
             else if(type == dbType.SQLServerDB)
             {
-                return new SQLServerDB(cleanRefString);
+                //TODO: Handle errors on reference creation and constructor vals reference
+                if (constructorVals != null)
+                {
+                    reference fileName = constructorVals["fileName"];
+                    return new SQLiteDB(fileName);
+                }
+                else
+                {
+                    return new SQLServerDB(refString);
+                }
             }
             else if(type == dbType.PostgreSqlDB)
             {
-                return new PostgreSqlDB(cleanRefString);
+                //TODO: Handle errors on reference creation and constructor vals reference
+                if(constructorVals != null)
+                {
+                    reference conStr = constructorVals["connectionString"];
+                    return new PostgreSqlDB(conStr);
+                }
+                else
+                {
+                    return new PostgreSqlDB(refString);
+                }
             }
             else if(type == dbType.MariaDB)
             {
@@ -274,13 +332,55 @@ namespace AbstractData
             }
             else if(type == dbType.SQLiteDB)
             {
-                return new SQLiteDB(cleanRefString);
+                if(constructorVals != null)
+                {
+                    reference fileName = constructorVals["fileName"];
+                    return new SQLiteDB(fileName);
+                }
+                else
+                {
+                    return new SQLiteDB(refString);
+                }
+            }
+            else if(type == dbType.GoogleSheets)
+            {
+                //TODO: Figure out how to manage if these are in error.
+                if(constructorVals != null)
+                {
+                    reference clientSecretPath = constructorVals["secretPath"];
+                    reference credPath = constructorVals["credPath"];
+                    reference id = constructorVals["id"];
+                    return new GoogleSheets(id, credPath, clientSecretPath); //Return the unclean one for google sheets
+                }
+                else
+                {
+                    //TODO: Throw an error because google sheets requires constructor syntax
+                    return null;
+                }
             }
             else
             {
                 throw new Exception("Fatal Exception: Internal error reading database type");
             }
 
+        }
+
+        public void parseConstructorRef(string refString, adScript script, ref adScript.Output output)
+        {
+            int posOfFirstSpace = refString.IndexOf(' ');
+            int posOfFirstParenth = refString.IndexOf('(');
+            int posOfLastParenth = refString.LastIndexOf(')');
+            string constructorType = refString.Substring(posOfFirstSpace + 1, refString.Length - (posOfLastParenth - posOfFirstParenth) - posOfFirstSpace - 2); //TODO: Check if this is right
+            string innerVars = refString.Substring(posOfFirstParenth + 1, posOfLastParenth - posOfFirstParenth - 1); //TODO: Check this too
+            if (getDbType(constructorType) == dbType.Unknown)
+            {
+                output = new adScript.Output("The database types in the dbRef do not match");
+            }
+            else
+            {
+                //Continue with the parsing
+                constructorVals = new StringUtils.constructorVals(innerVars); //Only initialize constructorvals when the constructor syntax is used
+            }
         }
     }
 }

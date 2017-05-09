@@ -94,7 +94,7 @@ namespace AbstractData
             output = null;
         }
 
-        public void parseString(ref adScript.Output output)
+        public void parseString(adScript script, ref adScript.Output output)
         {
             commentText = original.TrimStart('#');
             output = null;

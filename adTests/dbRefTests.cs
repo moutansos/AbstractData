@@ -16,26 +16,25 @@ namespace adTests
             dbRef dbref = new dbRef(testOriginalString);
 
             adScript.Output output = null;
-            dbref.parseString(ref output);
+            dbref.parseString(new adScript(), ref output);
 
             //Check
             Assert.IsTrue(output == null || !output.isError);
             Assert.AreEqual(dbType.SQLServerDB, dbref.databaseType);
             Assert.AreEqual("sqlDb", dbref.referenceID);
             Assert.AreEqual("\"<<connectionString>>\"", dbref.referenceString);
-            Assert.AreEqual("<<connectionString>>", dbref.cleanReferenceString);
         }
 
+        /* TODO: write a gen db ref string method
         [TestMethod]
         public void dbRefStringGenerationTest1()
         {
-
             //Begin test
-            ExcelFile excelFile = new ExcelFile("<<TestPath>>");
+            ExcelFile excelFile = new ExcelFile(new reference("\"<<TestPath>>\""));
             dbRef dbref = new dbRef(excelFile, "excelFile");
 
             //Check
             Assert.AreEqual("ExcelFile excelFile = \"<<TestPath>>\"", dbref.generateString());
-        }
+        }*/
     }
 }

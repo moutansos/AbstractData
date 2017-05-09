@@ -9,7 +9,7 @@ namespace AbstractData
     public class Variable : ILine
     {
         private string varID;
-        private string varValue; //Switch to a reference
+        private string varValue;
         private string typeID;
         private int line;
 
@@ -121,14 +121,17 @@ namespace AbstractData
             }
         }
 
-        public void parseString(ref adScript.Output output)
+        public void parseString(adScript script, ref adScript.Output output)
         {
             int posOfFirstSpace = originalString.IndexOf(' ');
             varType = originalString.Substring(0, posOfFirstSpace);
             string varAndId = originalString.Substring(posOfFirstSpace, originalString.Length - posOfFirstSpace); //this too
             varID = varAndId.Split('=')[0].Trim();
             value = varAndId.Split('=')[1].Trim();
-            varID = StringUtils.returnStringInside(varID, '{', '}');
+            if(varID.StartsWith("{") && varID.EndsWith("}"))
+            {
+                varID = StringUtils.returnStringInside(varID, '{', '}');
+            }
 
             //TODO: Add RegEx Validation
             output = null;

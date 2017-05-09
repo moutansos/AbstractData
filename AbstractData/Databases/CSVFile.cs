@@ -13,13 +13,14 @@ namespace AbstractData
     {
         public const string idInScript = "CSVFile";
         private const int cacheLimit = 5000;
-        private string fileName;
+        private reference fileName;
+        private string file;
         private string ID;
 
         private List<string> dataCache;
 
         #region Constructors
-        public CSVFile(string fileName)
+        public CSVFile(reference fileName)
         {
             this.fileName = fileName;
             dataCache = new List<string>();
@@ -40,7 +41,7 @@ namespace AbstractData
 
         public string refString
         {
-            get { return fileName; }
+            get { return fileName.originalString; }
         }
 
         public string table
@@ -62,7 +63,8 @@ namespace AbstractData
         }
         #endregion
 
-        public void addData(DataEntry data)
+        public void addData(DataEntry data,
+                            adScript script)
         {
             data.csvFormatData();
             int maxColumn = getBiggestFieldOrdinal(data);
@@ -86,6 +88,11 @@ namespace AbstractData
             }
             dataCache.Add(CSVLine);
 
+            if(file == null)
+            {
+                evalFileName(script);
+            }
+
             if(dataCache.Count > cacheLimit)
             {
                 writeCache();
@@ -95,23 +102,30 @@ namespace AbstractData
 
         public void writeCache()
         {
-            using (TextWriter writer = new StreamWriter(fileName, true))
+            if(dataCache.Count > 0)
             {
-                foreach(string line in dataCache)
+                using (TextWriter writer = new StreamWriter(file, true))
                 {
-                    writer.WriteLine(line);
+                    foreach (string line in dataCache)
+                    {
+                        writer.WriteLine(line);
+                    }
+                    writer.Close();
                 }
-                writer.Close();
-            }
 
-            dataCache.Clear();
+                dataCache.Clear();
+            }
         }
 
-        public moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs)
+        public moveResult getData(Action<DataEntry, adScript> addData, 
+                                  List<dataRef> dRefs,
+                                  adScript script,
+                                  ref adScript.Output output)
         {
             moveResult result = new moveResult();
+            evalFileName(script);
 
-            using (TextFieldParser parser = new TextFieldParser(fileName))
+            using (TextFieldParser parser = new TextFieldParser(file))
             {
                 parser.TextFieldType = FieldType.Delimited;
                 parser.SetDelimiters(",");
@@ -124,8 +138,8 @@ namespace AbstractData
                     {
                         newEntry.addField(i.ToString(), fields[i]);
                     }
-                    newEntry.convertToWriteEntry(dRefs);
-                    addData(newEntry);
+                    newEntry.convertToWriteEntry(dRefs, script, ref output);
+                    addData(newEntry, script);
 
                     //Increment counters
                     result.incrementTraversalCounter();
@@ -158,6 +172,12 @@ namespace AbstractData
                 }
             }
             return biggestNum;
+        }
+
+        private void evalFileName(adScript script)
+        {
+            adScript.Output output = null;
+            file = fileName.evalReference(null, script, ref output);
         }
     }
 }

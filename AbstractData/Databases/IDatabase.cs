@@ -13,8 +13,12 @@ namespace AbstractData
         bool isMultiTable { get; }
         string table { get; set; }
         string refString { get; }
-        void addData(DataEntry data);
-        moveResult getData(Action<DataEntry> addData, List<dataRef> dRefs);
+        void addData(DataEntry data,
+                     adScript script);
+        moveResult getData(Action<DataEntry, adScript> addData, 
+                           List<dataRef> dRefs,
+                           adScript script,
+                           ref adScript.Output output);
         void close();
     }
 
@@ -22,6 +26,7 @@ namespace AbstractData
     {
         ExcelFile,
         CSVFile,
+        GoogleSheets,
         AccessDB,
         SQLServerDB,
         PostgreSqlDB,
