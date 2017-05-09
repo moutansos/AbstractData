@@ -78,7 +78,7 @@ namespace AbstractData
                 }
             }
 
-
+            dataStream.Close();
         }
 
         public void runLine(string line)
