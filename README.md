@@ -13,7 +13,7 @@ Currently the only thing in testing is text only. Some data adaption has been im
 - SQLite Databases  
 - Google Sheets  
 - Access Databases  
-- TODO: PostgreSql Databases  
+- PostgreSql Databases  
 - TODO: MariaDB Databases  
 - TODO: Oracle Databases  
 - TODO: VoltDB Databases  
