@@ -12,7 +12,7 @@ Currently the only thing in testing is text only. Some data adaption has been im
 - CSV Files  
 - SQLite Databases  
 - Google Sheets  
-- TODO: Access Databases  
+- Access Databases  
 - TODO: PostgreSql Databases  
 - TODO: MariaDB Databases  
 - TODO: Oracle Databases  
@@ -22,10 +22,10 @@ Currently the only thing in testing is text only. Some data adaption has been im
 - TODO: JSON Files ?  
 
 ## Build with Visual Studio
-This solution has been built for Visual Studio Community 2015 and can be edited and built in that environment.
+This solution has been built for Visual Studio Community 2017 and can be edited and built in that environment.
 
 ## Build without Visual Studio
-Without visual studio, download nuget bianaries from nuget.org and add nuget to your PATH. Then dowload Visual Studio 2015 Build Tools. After it has been installed then run the build.cmd file.
+Without visual studio, download nuget bianaries from nuget.org and add nuget to your PATH. Then dowload Visual Studio 2017 Build Tools. After it has been installed, then run the build.cmd file.
 
 ## Library Usage
 Currently unusable. As things come together there will be a way to include the library in projects from source and also from NuGet.
