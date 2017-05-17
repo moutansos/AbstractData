@@ -75,6 +75,7 @@ namespace AbstractData
             //Open a Sql Connection
             using (NpgsqlConnection conn = new NpgsqlConnection(conStr))
             {
+                //TODO: Catch and manage sql connection exceptions
                 conn.Open();
                 string sqlCommandText = "SELECT  ";
                 foreach (string column in readColumns)

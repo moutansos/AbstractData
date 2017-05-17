@@ -287,8 +287,21 @@ namespace AbstractData
                 {
                     ILine lineObject = getLineObjectForLine(line, lineCounter);
 
+                    //IDEA: Put an output object inside the line object?? then during execution
+                    //      the execute method can check to see if the line has an error.
+                    //      In this way, all the possible syntax errors can be reported instead
+                    //      of just a single one.
+                    // PROJECT: https://github.com/moutansos/AbstractData/projects/7
                     Output outputObj = null;
-                    lineObject.parseString(this, ref outputObj);
+                    if(lineObject == null)
+                    {
+                        outputObj = new Output("Unknown syntax!", true);
+                    }
+                    else
+                    {
+                        lineObject.parseString(this, ref outputObj);
+                    }
+
 
                     if(output != null && 
                        outputObj != null && 
