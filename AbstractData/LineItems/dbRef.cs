@@ -169,7 +169,7 @@ namespace AbstractData
                candidateString.StartsWith(AccessDB.idInScript) ||
                candidateString.StartsWith(SQLServerDB.idInScript) ||
                candidateString.StartsWith(PostgreSqlDB.idInScript) ||
-               candidateString.StartsWith("MariaDB") ||
+               candidateString.StartsWith(MariaDB.idInScript) ||
                candidateString.StartsWith(SQLiteDB.idInScript) ||
                candidateString.StartsWith(GoogleSheets.idInScript))
             {
@@ -201,7 +201,7 @@ namespace AbstractData
             {
                 return dbType.PostgreSqlDB;
             }
-            else if(type == "MariaDB")
+            else if(type == MariaDB.idInScript)
             {
                 return dbType.MariaDB;
             }
@@ -243,7 +243,7 @@ namespace AbstractData
             }
             else if(type == dbType.MariaDB)
             {
-                return "MariaDB";
+                return MariaDB.idInScript;
             }
             else if(type == dbType.SQLiteDB)
             {
@@ -328,7 +328,16 @@ namespace AbstractData
             }
             else if(type == dbType.MariaDB)
             {
-                throw new NotImplementedException("MariaDB Database Not Implemented");
+                //TODO: Handle errors on reference creation and constructor vals reference
+                if(constructorVals != null)
+                {
+                    reference conStr = constructorVals["connectionString"];
+                    return new MariaDB(conStr);
+                }
+                else
+                {
+                    return new MariaDB(refString);
+                }
             }
             else if(type == dbType.SQLiteDB)
             {

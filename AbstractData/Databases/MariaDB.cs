@@ -33,15 +33,8 @@ namespace AbstractData
         #region Properties
         public string id
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get { return ID; }
+            set { ID = value; }
         }
 
         public bool isMultiTable
@@ -60,6 +53,7 @@ namespace AbstractData
             set
             {
                 writeCache();
+                tableName = value;
             }
         }
 
@@ -71,7 +65,16 @@ namespace AbstractData
 
         public void addData(DataEntry data, adScript script)
         {
-            throw new NotImplementedException();
+            if(connStr == null)
+            {
+                evalConnectionString(script);
+            }
+
+            dataEntryCache.Add(data);
+            if(dataEntryCache.Count > cacheLimit)
+            {
+                writeCache();
+            }
         }
 
         public void writeCache()
@@ -104,7 +107,7 @@ namespace AbstractData
 
         public void close()
         {
-            throw new NotImplementedException();
+            writeCache();
         }
 
         public moveResult getData(Action<DataEntry, adScript> addData,
@@ -112,12 +115,50 @@ namespace AbstractData
                                   adScript script,
                                   ref adScript.Output output)
         {
-            throw new NotImplementedException();
+            evalConnectionString(script);
+            List<string> readColumns = dataRef.getColumnsForRefs(dRefs);
+            moveResult result = new moveResult();
+
+            //Open a SQL Connection
+            using (MySqlConnection conn = new MySqlConnection(connStr))
+            {
+                conn.Open();
+                string sqlCommandText = "SELECT ";
+                foreach(string column in readColumns)
+                {
+                    sqlCommandText = sqlCommandText + column + ",";
+                }
+                sqlCommandText = sqlCommandText.Remove(sqlCommandText.Length - 1);
+                sqlCommandText = sqlCommandText + " FROM " + table;
+                using (MySqlCommand cmd = new MySqlCommand(sqlCommandText, conn))
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        DataEntry newEntry = new DataEntry();
+                        foreach (string column in readColumns)
+                        {
+                            string dataToGet = reader.GetValue(readColumns.IndexOf(column)).ToString();
+                            newEntry.addField(column, dataToGet);
+                        }
+                        //Add the data to the database
+                        newEntry.convertToWriteEntry(dRefs, script, ref output);
+                        addData(newEntry, script);
+
+                        //Increment counters
+                        result.incrementTraversalCounter();
+                        result.incrementMovedCounter(); //TODO: Change this when implementing conditionals
+                    }
+                    reader.Close();
+                }
+            }
+
+            return result;
         }
 
         private DataTable getSchemaTable(string conStr)
         {
-            MySqlCommand cmd = new MySqlCommand("SELECT * FROM " + tableName);
+            MySqlCommand cmd = new MySqlCommand("SELECT * FROM " + table);
             using (MySqlConnection con = new MySqlConnection(connStr))
             {
                 con.Open();
@@ -201,6 +242,12 @@ namespace AbstractData
                 }
             }
             return cmd;
+        }
+
+        private void evalConnectionString(adScript script)
+        {
+            adScript.Output output = null;
+            connStr = connectionString.evalReference(null, script, ref output);
         }
     }
 }
