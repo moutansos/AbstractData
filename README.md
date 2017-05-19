@@ -14,7 +14,7 @@ Currently the only thing in testing is text only. Some data adaption has been im
 - Google Sheets  
 - Access Databases  
 - PostgreSql Databases  
-- TODO: MariaDB Databases  
+- MariaDB/MySQL Databases  
 - TODO: Oracle Databases  
 - TODO: VoltDB Databases  
 - TODO: MongoDB Datablases ?  
