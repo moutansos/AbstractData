@@ -10,15 +10,16 @@ namespace AbstractData
     {
         dbType type { get; }
         string id { get; set; }
-        bool isMultiTable { get; }
         string table { get; set; }
-        string refString { get; }
+
         void addData(DataEntry data,
                      adScript script);
+
         moveResult getData(Action<DataEntry, adScript> addData, 
                            List<dataRef> dRefs,
                            adScript script,
                            ref adScript.Output output);
+
         void close();
     }
 
