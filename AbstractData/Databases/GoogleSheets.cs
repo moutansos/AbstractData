@@ -17,7 +17,6 @@ namespace AbstractData
         private const int cacheLimit = 5000;
 
         private string ID;
-        private string refStr;
         private string tableRange;
 
         private reference sheetIdRef;
@@ -46,16 +45,6 @@ namespace AbstractData
         {
             get { return ID; }
             set { ID = value; }
-        }
-
-        public bool isMultiTable
-        {
-            get { return true; }
-        }
-
-        public string refString
-        {
-            get { return refStr; }
         }
 
         public string table
