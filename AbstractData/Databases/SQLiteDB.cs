@@ -35,16 +35,6 @@ namespace AbstractData
             set { ID = value; }
         }
 
-        public bool isMultiTable
-        {
-            get { return true; }
-        }
-
-        public string refString
-        {
-            get { return fileName.originalString; }
-        }
-
         public string table
         {
             get { return tableName; }

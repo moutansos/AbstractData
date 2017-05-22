@@ -25,14 +25,15 @@ namespace AbstractData
 
     public enum dbType
     {
-        ExcelFile,
-        CSVFile,
-        GoogleSheets,
         AccessDB,
-        SQLServerDB,
-        PostgreSqlDB,
+        CSVFile,
+        ExcelFile,
+        GoogleSheets,
         MariaDB,
+        MongoDB,
+        PostgreSqlDB,
         SQLiteDB,
+        SQLServerDB,
         Unknown
     }
 }
