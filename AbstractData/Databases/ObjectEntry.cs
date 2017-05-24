@@ -55,10 +55,11 @@ namespace AbstractData
             subObjects = new Dictionary<string, ObjectEntry>();
         }
 
-        public string this[List<string> addr]
+        public string this[string[] address]
         {
             set
             {
+                List<string> addr = address.ToList();
                 if (addr.Count == 0)
                 {
                     throw new ArgumentException("You must have at least a base to the address!");
@@ -75,11 +76,12 @@ namespace AbstractData
                     }
                     string adrTmp = addr[0];
                     addr.RemoveAt(0);
-                    ((ContainerObject)subObjects[adrTmp])[addr] = value;
+                    ((ContainerObject)subObjects[adrTmp])[addr.ToArray()] = value;
                 }
             }
             get
             {
+                List<string> addr = address.ToList();
                 if (addr.Count == 0)
                 {
                     throw new ArgumentException("You must have at least a base to the address!");
@@ -107,7 +109,7 @@ namespace AbstractData
                     {
                         string adrTmp = addr[0];
                         addr.RemoveAt(0);
-                        return ((ContainerObject)subObjects[adrTmp])[addr];
+                        return ((ContainerObject)subObjects[adrTmp])[addr.ToArray()];
                     }
                     return null; //If it isn't a container we can't go down any farther
                 }
