@@ -19,18 +19,18 @@ namespace adTests
             string tv2 = "testVal2";
             string tv3 = "testVal3";
 
-            List<string> path1 = (new string[] { "test", "value", "one" }).ToList();
-            List<string> path2 = (new string[] { "test", "value", "two" }).ToList();
-            List<string> path3 = (new string[] { "test", "value3" }).ToList();
+            string[] path1 = new string[] { "test", "value", "one" };
+            string[] path2 = new string[] { "test", "value", "two" };
+            string[] path3 = new string[] { "test", "value3" };
 
             ContainerObject cont = new ContainerObject();
-            cont[path1] = tv1;
-            cont[path2] = tv2;
-            cont[path3] = tv3;
+            cont[path1.ToList()] = tv1;
+            cont[path2.ToList()] = tv2;
+            cont[path3.ToList()] = tv3;
 
-            Assert.AreEqual(tv1, cont[path1]);
-            Assert.AreEqual(tv2, cont[path2]);
-            Assert.AreEqual(tv3, cont[path3]);
+            Assert.AreEqual(tv1, cont[path1.ToList()]);
+            Assert.AreEqual(tv2, cont[path2.ToList()]);
+            Assert.AreEqual(tv3, cont[path3.ToList()]);
         }
     }
 }
