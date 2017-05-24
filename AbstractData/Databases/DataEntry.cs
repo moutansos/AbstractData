@@ -69,6 +69,11 @@ namespace AbstractData
                 set { columnName = value; }
             }
 
+            public string[] splitColumn
+            {
+                get => evalSplitColumn();
+            }
+
             public string data
             {
                 get { return dataString; }
@@ -111,6 +116,11 @@ namespace AbstractData
                 get { return Guid.Parse(dataString); }
             }
             #endregion
+
+            private string[] evalSplitColumn()
+            {
+                return this.column.Split('.');
+            }
         }
 
         public Field getField(string columnName)

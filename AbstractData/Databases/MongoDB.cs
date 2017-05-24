@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,7 +80,15 @@ namespace AbstractData
 
         private void writeCache()
         {
-            throw new NotImplementedException();
+            if (dataEntryCache.Count > 0 && conStr != null)
+            {
+                foreach(DataEntry entry in dataEntryCache)
+                {
+                    //BsonDocument doc = getDocumentForEntry(entry);
+
+                    
+                }
+            }
         }
 
         private void evalReferences(adScript script)
@@ -88,6 +97,12 @@ namespace AbstractData
             conStr = connectionString.evalReference(null, script, ref output);
         }
 
-
+        /*
+        private BsonDocument getDocumentForEntry(DataEntry entry)
+        {
+            BsonDocument doc = new BsonDocument();
+            
+        }
+        */
     }
 }
