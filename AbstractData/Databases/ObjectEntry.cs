@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace AbstractData
 {
@@ -20,25 +22,31 @@ namespace AbstractData
             get => fieldName;
             set => this.fieldName = value;
         }
+
+        public abstract BsonValue toBsonValue();
     }
 
-    public sealed class DataObject : ObjectEntry
+    public sealed class DataObject<T> : ObjectEntry
     {
-        private string value;
+        private T value;
         private string fieldName;
 
-        public DataObject(string value, string fieldName) : base(fieldName)
+        public DataObject(T value, string fieldName) : base(fieldName)
         {
             this.value = value;
         }
 
-        public string data
+        public T data
         {
             get => value;
             set => this.value = value;
         }
 
 
+        public override BsonValue toBsonValue()
+        {
+            return value.ToBson();
+        }
     }
 
     public sealed class ContainerObject : ObjectEntry
@@ -55,67 +63,78 @@ namespace AbstractData
             subObjects = new Dictionary<string, ObjectEntry>();
         }
 
-        public string this[string[] address]
+        public void setData<T>(string[] address, T value)
         {
-            set
+            List<string> addr = address.ToList();
+            if (addr.Count == 0)
             {
-                List<string> addr = address.ToList();
-                if (addr.Count == 0)
-                {
-                    throw new ArgumentException("You must have at least a base to the address!");
-                }
-                else if (addr.Count == 1)
-                {
-                    subObjects[addr[0]] = new DataObject(value, addr[0]);
-                }
-                else
-                {
-                    if (!subObjects.ContainsKey(addr[0]) || subObjects[addr[0]].GetType() != typeof(ContainerObject))
-                    {
-                        subObjects[addr[0]] = new ContainerObject(addr[0]);
-                    }
-                    string adrTmp = addr[0];
-                    addr.RemoveAt(0);
-                    ((ContainerObject)subObjects[adrTmp])[addr.ToArray()] = value;
-                }
+                throw new ArgumentException("You must have at least a base to the address!");
             }
-            get
+            else if (addr.Count == 1)
             {
-                List<string> addr = address.ToList();
-                if (addr.Count == 0)
+                //TODO: Figure out how to handle generics
+                subObjects[addr[0]] = new DataObject<T>(value, addr[0]);
+            }
+            else
+            {
+                if (!subObjects.ContainsKey(addr[0]) || subObjects[addr[0]].GetType() != typeof(ContainerObject))
                 {
-                    throw new ArgumentException("You must have at least a base to the address!");
+                    subObjects[addr[0]] = new ContainerObject(addr[0]);
                 }
-                else if (addr.Count == 1)
-                {
-                    ObjectEntry data = subObjects[addr[0]];
-                    if (data.GetType() == typeof(ContainerObject))
-                    {
-                        return null;
-                    }
-                    else if (data.GetType() == typeof(DataObject))
-                    {
-                        return ((DataObject)subObjects[addr[0]]).data;
-                    }
-                    else
-                    {
-                        throw new Exception("Internal Error. Invalid ObjectEntry subclass");
-                    }
-                }
-                else
-                {
-                    ObjectEntry data = subObjects[addr[0]];
-                    if (data.GetType() == typeof(ContainerObject))
-                    {
-                        string adrTmp = addr[0];
-                        addr.RemoveAt(0);
-                        return ((ContainerObject)subObjects[adrTmp])[addr.ToArray()];
-                    }
-                    return null; //If it isn't a container we can't go down any farther
-                }
+                string adrTmp = addr[0];
+                addr.RemoveAt(0);
+                ((ContainerObject)subObjects[adrTmp]).setData<T>(addr.ToArray(), value);
             }
         }
 
+        public T getData<T>(string[] address)
+        {
+            List<string> addr = address.ToList();
+            if (addr.Count == 0)
+            {
+                throw new ArgumentException("You must have at least a base to the address!");
+            }
+            else if (addr.Count == 1)
+            {
+                ObjectEntry data = subObjects[addr[0]];
+                if (data.GetType() == typeof(ContainerObject))
+                {
+                    return default(T);
+                }
+                else if (data.GetType() == typeof(DataObject<T>))
+                {
+                    return ((DataObject<T>)subObjects[addr[0]]).data;
+                }
+                else
+                {
+                    throw new Exception("Internal Error. Invalid ObjectEntry subclass");
+                }
+            }
+            else
+            {
+                ObjectEntry data = subObjects[addr[0]];
+                if (data.GetType() == typeof(ContainerObject))
+                {
+                    string adrTmp = addr[0];
+                    addr.RemoveAt(0);
+                    return ((ContainerObject)subObjects[adrTmp]).getData<T>(address);
+                }
+                return default(T); //If it isn't a container we can't go down any farther
+            }
+        }
 
+        public override BsonValue toBsonValue()
+        {
+            BsonDocument doc = new BsonDocument();
+
+            foreach (KeyValuePair<string, ObjectEntry> pair in subObjects)
+            {
+                BsonValue newVal = pair.Value.toBsonValue();
+                BsonElement newElement = new BsonElement(pair.Key, newVal);
+                var obj = pair.Value;
+                doc.Add(newElement);
+            }
+            return doc;
+        }
     }
 }

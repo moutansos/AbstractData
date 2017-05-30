@@ -24,13 +24,13 @@ namespace adTests
             string[] path3 = new string[] { "test", "value3" };
 
             ContainerObject cont = new ContainerObject();
-            cont[path1] = tv1;
-            cont[path2] = tv2;
-            cont[path3] = tv3;
+            cont.setData(path1, tv1);
+            cont.setData(path2, tv2);
+            cont.setData(path3, tv3);
 
-            Assert.AreEqual(tv1, cont[path1]);
-            Assert.AreEqual(tv2, cont[path2]);
-            Assert.AreEqual(tv3, cont[path3]);
+            Assert.AreEqual(tv1, cont.getData<string>(path1));
+            Assert.AreEqual(tv2, cont.getData<string>(path2));
+            Assert.AreEqual(tv3, cont.getData<string>(path3));
         }
     }
 }
