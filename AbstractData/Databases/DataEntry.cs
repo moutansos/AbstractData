@@ -57,10 +57,15 @@ namespace AbstractData
             private string columnName;
             private string dataString;
 
-            public Field(string column, string data)
+            private Type type;
+
+            public Field(string column, string data) : this(column, data, typeof(string)) { }
+
+            public Field(string column, string data, Type destType)
             {
                 this.column = column;
                 this.data = data;
+                this.destType = destType;
             }
 
             public string column
@@ -69,15 +74,16 @@ namespace AbstractData
                 set { columnName = value; }
             }
 
-            public string[] splitColumn
-            {
-                get => evalSplitColumn();
-            }
-
             public string data
             {
                 get { return dataString; }
                 set { dataString = value; }
+            }
+
+            public Type destType
+            {
+                get => destType;
+                set => destType = value;
             }
 
             #region Conversion Properties
@@ -116,11 +122,6 @@ namespace AbstractData
                 get { return Guid.Parse(dataString); }
             }
             #endregion
-
-            private string[] evalSplitColumn()
-            {
-                return this.column.Split('.');
-            }
         }
 
         public Field getField(string columnName)
@@ -134,6 +135,18 @@ namespace AbstractData
             }
 
             return null;
+        }
+
+        public ObjectEntry convertToObjectEntry(char delimiter)
+        {
+            ContainerObject root = new ContainerObject();
+            foreach(Field field in fields)
+            {
+                string[] address = field.column.Split(delimiter);
+                root.setData(address, field.data, field.destType);
+            }
+
+            return root;
         }
     }
 }

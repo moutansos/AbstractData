@@ -30,10 +30,13 @@ namespace AbstractData
     {
         private T value;
         private string fieldName;
+        private Type destType;
 
-        public DataObject(T value, string fieldName) : base(fieldName)
+        public DataObject(T value, string fieldName, Type destType) : base(fieldName)
         {
             this.value = value;
+            this.fieldName = fieldName;
+            this.destType = destType;
         }
 
         public T data
@@ -45,7 +48,7 @@ namespace AbstractData
 
         public override BsonValue toBsonValue()
         {
-            return value.ToBson();
+            return value.ToBson(destType);
         }
     }
 
@@ -63,7 +66,7 @@ namespace AbstractData
             subObjects = new Dictionary<string, ObjectEntry>();
         }
 
-        public void setData<T>(string[] address, T value)
+        public void setData<T>(string[] address, T value, Type destType)
         {
             List<string> addr = address.ToList();
             if (addr.Count == 0)
@@ -73,7 +76,7 @@ namespace AbstractData
             else if (addr.Count == 1)
             {
                 //TODO: Figure out how to handle generics
-                subObjects[addr[0]] = new DataObject<T>(value, addr[0]);
+                subObjects[addr[0]] = new DataObject<T>(value, addr[0], destType);
             }
             else
             {
