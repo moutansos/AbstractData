@@ -14,6 +14,7 @@ namespace AbstractData
         private tableRef tableRef;
         private reference readField;
         private string writeField; //TODO: Change to an assignment
+        private Type writeFieldType;
 
         #region Constructors
         public dataRef(string originalString)
@@ -94,6 +95,9 @@ namespace AbstractData
 
         public void parseString(adScript script, ref adScript.Output output)
         {
+            // A => Field1(string)
+            // B => Field2(boolean)
+
             if (lineString.Contains("=>")) //TODO: Move this into string utils and implement it here and in tableRef
             {
                 int indexOfSplit = lineString.IndexOf("=>");
@@ -169,6 +173,16 @@ namespace AbstractData
                 readColumns.AddRange(dRef.readReference.refFields);
             }
             return readColumns;
+        }
+
+        public void parseWriteText(string writeText)
+        {
+            const string stringStr = "string";
+            const string intStr = "int";
+
+            //TODO: Use regex to match and replace
+            throw new NotImplementedException();
+            
         }
     }
 }
