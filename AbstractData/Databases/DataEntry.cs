@@ -16,6 +16,12 @@ namespace AbstractData
             fields.Add(newField);
         }
 
+        public void addField(string column, string data, Type destType)
+        {
+            Field newField = new Field(column, data, destType);
+            fields.Add(newField);
+        }
+
         public List<Field> getFields()
         {
             return fields;
