@@ -24,9 +24,9 @@ namespace adTests
             string[] path3 = new string[] { "test", "value3" };
 
             ContainerObject cont = new ContainerObject();
-            cont.setData(path1, tv1);
-            cont.setData(path2, tv2);
-            cont.setData(path3, tv3);
+            cont.setData(path1, tv1, typeof(string));
+            cont.setData(path2, tv2, typeof(string));
+            cont.setData(path3, tv3, typeof(string));
 
             Assert.AreEqual(tv1, cont.getData<string>(path1));
             Assert.AreEqual(tv2, cont.getData<string>(path2));

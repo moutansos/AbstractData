@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AbstractData
@@ -91,6 +92,8 @@ namespace AbstractData
         {
             get { return writeField; }
         }
+
+        public Type writeAssignmentType => writeFieldType;
         #endregion
 
         public void parseString(adScript script, ref adScript.Output output)
@@ -106,7 +109,7 @@ namespace AbstractData
                 string writeText = lineString.Substring(indexOfSplitEnd, lineString.Length - indexOfSplitEnd).Trim();
 
                 readField = new reference(readText);
-                writeField = writeText;
+                parseWriteText(writeText, ref output);
             }
             else if (lineString.Contains("<="))
             {
@@ -116,7 +119,7 @@ namespace AbstractData
                 string readText = lineString.Substring(indexOfSplitEnd, lineString.Length - indexOfSplitEnd).Trim();
 
                 readField = new reference(readText);
-                writeField = writeText;
+                parseWriteText(writeText, ref output);
             }
             else
             {
@@ -175,13 +178,36 @@ namespace AbstractData
             return readColumns;
         }
 
-        public void parseWriteText(string writeText)
+        public void parseWriteText(string writeText, ref adScript.Output output)
         {
             const string stringStr = "string";
             const string intStr = "int";
 
-            //TODO: Use regex to match and replace
-            throw new NotImplementedException();
+            Regex prenReg = new Regex(@"[(].+[)]");
+            Match prenMatch = prenReg.Match(writeText);
+
+            if(prenMatch.Success)
+            {
+                writeField = writeText.Replace(prenMatch.Value, "").Trim();
+                string type = prenMatch.Value.TrimStart('(').TrimEnd(')').Trim().ToLower();
+                if(type == stringStr)
+                {
+                    writeFieldType = typeof(string);
+                }
+                else if(type == intStr)
+                {
+                    writeFieldType = typeof(int);
+                }
+                else
+                {
+                    output = new adScript.Output("Invalid type of " + type + " provided.", true);
+                }
+            }
+            else
+            {
+                writeFieldType = typeof(string);
+                writeField = writeText;
+            }
             
         }
     }

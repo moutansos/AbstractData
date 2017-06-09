@@ -86,7 +86,7 @@ namespace AbstractData
                 }
                 string adrTmp = addr[0];
                 addr.RemoveAt(0);
-                ((ContainerObject)subObjects[adrTmp]).setData<T>(addr.ToArray(), value);
+                ((ContainerObject)subObjects[adrTmp]).setData<T>(addr.ToArray(), value, typeof(T));
             }
         }
 

@@ -25,6 +25,25 @@ namespace adTests
         }
 
         [TestMethod]
+        public void dataRefParseTest2()
+        {
+            //Setup Variables
+            string testOriginalString = "\"Test: \" + Column1 => B( String   )";
+
+            //Setup Object
+            dataRef dataRef = new dataRef(testOriginalString);
+
+            adScript.Output output = null;
+            dataRef.parseString(new adScript(), ref output);
+
+            //Check Results
+            Assert.IsTrue(output == null || !output.isError);
+            Assert.AreEqual("\"Test: \" + Column1", dataRef.readReferenceText);
+            Assert.AreEqual("B", dataRef.writeAssignmentText);
+            Assert.AreEqual(typeof(string), dataRef.writeAssignmentType);
+        }
+
+        [TestMethod]
         public void dataRefGenTest1()
         {
             //Setup Object
