@@ -120,7 +120,7 @@ namespace AbstractData
                 {
                     string adrTmp = addr[0];
                     addr.RemoveAt(0);
-                    return ((ContainerObject)subObjects[adrTmp]).getData<T>(address);
+                    return ((ContainerObject)subObjects[adrTmp]).getData<T>(addr.ToArray());
                 }
                 return default(T); //If it isn't a container we can't go down any farther
             }
