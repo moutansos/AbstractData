@@ -15,6 +15,7 @@ Currently the only thing in testing is text only. Some data adaption has been im
 - Access Databases  
 - PostgreSql Databases  
 - MariaDB/MySQL Databases  
+- TODO: Windows File Permissions (read only)  
 - TODO: Oracle Databases  
 - TODO: VoltDB Databases  
 - TODO: MongoDB Datablases ?  
