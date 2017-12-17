@@ -92,8 +92,8 @@ namespace AbstractData
             else if (field.StartsWith("{") && field.EndsWith("}")) //This is a variable reference
             {
                 string varID = field.TrimStart('{').TrimEnd('}');
-                string globalResult = script.getGlobalVarString(varID);
-                string localResult = script.getLocalVarString(varID);
+                string globalResult = script.getGlobalVariable(varID).ToString();
+                string localResult = script.getLocalVariable(varID).ToString();
 
                 string varVal = "";
 

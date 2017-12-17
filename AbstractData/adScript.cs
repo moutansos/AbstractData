@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,8 +12,8 @@ namespace AbstractData
         System.IO.StreamReader dataStream;
         //TODO: Add a script command for printing to the output/log
 
-        private List<Variable> globalVariablesList;
-        private List<Variable> localVariablesList;
+        private Dictionary<string, Variable> globalVariables;
+        private Dictionary<string, Variable> localVariables;
         private List<IDatabase> databaseReferenceList;
         private tableRef curTableRef;
         private List<dataRef> curDataReferences;
@@ -23,18 +24,14 @@ namespace AbstractData
         #region Constructors
         public adScript()
         {
-
         }
 
-        public adScript(string fileName)
-        {
-            dataStream = new System.IO.StreamReader(fileName);
-        }
-
-        public adScript(System.IO.StreamReader reader)
+        public adScript(System.IO.StreamReader reader) : this()
         {
             dataStream = reader;
         }
+
+        public adScript(string fileName) : this(new StreamReader(fileName)) { }
         #endregion
 
         public void runScript()
@@ -47,8 +44,8 @@ namespace AbstractData
             }
 
             //Reset storage structures
-            globalVariablesList = new List<Variable>();
-            localVariablesList = new List<Variable>();
+            globalVariables = new Dictionary<string, Variable>();
+            localVariables = new Dictionary<string, Variable>();
             databaseReferenceList = new List<IDatabase>();
             #endregion
 
@@ -83,13 +80,13 @@ namespace AbstractData
 
         public void runLine(string line)
         {
-            if(globalVariablesList == null)
+            if(globalVariables == null)
             {
-                globalVariablesList = new List<Variable>();
+                globalVariables = new Dictionary<string, Variable>();
             }
-            if(localVariablesList == null)
+            if(localVariables == null)
             {
-                localVariablesList = new List<Variable>();
+                localVariables = new Dictionary<string, Variable>();
             }
             if(databaseReferenceList == null)
             {
@@ -128,99 +125,33 @@ namespace AbstractData
         public void setGlobalVariable(Variable newVar)
         {
             string varID = newVar.id;
-            Variable foundValue = null;
-            foreach (Variable var in globalVariablesList)
-            {
-                if (var.id == varID)
-                {
-                    foundValue = var;
-                    break;
-                }
-            }
-
-            if (foundValue != null)
-            {
-                globalVariablesList.Remove(foundValue);
-            }
-
-            globalVariablesList.Add(newVar);
+            globalVariables[varID] = newVar;
         }
 
         public void setGlobalVariable(string varID, string value)
         {
-            setGlobalVariable(new Variable(varID, value, "Global"));
+            globalVariables[varID] = new Variable(varID, value, "Global");
         }
 
         public void setLocalVariable(Variable newVar)
         {
             string varID = newVar.id;
-            Variable foundValue = null;
-            foreach (Variable var in localVariablesList)
-            {
-                if (var.id == varID)
-                {
-                    foundValue = var;
-                    break;
-                }
-            }
-
-            if (foundValue != null)
-            {
-                localVariablesList.Remove(foundValue);
-            }
-
-            localVariablesList.Add(newVar);
+            localVariables[varID] = newVar;
         }
 
         public void setLocalVariable(string varID, string value)
         {
-            setLocalVariable(new Variable(varID, value, "Local"));
+            localVariables[varID] = new Variable(varID, value, "Local");
         }
 
         public Variable getGlobalVariable(string varID)
         {
-            foreach (Variable var in globalVariablesList)
-            {
-                if (var.id == varID)
-                {
-                    return var;
-                }
-            }
-
-            return null;
-        }
-
-        public string getGlobalVarString(string varID)
-        {
-            Variable var = getGlobalVariable(varID);
-            if (var != null)
-            {
-                return var.value;
-            }
-            return null;
+            return globalVariables[varID];
         }
 
         public Variable getLocalVariable(string varID)
         {
-            foreach (Variable var in localVariablesList)
-            {
-                if (var.id == varID)
-                {
-                    return var;
-                }
-            }
-
-            return null;
-        }
-
-        public string getLocalVarString(string varID)
-        {
-            Variable var = getLocalVariable(varID);
-            if(var != null)
-            {
-                return var.value;
-            }
-            return null;
+            return localVariables[varID];
         }
         #endregion
 
