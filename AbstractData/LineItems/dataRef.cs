@@ -15,7 +15,7 @@ namespace AbstractData
         private tableRef tableRef;
         private reference readField;
         private string writeField; //TODO: Change to an assignment
-        private Type writeFieldType;
+        private ADType writeFieldType;
 
         #region Constructors
         public dataRef(string originalString)
@@ -93,7 +93,7 @@ namespace AbstractData
             get { return writeField; }
         }
 
-        public Type writeAssignmentType => writeFieldType;
+        public ADType writeAssignmentType => writeFieldType;
         #endregion
 
         public void parseString(adScript script, ref adScript.Output output)
@@ -180,32 +180,26 @@ namespace AbstractData
 
         public void parseWriteText(string writeText, ref adScript.Output output)
         {
-            const string stringStr = "string";
-            const string intStr = "int";
-
             Regex prenReg = new Regex(@"[(].+[)]");
             Match prenMatch = prenReg.Match(writeText);
 
             if(prenMatch.Success)
             {
                 writeField = writeText.Replace(prenMatch.Value, "").Trim();
-                string type = prenMatch.Value.TrimStart('(').TrimEnd(')').Trim().ToLower();
-                if(type == stringStr) //TODO: Implement ADType
+                string type = prenMatch.Value.TrimStart('(').TrimEnd(')').Trim();
+                try
                 {
-                    writeFieldType = typeof(string);
+                    writeFieldType = new ADType(type);
+                    writeFieldType.Parse();
                 }
-                else if(type == intStr)
+                catch(Exception ex)
                 {
-                    writeFieldType = typeof(int);
-                }
-                else
-                {
-                    output = new adScript.Output("Invalid type of " + type + " provided.", true);
+                    output = new adScript.Output(ex.Message, true);
                 }
             }
             else
             {
-                writeFieldType = typeof(string);
+                writeFieldType = new ADType("string"); //TODO: Try to determine the input type dynamically
                 writeField = writeText;
             }
             

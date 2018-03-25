@@ -28,7 +28,7 @@ namespace adTests
         public void dataRefParseTest2()
         {
             //Setup Variables
-            string testOriginalString = "\"Test: \" + Column1 => B( String   )";
+            string testOriginalString = "\"Test: \" + Column1 => B( List<String>   )";
 
             //Setup Object
             dataRef dataRef = new dataRef(testOriginalString);
@@ -40,7 +40,8 @@ namespace adTests
             Assert.IsTrue(output == null || !output.isError);
             Assert.AreEqual("\"Test: \" + Column1", dataRef.readReferenceText);
             Assert.AreEqual("B", dataRef.writeAssignmentText);
-            Assert.AreEqual(typeof(string), dataRef.writeAssignmentType);
+            Assert.AreEqual(typeof(string), dataRef.writeAssignmentType.NativeType);
+            Assert.IsTrue(dataRef.writeAssignmentType.IsList);
         }
 
         [TestMethod]
