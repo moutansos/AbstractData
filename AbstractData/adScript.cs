@@ -14,9 +14,9 @@ namespace AbstractData
 
         private Dictionary<string, Variable> globalVariables;
         private Dictionary<string, Variable> localVariables;
-        private List<IDatabase> databaseReferenceList;
+        private List<IDatabase> databaseReferenceList; //TODO: Replace list with dictionary
         private tableRef curTableRef;
-        private List<dataRef> curDataReferences;
+        private List<dataRef> curDataReferences; //TODO: Look at posibility of replacing with a dictionary
 
         //An action for handling output - Set by the user of the library
         public Action<string> output;

@@ -190,7 +190,7 @@ namespace AbstractData
             {
                 writeField = writeText.Replace(prenMatch.Value, "").Trim();
                 string type = prenMatch.Value.TrimStart('(').TrimEnd(')').Trim().ToLower();
-                if(type == stringStr)
+                if(type == stringStr) //TODO: Implement ADType
                 {
                     writeFieldType = typeof(string);
                 }

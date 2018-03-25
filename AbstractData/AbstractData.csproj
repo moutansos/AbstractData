@@ -233,6 +233,7 @@
     <Compile Include="Databases\PostgreSqlDB.cs" />
     <Compile Include="Databases\SQLiteDB.cs" />
     <Compile Include="Databases\SQLServerDB.cs" />
+    <Compile Include="LineItems\ADType.cs" />
     <Compile Include="LineItems\Comment.cs" />
     <Compile Include="LineItems\dataRef.cs" />
     <Compile Include="LineItems\dbRef.cs" />
