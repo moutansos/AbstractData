@@ -11,22 +11,20 @@ namespace AbstractData
     {
         private int line;
         private string lineString;
-
-        private tableRef tableRef;
-        private reference readField;
-        private string writeField; //TODO: Change to an assignment
         private ADType writeFieldType;
 
         #region Constructors
         public dataRef(string originalString)
         {
             this.originalString = originalString;
+            writeFieldType = null;
         }
 
         public dataRef(string readRefText, string writeRefText)
         {
-            readField = new reference(readRefText);
-            writeField = writeRefText;
+            readReference = new reference(readRefText);
+            writeAssignmentText = writeRefText;
+            writeFieldType = null;
         }
         #endregion
 
@@ -68,38 +66,32 @@ namespace AbstractData
             get { return typeof(dataRef); }
         }
 
-        public reference readReference
-        {
-            get { return readField; }
-        }
+        public reference readReference { get; private set; }
 
-        public tableRef tableReference
-        {
-            get { return tableRef; }
-        }
+        public tableRef tableReference { get; private set; }
 
         public string readReferenceText
         {
-            get { return readField.originalString; }
+            get { return readReference.originalString.Trim(); }
         }
 
         public string writeAssignment
         {
-            get { return writeAssignment; }
+            get { return writeAssignment.Trim(); }
         }
 
-        public string writeAssignmentText
-        {
-            get { return writeField; }
-        }
+        public string writeAssignmentText { get; private set; }
 
         public ADType writeAssignmentType => writeFieldType;
+
+        public string dataReferenceKey => readReferenceText + " => " + writeAssignmentText;
         #endregion
 
         public void parseString(adScript script, ref adScript.Output output)
         {
             // A => Field1(string)
             // B => Field2(boolean)
+            // Field3(float) <= C
 
             if (lineString.Contains("=>")) //TODO: Move this into string utils and implement it here and in tableRef
             {
@@ -108,7 +100,7 @@ namespace AbstractData
                 string readText = lineString.Substring(0, indexOfSplit).Trim();
                 string writeText = lineString.Substring(indexOfSplitEnd, lineString.Length - indexOfSplitEnd).Trim();
 
-                readField = new reference(readText);
+                readReference = new reference(readText);
                 parseWriteText(writeText, ref output);
             }
             else if (lineString.Contains("<="))
@@ -118,12 +110,12 @@ namespace AbstractData
                 string writeText = lineString.Substring(0, indexOfSplit).Trim();
                 string readText = lineString.Substring(indexOfSplitEnd, lineString.Length - indexOfSplitEnd).Trim();
 
-                readField = new reference(readText);
+                readReference = new reference(readText);
                 parseWriteText(writeText, ref output);
             }
             else
             {
-                output = new adScript.Output("Line was parsed as a dataRef but no reference operator was used.", true);
+                output = new adScript.Output("Line was parsed as a dataRef but no reference operator (=> or <=) was used.", true);
                 if(line > 0)
                 {
                     output.lineNumber = line;
@@ -145,14 +137,14 @@ namespace AbstractData
             }
             else
             {
-                tableRef = script.currentTableRef; //Grab the table reference
-                script.addDataRef(this);
+                tableReference = script.currentTableRef; //Grab the table reference
+                script.AddDataRef(this);
             }
         }
 
         public string generateString()
         {
-            lineString = readField.originalString + " => " + writeField;
+            lineString = readReference.originalString + " => " + writeAssignmentText;
             return originalString;
         }
 
@@ -185,7 +177,7 @@ namespace AbstractData
 
             if(prenMatch.Success)
             {
-                writeField = writeText.Replace(prenMatch.Value, "").Trim();
+                writeAssignmentText = writeText.Replace(prenMatch.Value, "").Trim();
                 string type = prenMatch.Value.TrimStart('(').TrimEnd(')').Trim();
                 try
                 {
@@ -199,8 +191,7 @@ namespace AbstractData
             }
             else
             {
-                writeFieldType = new ADType("string"); //TODO: Try to determine the input type dynamically
-                writeField = writeText;
+                writeAssignmentText = writeText;
             }
             
         }

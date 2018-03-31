@@ -15,8 +15,6 @@ namespace AbstractData
         private Dictionary<string, Variable> globalVariables;
         private Dictionary<string, Variable> localVariables;
         private List<IDatabase> databaseReferenceList; //TODO: Replace list with dictionary
-        private tableRef curTableRef;
-        private List<dataRef> curDataReferences; //TODO: Look at posibility of replacing with a dictionary
 
         //An action for handling output - Set by the user of the library
         public Action<string> output;
@@ -187,7 +185,7 @@ namespace AbstractData
             {
                 lineObject = new dataRef(line);
             }
-            else if (moveCom.isMoveCom(line))
+            else if (moveCom.IsMoveCom(line))
             {
                 lineObject = new moveCom(line);
             }
@@ -283,83 +281,68 @@ namespace AbstractData
         #endregion
 
         #region Data Reference Methods
-        public void addDataRef(dataRef newRef)
+        public void AddDataRef(dataRef newRef)
         {
-            if(curDataReferences == null)
+            if(currentDataRefs == null)
             {
-                curDataReferences = new List<dataRef>();
+                currentDataRefs = new Dictionary<string, dataRef>();
             }
-            curDataReferences.Add(newRef);
+            currentDataRefs[newRef.dataReferenceKey] = newRef;
         }
 
-        public void clearDataRefs()
+        public void ClearDataRefs()
         {
-            if(curDataReferences != null)
+            if(currentDataRefs != null)
             {
-                curDataReferences.Clear();
+                currentDataRefs.Clear();
             }
         }
         #endregion
 
         #region Properties
-        public tableRef currentTableRef
-        {
-            get { return curTableRef; }
-            set { curTableRef = value; }
-        }
+        public tableRef currentTableRef { get; set; }
 
-        public List<dataRef> currentDataRefs
-        {
-            get { return curDataReferences; }
-        }
+        // string: data ref key composed of read and write reference without types
+        public Dictionary<string, dataRef> currentDataRefs //TODO: Implement as a dictionary of table references and data references
+        { get; private set; }
         #endregion
 
         public class Output
         {
-            private bool error;
             private string outputString;
-            private int line;
 
             #region Constructors
             public Output()
             {
                 isError = false;
                 value = "";
-                line = -1;
+                lineNumber = -1;
             }
 
             public Output(string message)
             {
                 isError = false;
                 value = message;
-                line = -1;
+                lineNumber = -1;
             }
 
             public Output(string message, bool isError)
             {
                 this.isError = isError;
                 value = message;
-                line = -1;
+                lineNumber = -1;
             }
             #endregion
 
             #region Properties
-            public bool isError
-            {
-                get { return error; }
-                set { error = value; }
-            }
+            public bool isError { get; set; }
 
             public bool isEmpty
             {
-                get { return (error = false && String.IsNullOrWhiteSpace(outputString)); }
+                get { return (isError = false && String.IsNullOrWhiteSpace(outputString)); }
             }
 
-            public int lineNumber
-            {
-                get { return line; }
-                set { line = value; }
-            }
+            public int lineNumber { get; set; }
 
             public string value
             {
@@ -370,13 +353,13 @@ namespace AbstractData
 
             private string generateValue()
             {
-                if (error && line == -1)
+                if (isError && lineNumber == -1)
                 {
                     return "Error: " + outputString;
                 }
-                else if(error && line != -1)
+                else if(isError && lineNumber != -1)
                 {
-                    return "Error on line " + line + ": " + outputString;
+                    return "Error on line " + lineNumber + ": " + outputString;
                 }
                 else
                 {

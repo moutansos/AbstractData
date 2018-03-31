@@ -6,18 +6,16 @@ using System.Threading.Tasks;
 
 namespace AbstractData
 {
-    public class tableRef : ILine
+    public class tableRef : ILine, IEquatable<tableRef>
     {
+        const char TABLE_SEPERATOR = '>';
+
         private int line;
         private string lineString;
 
         private string readDb;
         private string writeDb;
         private string readTable;
-        private string writeTable;
-
-        private IDatabase readData;
-        private IDatabase writeData;
 
         #region Constructors
         public tableRef(string originalString)
@@ -27,10 +25,10 @@ namespace AbstractData
 
         public tableRef(string readDbName, string readTableName, string writeDbName, string writeTableName)
         {
-            readDb = readDbName;
-            readTable = readTableName;
-            writeDb = writeDbName;
-            writeTable = writeTableName;
+            ReadDb = readDbName;
+            ReadTable = readTableName;
+            WriteDb = writeDbName;
+            writeTableText = writeTableName;
         }
         #endregion
 
@@ -72,35 +70,32 @@ namespace AbstractData
             get { return typeof(tableRef); }
         }
 
-        public IDatabase readDatabase
-        {
-            get { return readData; }
-        }
+        public IDatabase ReadDatabase { get; private set; }
 
-        public IDatabase writeDatabase
-        {
-            get { return writeData; }
-        }
+        public IDatabase WriteDatabase { get; private set; }
 
         public string readDbText
         {
-            get { return readDb; }
+            get { return ReadDb; }
         }
 
         public string readTableText
         {
-            get { return readTable; }
+            get { return ReadTable; }
         }
 
         public string writeDbText
         {
-            get { return writeDb; }
+            get { return WriteDb; }
         }
 
-        public string writeTableText
-        {
-            get { return writeTable; }
-        }
+        public string writeTableText { get; private set; }
+
+        public string tableRefKey => ReadDb + TABLE_SEPERATOR + ReadTable + " => " + WriteDb + TABLE_SEPERATOR + writeTableText;
+
+        public string ReadDb { get => readDb; set => readDb = value; }
+        public string WriteDb { get => writeDb; set => writeDb = value; }
+        public string ReadTable { get => readTable; set => readTable = value; }
         #endregion
 
         public void parseString(adScript script, ref adScript.Output output)
@@ -134,23 +129,23 @@ namespace AbstractData
             if (readText.Contains('>'))
             {
                 string[] readTextSplit = readText.Split('>');
-                readDb = readTextSplit[0].Trim();
-                readTable = readTextSplit[1].Trim();
+                ReadDb = readTextSplit[0].Trim();
+                ReadTable = readTextSplit[1].Trim();
             }
             else
             {
-                readDb = readText;
+                ReadDb = readText;
             }
 
             if (writeText.Contains('>'))
             {
                 string[] writeTextSplit = writeText.Split('>');
-                writeDb = writeTextSplit[0].Trim();
-                writeTable = writeTextSplit[1].Trim();
+                WriteDb = writeTextSplit[0].Trim();
+                writeTableText = writeTextSplit[1].Trim();
             }
             else
             {
-                writeDb = writeText;
+                WriteDb = writeText;
             }
 
             //TODO: Add RegEx validation
@@ -160,12 +155,12 @@ namespace AbstractData
 
         public void execute(adScript script, ref adScript.Output output)
         {
-            script.clearDataRefs();
-            readData = script.getDatabase(readDb);
+            script.ClearDataRefs();
+            ReadDatabase = script.getDatabase(ReadDb);
             //TODO: Validate readTable is in database
-            writeData = script.getDatabase(writeDb);
-            if(readData == null ||
-               writeData == null)
+            WriteDatabase = script.getDatabase(WriteDb);
+            if(ReadDatabase == null ||
+               WriteDatabase == null)
             {
                 output = new adScript.Output("Invalid database name. That database hasn't been initialied yet.", true);
                 if (line > 0)
@@ -179,15 +174,15 @@ namespace AbstractData
 
         public string generateString()
         {
-            string readRef = readDb;
-            string writeRef = writeDb;
-            if(readTable != null)
+            string readRef = ReadDb;
+            string writeRef = WriteDb;
+            if(ReadTable != null)
             {
-                readRef = readRef + ">" + readTable;
+                readRef = readRef + ">" + ReadTable;
             }
-            if(writeTable != null)
+            if(writeTableText != null)
             {
-                writeRef = writeRef + ">" + writeTable;
+                writeRef = writeRef + ">" + writeTableText;
             }
             lineString = "tableReference(" + readRef + " => " + writeRef + ")";
             return originalString;
@@ -200,6 +195,16 @@ namespace AbstractData
                 return true;
             }
             return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return tableRefKey.GetHashCode();
+        }
+
+        public bool Equals(tableRef other)
+        {
+            return tableRefKey == other.tableRefKey;
         }
     }
 }

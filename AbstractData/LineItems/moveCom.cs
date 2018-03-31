@@ -68,44 +68,32 @@ namespace AbstractData
 
         public void execute(adScript script, ref adScript.Output output)
         {
-            List<dataRef> currentDataRefs = script.currentDataRefs;
-            List<movePackage> movePacks = new List<movePackage>();
+            Dictionary<tableRef, List<dataRef>> moveSchema = new Dictionary<tableRef, List<dataRef>>();
 
-            //Setup Move Packages
-            foreach (dataRef data in currentDataRefs)
+            //Setup the schema that defines what data is moved where
+            foreach(KeyValuePair<string, dataRef> kv in script.currentDataRefs)
             {
-                movePackage pack = matchRefInMovePack(movePacks, data);
-                if (pack.isEmpty) //No package found. Make a new one
+                dataRef dataReference = kv.Value;
+                if(!moveSchema.ContainsKey(dataReference.tableReference))
                 {
-                    pack = new movePackage {
-                        isEmpty = false,
-                        tableReference = data.tableReference,
-                        references = new List<dataRef>()
-                    };
-                    pack.references.Add(data);
-                    movePacks.Add(pack);
+                    moveSchema[dataReference.tableReference] = new List<dataRef>();
                 }
-                else
-                {
-                    movePacks.Remove(pack); //Remove from collection
-                    pack.references.Add(data); //Change data
-                    movePacks.Add(pack); //Add it back to collection
-                }
+
+                moveSchema[dataReference.tableReference].Add(dataReference);
             }
 
             //Execute each movePack
-            foreach(var pack in movePacks)
+            foreach(KeyValuePair<tableRef, List<dataRef>> kv in moveSchema)
             {
-                tableRef tRef = pack.tableReference;
-                tRef.readDatabase.table = tRef.readTableText;
-                tRef.writeDatabase.table = tRef.writeTableText;
-                moveResult result = tRef.readDatabase.getData(tRef.writeDatabase.addData, pack.references, script, ref output);
-                tRef.readDatabase.close();
-                tRef.writeDatabase.close();
-                if (script.output != null)
-                {
-                    script.output(result.resultText);
-                }
+                tableRef tRef = kv.Key;
+                List<dataRef> dataRefs = kv.Value;
+
+                tRef.ReadDatabase.table = tRef.readTableText;
+                tRef.WriteDatabase.table = tRef.writeTableText;
+                moveResult result = tRef.ReadDatabase.getData(tRef.WriteDatabase.addData, dataRefs, script, ref output);
+                tRef.ReadDatabase.close();
+                tRef.WriteDatabase.close();
+                script.output?.Invoke(result.resultText);
             }
 
             //Check for errors
@@ -118,7 +106,7 @@ namespace AbstractData
             return lineString;
         }
 
-        public static bool isMoveCom(string line)
+        public static bool IsMoveCom(string line)
         {
             if (line.StartsWith("move"))
             {
@@ -127,7 +115,7 @@ namespace AbstractData
             return false;
         }
 
-        private static movePackage matchRefInMovePack(List<movePackage> packs, dataRef dataReference)
+        private static movePackage MatchRefInMovePack(List<movePackage> packs, dataRef dataReference)
         {
             foreach(var pack in packs)
             {
